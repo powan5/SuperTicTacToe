@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include "Array.h"
+/* #include "Array.h" */
 
 // Const // USE SIZE (1d) && ROW & COLUMN (2d)
 #define ROW 3
@@ -13,7 +13,10 @@ typedef char List[ROW][COLUMN];
 typedef Grid SuperGrid[ROW][COLUMN];
 
 // Prototypes
-void PrintGrid(Grid grid);
+void PrintGrid(SuperGrid grid);
+void initGrid(Grid grid);
+void initSuperGrid(SuperGrid superGrid);
+
 
 int main()
 {
@@ -24,12 +27,11 @@ int main()
 
     // Inputs
     // while (getchar() != '\n');  // Buffer clear (if usage of strings)
+    PrintGrid(superGrid);
 
 
     // Printing of the grid
-    initSuperGrid(superGrid);   
-    printArray2d(superGrid, ROW, COLUMN);
-
+    initSuperGrid(superGrid);
 
 
     return EXIT_SUCCESS;
@@ -61,7 +63,7 @@ void initSuperGrid(SuperGrid superGrid)
     }
 }
 
-void PrintGrid(Grid grid)
+void PrintGrid(SuperGrid grid)
 {
     List letters = {{'A','B','C'}, {'D','E','F'}, {'G','H','I'}};
 
