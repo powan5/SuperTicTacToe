@@ -61,7 +61,7 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN]) //Finished
     }
 }
 
-void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // NEED TO RE DO (remove // when imput is done)
+void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // NEED TO RE-DO (remove // when input is done)
 {
     // Prints the TOP outline of the 'super grid'
     for (int _ = 0; _ < ROW; _++)
@@ -69,6 +69,12 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // NEED TO RE DO (remove // w
         printf("+-------------------");
     }
     printf("+\n");
+
+
+    /**
+     * NEED TO RE-DO THIS PART aka basically everything
+     * Why? Cuz I need to print X or O when the tinyGrid is done by either
+    */
 
     // Prints the middle of 'super grid'
     for (int row = 0; row < ROW; row++)
@@ -143,7 +149,8 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // NEED TO RE DO (remove // w
         printf("|\n");
 
 
-        // Prints the BOTTOM outline of the 'super grid'
+
+        // Prints the BOTTOM & MIDDLE outline of the 'super grid'
         for (int _ = 0; _ < ROW; _++)
         {
             printf("+-------------------");
@@ -252,20 +259,64 @@ void inputWhichSquare(char *adrInput) // Done, need to add errors messages
     } while (!condition);
 }
 
-int gridComplete(struct Grid superGrid[ROW][COLUMN])
+int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter) // Seems done
 {
     for (int row = 0; row < ROW; row++)
     { // Row of super grid
         for (int col = 0; col < COLUMN; col++)
         { // Column of super grid
-            for (int gridRow = 0; gridRow < ROW; gridRow++)
-            { // Row of the grid inside superGrid[row][col]
-                for (int gridCol = 0; gridCol < COLUMN; gridCol++)
-                { // Column of the grid inside superGrid[row][col]
-                    superGrid[row][col].grid[gridRow][gridCol] == 'X';
+
+            if (letter == letters[row][col])
+            {
+                for (int gridRow = 0; gridRow < ROW; gridRow++)
+                { // Row of the grid inside superGrid[row][col]
+
+                    if (superGrid[row][col].grid[gridRow][gridRow] == 'X') { return P1; } // Checks the diagonal from (0,0) to (2,2) for P1 win
+                    if (superGrid[row][col].grid[gridRow][gridRow] == 'O') { return P2; } // Checks the diagonal from (0,0) to (2,2) for P2 win
+
+                    for (int gridDiag = 2; gridDiag >=0; gridDiag--)
+                    {
+                        if (superGrid[row][col].grid[gridRow][gridDiag] == 'X') { return P1; } // Checks the diagonal from (0,2) to (2,0) for P1 win
+                        if (superGrid[row][col].grid[gridRow][gridDiag] == 'O') { return P2; } // Checks the diagonal from (0,2) to (2,0) for P2 win
+                    }
+
+                    for (int gridCol = 0; gridCol < COLUMN; gridCol++)
+                    { // Column of the grid inside superGrid[row][col]
+                        if (superGrid[row][col].grid[gridRow][gridCol] == 'X') { return P1; } // Checks each rows for P1 wins
+                        else if (superGrid[row][col].grid[gridCol][gridRow] == 'X') { return P1; } // Checks each columns for P1 wins
+
+                        if (superGrid[row][col].grid[gridRow][gridCol] == 'O') { return P2; } // Checks each rows for P2 wins
+                        else if (superGrid[row][col].grid[gridCol][gridRow] == 'O') { return P2; } // Checks each columns for P2 wins
+                    }
                 }
             }
         }
     }
+    return 0;
 }
+
+int superGridComplete(struct Grid superGrid[ROW][COLUMN]) // Seems done
+{
+    for (int row = 0; row < ROW; row++)
+    { // Row of super grid
+        for (int col = 0; col < COLUMN; col++)
+        { // Column of super grid
+            for (int invCol = 0; invCol < ROW; invCol--)
+            { // Row of the grid inside superGrid[row][col]
+
+                if (gridComplete(superGrid, letters[row][row]) == P1) { return P1; } // Checks the diagonal from (0,0) to (2,2) for P1 win
+                else if (gridComplete(superGrid, letters[row][row]) == P2) { return P2; } // Checks the diagonal from (0,0) to (2,2) for P2 win
+
+                else if (gridComplete(superGrid, letters[row][invCol]) == P1) { return P1; } // Checks the diagonal from (0,2) to (2,0) for P1 win
+                else if (gridComplete(superGrid, letters[row][invCol]) == P2) { return P2; } // Checks the diagonal from (0,2) to (2,0) for P2 win
+
+                else if (gridComplete(superGrid, letters[row][col]) == P1) { return P1; } // Checks each rows for P1 wins
+                else if (gridComplete(superGrid, letters[col][row]) == P1) { return P1; } // Checks each columns for P1 wins
+
+                else if (gridComplete(superGrid, letters[row][col]) == P2) { return P2; } // Checks each rows for P2 wins
+                else if (gridComplete(superGrid, letters[col][row]) == P2) { return P2; } // Checks each columns for P2 wins
+            }
+        }
+    }
+    return 0;
 }
