@@ -2,16 +2,16 @@
  * @brief Program to play Super Tic-Tac-Toe, a variation of tic-tac-toe where players need to complete a grid in order to claim a square of the main grid ('super grid')
  * 
  * @author Powan
- * @version Beta 1.0
+ * @version Beta 1.0.2
 */
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
+// while (getchar() != '\n');  // Buffer clear (if usage of strings)
 
-
-// Const // USE SIZE (1d) && ROW & COLUMN (2d)
+/*-- Constants & Types --*/
 #define ROW 3
 #define COLUMN 3
 #define P1 1
@@ -23,24 +23,67 @@ typedef struct Grid { char grid[ROW][COLUMN]; };
 typedef char List[ROW][COLUMN];
 const List letters = {{'A','B','C'}, {'D','E','F'}, {'G','H','I'}};
 
-// Prototypes init
-void PrintGrid(struct Grid superGrid[ROW][COLUMN]);
-void initSuperGrid(struct Grid superGrid[ROW][COLUMN]);
+/*-- Prototypes initialisation --*/
+/**
+ * @brief Initialise 'the super grid's grids values with 'Z'.
+ * 
+ * @param superGrid Game's grid.
+ */
+void initSuperGrid(struct Grid superGrid[ROW][COLUMN])
+
+/**
+ * @brief Asks the User for a CHAR input in order to choose where to play in the 'super grid'.
+ * 
+ * @param adrInput adress of the input variable.
+ */
 void inputWhichGrid(char *adrInput);
+
+/**
+ * @brief Asks the User for an INT input in order to choose where to play in the grid inside the 'super grid'.
+ * 
+ * @param adrInput Adress of the input variable.
+ */
+void inputWhichSquare(char *adrInput);
+
+/**
+ * @brief Checks if the given grid inside 'super grid' is complete.
+ * 
+ * @param superGrid Game's grid.
+ * @param letter Letter of the grid to check, gives the index of said grid.
+ * @return 1 if Player1 has finished it, 2 if Player2 did, 0 otherwise.
+ */
+int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
+
+/**
+ * @brief Checks if the 'super grid' is completed, so if the game finished.
+ * 
+ * @param superGrid Game's grid.
+ * @return 1 if Player1 has won, 2 if Player2 did, 0 otherwise.
+ */
+int superGridComplete(struct Grid superGrid[ROW][COLUMN]);
+
+/**
+ * @brief Prints the game's grid in the terminal.
+ * 
+ * @param superGrid Game's grid.
+ */
+void PrintGrid(struct Grid superGrid[ROW][COLUMN]);
 
 int main()
 {
-    // Variables
+    /*-- Variables --*/
+
     struct Grid grid;
     struct Grid superGrid[ROW][COLUMN];
 
 
-    // Inputs
-    // while (getchar() != '\n');  // Buffer clear (if usage of strings)
+    /*-- Inputs --*/
+
     initSuperGrid(superGrid);
 
 
-    // Printing of the grid
+    /*-- Printing of the grid --*/
+
     printf("\033[2J\033[1;1H"); // Clears output terminal
     PrintGrid(superGrid);
 
@@ -48,7 +91,7 @@ int main()
     return EXIT_SUCCESS;
 }
 
-// definition of Prototypes
+/*-- Prototypes definitions --*/
 
 /**
  * @brief Initialise 'the super grid's grids values with 'Z'.
@@ -56,15 +99,11 @@ int main()
  * @param superGrid Game's grid.
  */
 void initSuperGrid(struct Grid superGrid[ROW][COLUMN]) //Finished
-{ // Sets every square of the grids inside the 'super grid' to 'Z' (for Zero)
-    for (int row = 0; row < ROW; row++)
-    { // Row of super grid
-        for (int col = 0; col < COLUMN; col++)
-        { // Column of super grid
-            for (int gridRow = 0; gridRow < ROW; gridRow++)
-            { // Row of the grid inside superGrid[row][col]
-                for (int gridCol = 0; gridCol < COLUMN; gridCol++)
-                { // Column of the grid inside superGrid[row][col]
+{
+    for (int row = 0; row < ROW; row++) {
+        for (int col = 0; col < COLUMN; col++) {
+            for (int gridRow = 0; gridRow < ROW; gridRow++) {
+                for (int gridCol = 0; gridCol < COLUMN; gridCol++) {
                     superGrid[row][col].grid[gridRow][gridCol] = 'Z';
                 }
             }
@@ -190,10 +229,11 @@ void inputWhichGrid(char *adrInput) // Done, need to add errors messages
     {
         char input[3] = "";
 
-        fgets(input, sizeof(input), stdin); // Gets input
-        fflush(stdin); // Clears the input terminal
+        fgets(input, sizeof(input), stdin);
+        fflush(stdin);
 
-        // Makes sure the input is not longer the 3
+        /*-- Makes sure the input is not longer the 3 --*/
+
         if (strlen(input) > 0 && input[strlen(input) - 1] == '\n')
         {
             input[strlen(input) - 1] = '\0';
@@ -205,19 +245,20 @@ void inputWhichGrid(char *adrInput) // Done, need to add errors messages
             continue;
         }
         
-        // If the input is only 1 character,  
-        if (strlen(input) <= 1)
+        /*-- Main loop, checks if the user's input is correct --*/
+
+        if (strlen(input) <= 1) /* If the input is only 1 character, */ 
         {        
             for (int row = 0; row < ROW; row++)
             {
                 for (size_t col = 0; col < COLUMN; col++)
                 {
-                    if (input == letters[row][col]) // checks if it's a correct letter,
+                    if (input == letters[row][col]) /* checks if it's a correct letter, */
                     {
                         *adrInput = input;
                         condition = true;
                     }
-                    else // prints an error otherwise, and ask the user to try again
+                    else /* prints an error otherwise, asking the user to try again */
                     {
                         // printf error not in letters
                     }
@@ -229,7 +270,7 @@ void inputWhichGrid(char *adrInput) // Done, need to add errors messages
             // printf error too long
         }
 
-        // Clears the input terminal before looping
+        /* Clears the buffer before looping */
         while (getchar() != '\n');
     } while (!condition);
 }
@@ -250,10 +291,11 @@ void inputWhichSquare(char *adrInput) // Done, need to add errors messages
         char input[3] = "";
         int value;
 
-        fgets(input, sizeof(input), stdin); // Gets input
-        fflush(stdin); // Clears the input terminal
+        fgets(input, sizeof(input), stdin);
+        fflush(stdin);
 
-        // Makes sure the input is not longer the 3
+        /*-- Makes sure the input is not longer than 3 --*/
+
         if (strlen(input) > 0 && input[strlen(input) - 1] == '\n')
         {
             input[strlen(input) - 1] = '\0';
@@ -265,22 +307,23 @@ void inputWhichSquare(char *adrInput) // Done, need to add errors messages
             continue;
         }
         
+        /*-- Main loop, checks if the user's input is correct --*/
 
-        if (sscanf(input, "%d", value) != false)
+        if (sscanf(input, "%d", value) != false) /* Convert the STR to INT, prints error if it doesn't work */
         {
-            if (value >= 1 && value <= 3) // checks if it's a correct number,
+            if (value >= 1 && value <= 3) /* Checks if it's a correct number, */
             {
                 value--;
-                *adrInput = value;
+                *adrInput = value; /* attributes it to the variable if correct, */
                 condition = true;
             }
-            else // prints an error otherwise, and ask the user to try again
+            else /* prints an error otherwise, asking the user to try again */
             {
                 // printf error not in limits
             }
         }
 
-        // Clears the input terminal before looping
+        /* Clears the buffer before looping */
         while (getchar() != '\n');
     } while (!condition);
 }
@@ -294,32 +337,31 @@ void inputWhichSquare(char *adrInput) // Done, need to add errors messages
  */
 int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter) // Seems done
 {
-    for (int row = 0; row < ROW; row++)
-    { // Row of super grid
-        for (int col = 0; col < COLUMN; col++)
-        { // Column of super grid
+    for (int row = 0; row < ROW; row++) {
+        for (int col = 0; col < COLUMN; col++) {
 
-            if (letter == letters[row][col])
+            if (letter == letters[row][col]) /* Finds the index of the current working grid inside of 'super grid' */
             {
-                for (int gridRow = 0; gridRow < ROW; gridRow++)
-                { // Row of the grid inside superGrid[row][col]
+                for (int gridRow = 0; gridRow < ROW; gridRow++) {
 
-                    if (superGrid[row][col].grid[gridRow][gridRow] == 'X') { return P1; } // Checks the diagonal from (0,0) to (2,2) for P1 win
-                    if (superGrid[row][col].grid[gridRow][gridRow] == 'O') { return P2; } // Checks the diagonal from (0,0) to (2,2) for P2 win
+                    /*-- Checks the diagonals --*/
 
-                    for (int gridDiag = 2; gridDiag >=0; gridDiag--)
-                    {
-                        if (superGrid[row][col].grid[gridRow][gridDiag] == 'X') { return P1; } // Checks the diagonal from (0,2) to (2,0) for P1 win
-                        if (superGrid[row][col].grid[gridRow][gridDiag] == 'O') { return P2; } // Checks the diagonal from (0,2) to (2,0) for P2 win
+                    if (superGrid[row][col].grid[gridRow][gridRow] == 'X') { return P1; } /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
+                    if (superGrid[row][col].grid[gridRow][gridRow] == 'O') { return P2; } /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
+
+                    for (int gridDiag = 2; gridDiag >=0; gridDiag--) {
+                        if (superGrid[row][col].grid[gridRow][gridDiag] == 'X') { return P1; } /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
+                        if (superGrid[row][col].grid[gridRow][gridDiag] == 'O') { return P2; } /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
                     }
 
-                    for (int gridCol = 0; gridCol < COLUMN; gridCol++)
-                    { // Column of the grid inside superGrid[row][col]
-                        if (superGrid[row][col].grid[gridRow][gridCol] == 'X') { return P1; } // Checks each rows for P1 wins
-                        else if (superGrid[row][col].grid[gridCol][gridRow] == 'X') { return P1; } // Checks each columns for P1 wins
+                    /*-- Checks the lines (Rows and Columns) --*/
 
-                        if (superGrid[row][col].grid[gridRow][gridCol] == 'O') { return P2; } // Checks each rows for P2 wins
-                        else if (superGrid[row][col].grid[gridCol][gridRow] == 'O') { return P2; } // Checks each columns for P2 wins
+                    for (int gridCol = 0; gridCol < COLUMN; gridCol++) {
+                        if (superGrid[row][col].grid[gridRow][gridCol] == 'X') { return P1; } /* Checks each rows for if P1 won */
+                        else if (superGrid[row][col].grid[gridCol][gridRow] == 'X') { return P1; } /* Checks each columns for if P1 won */
+
+                        if (superGrid[row][col].grid[gridRow][gridCol] == 'O') { return P2; } /* Checks each rows for if P2 won */
+                        else if (superGrid[row][col].grid[gridCol][gridRow] == 'O') { return P2; } /* Checks each columns for if P2 won */
                     }
                 }
             }
@@ -336,24 +378,21 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter) // Seems done
  */
 int superGridComplete(struct Grid superGrid[ROW][COLUMN]) // Seems done
 {
-    for (int row = 0; row < ROW; row++)
-    { // Row of super grid
-        for (int col = 0; col < COLUMN; col++)
-        { // Column of super grid
-            for (int invCol = 0; invCol < ROW; invCol--)
-            { // Row of the grid inside superGrid[row][col]
+    for (int row = 0; row < ROW; row++) {
+        for (int col = 0; col < COLUMN; col++) {
+            for (int invCol = 0; invCol < ROW; invCol--) {
 
-                if (gridComplete(superGrid, letters[row][row]) == P1) { return P1; } // Checks the diagonal from (0,0) to (2,2) for P1 win
-                else if (gridComplete(superGrid, letters[row][row]) == P2) { return P2; } // Checks the diagonal from (0,0) to (2,2) for P2 win
+                if (gridComplete(superGrid, letters[row][row]) == P1) { return P1; } /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
+                else if (gridComplete(superGrid, letters[row][row]) == P2) { return P2; } /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
 
-                else if (gridComplete(superGrid, letters[row][invCol]) == P1) { return P1; } // Checks the diagonal from (0,2) to (2,0) for P1 win
-                else if (gridComplete(superGrid, letters[row][invCol]) == P2) { return P2; } // Checks the diagonal from (0,2) to (2,0) for P2 win
+                else if (gridComplete(superGrid, letters[row][invCol]) == P1) { return P1; } /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
+                else if (gridComplete(superGrid, letters[row][invCol]) == P2) { return P2; } /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
 
-                else if (gridComplete(superGrid, letters[row][col]) == P1) { return P1; } // Checks each rows for P1 wins
-                else if (gridComplete(superGrid, letters[col][row]) == P1) { return P1; } // Checks each columns for P1 wins
+                else if (gridComplete(superGrid, letters[row][col]) == P1) { return P1; } /* Checks each rows for if P1 won */
+                else if (gridComplete(superGrid, letters[col][row]) == P1) { return P1; } /* Checks each columns for if P1 won */
 
-                else if (gridComplete(superGrid, letters[row][col]) == P2) { return P2; } // Checks each rows for P2 wins
-                else if (gridComplete(superGrid, letters[col][row]) == P2) { return P2; } // Checks each columns for P2 wins
+                else if (gridComplete(superGrid, letters[row][col]) == P2) { return P2; } /* Checks each rows for if P2 won */
+                else if (gridComplete(superGrid, letters[col][row]) == P2) { return P2; } /* Checks each columns for if P2 won */
             }
         }
     }
