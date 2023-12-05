@@ -44,6 +44,11 @@ int main()
 
 // definition of Prototypes
 
+/**
+ * @brief Initialise 'the super grid's grids values with 'Z'.
+ * 
+ * @param superGrid Game's grid.
+ */
 void initSuperGrid(struct Grid superGrid[ROW][COLUMN]) //Finished
 { // Sets every square of the grids inside the 'super grid' to 'Z' (for Zero)
     for (int row = 0; row < ROW; row++)
@@ -61,6 +66,11 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN]) //Finished
     }
 }
 
+/**
+ * @brief Prints the game's grid in the terminal.
+ * 
+ * @param superGrid Game's grid.
+ */
 void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // NEED TO RE-DO (remove // when input is done)
 {
     // Prints the TOP outline of the 'super grid'
@@ -159,6 +169,11 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // NEED TO RE-DO (remove // w
     }
 }
 
+/**
+ * @brief Asks the User for a CHAR input in order to choose where to play in the 'super grid'.
+ * 
+ * @param adrInput adress of the input variable.
+ */
 void inputWhichGrid(char *adrInput) // Done, need to add errors messages
 {
     printf("In which grid do you wish to play (From 'A' to 'I'): ");
@@ -213,6 +228,11 @@ void inputWhichGrid(char *adrInput) // Done, need to add errors messages
     } while (!condition);
 }
 
+/**
+ * @brief Asks the User for an INT input in order to choose where to play in the grid inside the 'super grid'.
+ * 
+ * @param adrInput Adress of the input variable.
+ */
 void inputWhichSquare(char *adrInput) // Done, need to add errors messages
 {
     printf("In which square do you wish to play (From 1 to 3): ");
@@ -259,6 +279,13 @@ void inputWhichSquare(char *adrInput) // Done, need to add errors messages
     } while (!condition);
 }
 
+/**
+ * @brief Checks if the given grid inside 'super grid' is complete.
+ * 
+ * @param superGrid Game's grid.
+ * @param letter Letter of the grid to check, gives the index of said grid.
+ * @return 1 if Player1 has finished it, 2 if Player2 did, 0 otherwise.
+ */
 int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter) // Seems done
 {
     for (int row = 0; row < ROW; row++)
@@ -295,6 +322,12 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter) // Seems done
     return 0;
 }
 
+/**
+ * @brief Checks if the 'super grid' is completed, so if the game finished.
+ * 
+ * @param superGrid Game's grid.
+ * @return 1 if Player1 has won, 2 if Player2 did, 0 otherwise.
+ */
 int superGridComplete(struct Grid superGrid[ROW][COLUMN]) // Seems done
 {
     for (int row = 0; row < ROW; row++)
@@ -320,3 +353,4 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN]) // Seems done
     }
     return 0;
 }
+
