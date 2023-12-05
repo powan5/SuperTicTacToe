@@ -1,20 +1,26 @@
+/**
+ * @brief Program to play Super Tic-Tac-Toe, a variation of tic-tac-toe where players need to complete a grid in order to claim a square of the main grid ('super grid')
+ * 
+ * @author Powan
+ * @version Beta 1.0
+*/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
+
 
 // Const // USE SIZE (1d) && ROW & COLUMN (2d)
 #define ROW 3
 #define COLUMN 3
 #define P1 1
 #define P2 2
-typedef struct Grid
-{
-    char grid[ROW][COLUMN];
-};
- 
-typedef char List[ROW][COLUMN];
 
+
+typedef struct Grid { char grid[ROW][COLUMN]; };
+
+typedef char List[ROW][COLUMN];
 const List letters = {{'A','B','C'}, {'D','E','F'}, {'G','H','I'}};
 
 // Prototypes init
