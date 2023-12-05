@@ -12,6 +12,7 @@
 // while (getchar() != '\n');  // Buffer clear (if usage of strings)
 
 /*-- Constants & Types --*/
+
 #define ROW 3
 #define COLUMN 3
 #define P1 1
@@ -24,12 +25,13 @@ typedef char List[ROW][COLUMN];
 const List letters = {{'A','B','C'}, {'D','E','F'}, {'G','H','I'}};
 
 /*-- Prototypes initialisation --*/
+
 /**
  * @brief Initialise 'the super grid's grids values with 'Z'.
  * 
  * @param superGrid Game's grid.
  */
-void initSuperGrid(struct Grid superGrid[ROW][COLUMN])
+void initSuperGrid(struct Grid superGrid[ROW][COLUMN]);
 
 /**
  * @brief Asks the User for a CHAR input in order to choose where to play in the 'super grid'.
@@ -52,7 +54,7 @@ void inputWhichSquare(char *adrInput);
  * @param letter Letter of the grid to check, gives the index of said grid.
  * @return 1 if Player1 has finished it, 2 if Player2 did, 0 otherwise.
  */
-int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
+int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter);
 
 /**
  * @brief Checks if the 'super grid' is completed, so if the game finished.
@@ -118,100 +120,7 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN]) //Finished
  */
 void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // NEED TO RE-DO (remove // when input is done)
 {
-    // Prints the TOP outline of the 'super grid'
-    for (int _ = 0; _ < ROW; _++)
-    {
-        printf("+-------------------");
-    }
-    printf("+\n");
-
-
-    /**
-     * NEED TO RE-DO THIS PART aka basically everything
-     * Why? Cuz I need to print X or O when the tinyGrid is done by either
-    */
-
-    // Prints the middle of 'super grid'
-    for (int row = 0; row < ROW; row++)
-    { // Divided in rows of 3
-        
-        int num = 1; // For the grids indexs (UI element only)
-        
-        
-        // Devides each rows in a row with columns, and prints the TOP row of letters (for the supder grid index) and numbers (for the grid index)
-        for (int col = 0; col < COLUMN; col++)
-        { 
-            printf("| %c   ", letters[row][col]);
-            for (int num = 1; num <= ROW; num++)
-            {
-                printf("%d   ", num);
-            }
-            printf("%c ", letters[row][col]);
-        }
-        printf("|\n");
-
-        
-        // Divides each rows in a row with columns, and prints the grids insides of the 'super grid', with indexs of the side
-        for (int col = 0; col < COLUMN; col++)
-        {
-            for (int _ = 0; _ < ROW; _++) // Separation lines
-            {
-                printf("|   +---+---+---+   ");
-            }
-            printf("|\n");
-            
-            for (int gridRow = 0; gridRow < ROW; gridRow++)
-            {
-                printf("| %d ", num); // Index number
-                
-                for (int gridCol = 0; gridCol < COLUMN; gridCol++)
-                {
-                    printf("| ");
-                    // Prints '.' if no value, 'X' or 'O' otherwise
-                    if (superGrid[row][col].grid[gridRow][gridCol] == 'Z')
-                    {
-                        printf(". ");
-                    }
-                    //else
-                    //{
-                    //    printf("%s ", superGrid[row][num].grid[gridRow][gridCol]);
-                    //}
-                }
-                printf("| %d ", num);
-            }
-            
-            printf("|\n");
-            num++;
-        }
-        // Prints the last separation line
-        for (int _ = 0; _ < ROW; _++)
-        {
-            printf("|   +---+---+---+   ");
-        }
-        printf("|\n");
-
-
-        // Devides each rows in a row with columns, and prints the BOTTOM row of letters (for the supder grid index) and numbers (for the grid index)
-        for (int col = 0; col < COLUMN; col++)
-        { 
-            printf("| %c   ", letters[row][col]);
-            for (int num = 1; num <= ROW; num++)
-            {
-                printf("%d   ", num);
-            }
-            printf("%c ", letters[row][col]);
-        }
-        printf("|\n");
-
-
-
-        // Prints the BOTTOM & MIDDLE outline of the 'super grid'
-        for (int _ = 0; _ < ROW; _++)
-        {
-            printf("+-------------------");
-        }
-        printf("+\n");
-    }
+    
 }
 
 /**
@@ -399,3 +308,101 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN]) // Seems done
     return 0;
 }
 
+
+
+/* AAAAAAAAAAAAHH sector */
+
+// // Prints the TOP outline of the 'super grid'
+//     for (int _ = 0; _ < ROW; _++)
+//     {
+//         printf("+-------------------");
+//     }
+//     printf("+\n");
+// 
+// 
+//     
+// 
+//     // Prints the middle of 'super grid'
+//     for (int row = 0; row < ROW; row++)
+//     { // Divids in rows of 3
+//         
+//         int num = 1; // For the grids indexs (UI element only)
+//         
+//         
+//         // Devides each rows in a row with columns, and prints the TOP row of letters (for the supder grid index) and numbers (for the grid index)
+//         for (int col = 0; col < COLUMN; col++)
+//         { 
+//             printf("| %c   ", letters[row][col]);
+//             for (int num = 1; num <= ROW; num++)
+//             {
+//                 printf("%d   ", num);
+//             }
+//             printf("%c ", letters[row][col]);
+//         }
+//         printf("|\n");
+// 
+//         /**
+//          * NEED TO RE-DO THIS PART (basically everything)
+//          * Why? Cuz I need to print X or O when the tinyGrid is done by either
+//      */
+//         // Divides each rows in a row with columns, and prints the grids insides of the 'super grid', with indexs of the side
+//         for (int col = 0; col < COLUMN; col++)
+//         {
+//             for (int _ = 0; _ < ROW; _++) // Separation lines
+//             {
+//                 printf("|   +---+---+---+   ");
+//             }
+//             printf("|\n");
+//             
+//             for (int gridRow = 0; gridRow < ROW; gridRow++)
+//             {
+//                 printf("| %d ", num); // Index number
+//                 
+//                 for (int gridCol = 0; gridCol < COLUMN; gridCol++)
+//                 {
+//                     printf("| ");
+//                     // Prints '.' if no value, 'X' or 'O' otherwise
+//                     if (superGrid[row][col].grid[gridRow][gridCol] == 'Z')
+//                     {
+//                         printf(". ");
+//                     }
+//                     //else
+//                     //{
+//                     //    printf("%s ", superGrid[row][num].grid[gridRow][gridCol]);
+//                     //}
+//                 }
+//                 printf("| %d ", num);
+//             }
+//             
+//             printf("|\n");
+//             num++;
+//         }
+//         // Prints the last separation line
+//         for (int _ = 0; _ < ROW; _++)
+//         {
+//             printf("|   +---+---+---+   ");
+//         }
+//         printf("|\n");
+// 
+// 
+//         // Devides each rows in a row with columns, and prints the BOTTOM row of letters (for the supder grid index) and numbers (for the grid index)
+//         for (int col = 0; col < COLUMN; col++)
+//         { 
+//             printf("| %c   ", letters[row][col]);
+//             for (int num = 1; num <= ROW; num++)
+//             {
+//                 printf("%d   ", num);
+//             }
+//             printf("%c ", letters[row][col]);
+//         }
+//         printf("|\n");
+// 
+// 
+// 
+//         // Prints the BOTTOM & MIDDLE outline of the 'super grid'
+//         for (int _ = 0; _ < ROW; _++)
+//         {
+//             printf("+-------------------");
+//         }
+//         printf("+\n");
+//     }
