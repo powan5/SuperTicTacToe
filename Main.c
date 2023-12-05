@@ -6,6 +6,8 @@
 // Const // USE SIZE (1d) && ROW & COLUMN (2d)
 #define ROW 3
 #define COLUMN 3
+#define P1 1
+#define P2 2
 typedef struct Grid
 {
     char grid[ROW][COLUMN];
@@ -59,7 +61,7 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN]) //Finished
     }
 }
 
-void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // Finished (remove // when imput is done)
+void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // NEED TO RE DO (remove // when imput is done)
 {
     // Prints the TOP outline of the 'super grid'
     for (int _ = 0; _ < ROW; _++)
@@ -88,7 +90,7 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // Finished (remove // when i
         printf("|\n");
 
         
-        // Divides each rows in a row with columns, and prints the grids inside 'super grid', with indexs of the side
+        // Divides each rows in a row with columns, and prints the grids insides of the 'super grid', with indexs of the side
         for (int col = 0; col < COLUMN; col++)
         {
             for (int _ = 0; _ < ROW; _++) // Separation lines
@@ -248,4 +250,22 @@ void inputWhichSquare(char *adrInput) // Done, need to add errors messages
         // Clears the input terminal before looping
         while (getchar() != '\n');
     } while (!condition);
+}
+
+int gridComplete(struct Grid superGrid[ROW][COLUMN])
+{
+    for (int row = 0; row < ROW; row++)
+    { // Row of super grid
+        for (int col = 0; col < COLUMN; col++)
+        { // Column of super grid
+            for (int gridRow = 0; gridRow < ROW; gridRow++)
+            { // Row of the grid inside superGrid[row][col]
+                for (int gridCol = 0; gridCol < COLUMN; gridCol++)
+                { // Column of the grid inside superGrid[row][col]
+                    superGrid[row][col].grid[gridRow][gridCol] == 'X';
+                }
+            }
+        }
+    }
+}
 }
