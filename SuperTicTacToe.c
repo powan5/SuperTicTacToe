@@ -24,14 +24,36 @@ typedef struct Grid { char grid[ROW][COLUMN]; };
 typedef char List[ROW][COLUMN];
 const List letters = {{'A','B','C'}, {'D','E','F'}, {'G','H','I'}};
 
-typedef char * BigXandO[1][COLUMN];
-const BigXandO X = {{'|                   '},{'|                   '},{'|       \\   /       '}, {'|       \\ /         '}, {'|         X         '}, {'|        / \\        '}, {'|       /   \\       '},{'|                   '},{'|                   '}};
-const BigXandO O = {{'|                   '},{'|                   '},{'|    /---------\\    '}, {'|    |         |    '}, {'|    |         |    '}, {'|    |         |    '}, {'|    \\---------/    '},{'|                   '},{'|                   '}};
+typedef char * BigXandO[2][9];
+const BigXandO LETTERS = 
+    {{
+    {"|                   "},
+    {"|                   "},
+    {"|      \\    /       "},
+    {"|       \\ /         "},
+    {"|         X         "},
+    {"|        / \\        "},
+    {"|       /   \\       "},
+    {"|                   "},
+    {"|                   "}
+    },
+    {
+    {"|                   "},
+    {"|                   "},
+    {"|    /---------\\    "},
+    {"|    |         |    "},
+    {"|    |         |    "},
+    {"|    |         |    "},
+    {"|    \\---------/    "},
+    {"|                   "},
+    {"|                   "}
+    }};
+    
 
 /*-- Prototypes initialisation --*/
 
 /**
- * @brief Initialise 'the super grid's grids values with 'Z'.
+ * @brief Initialise "the super grid's grids values with 'Z'.
  * 
  * @param superGrid Game's grid.
  */
@@ -131,133 +153,10 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // NEED TO RE-DO
         for (int superCol = 0; superCol < COLUMN; superCol++)
         {
             int tinyRowIndex = 0;
-            if (gridComplete(superGrid, letters[superRow][superCol]) == 1)
+            
+            for (int tinyRow = 0; tinyRow < ROW; tinyRow++)
             {
-                for (int tinyRow = 0; tinyRow < ROW; tinyRow++)
-                {
-                    /*-- Checks if P1 won a square in 'super grid' --*/
-                    if (superCol == 0)
-                    {
-                        /* Prints the big X */
-                        printf("%s", X[0][tinyRow]);
-
-                        /* Prints the rest */
-
-                        /* The TOP & BOTTOM part, with indexs*/
-                        if (tinyRow == 0 || tinyRow == 8)
-                        {
-                            for (int tinyCol = 0; tinyCol < COLUMN; tinyCol++)
-                            {
-                                { 
-                                    printf("| %c   ", letters[superRow][superCol]);
-                                    for (int indexTinyCol = 1; indexTinyCol <= ROW; indexTinyCol++)
-                                    {
-                                        printf("%d   ", indexTinyCol);
-                                    }
-                                    printf("%c ", letters[superRow][superCol]);
-                                }
-                            }
-                        }
-                        
-                        for (int _ = 0; _ < ROW; _++) // Separation lines
-                        {
-                            printf("|   +---+---+---+   ");
-                        }
-                        printf("|\n");
-                        
-                        for (int gridRow = 0; gridRow < ROW; gridRow++)
-                        {
-                            printf("| %d ", indexTinyRow);
-                            
-                            for (int gridCol = 0; gridCol < COLUMN; gridCol++)
-                            {
-                                printf("| ");
-                                // Prints '.' if no value, 'X' or 'O' otherwise
-                                if (superGrid[superRow][superCol].grid[gridRow][gridCol] == 'Z')
-                                {
-                                    printf(". ");
-                                }
-                                //else
-                                //{
-                                //    printf("%s ", superGrid[row][indexTinyRow].grid[gridRow][gridCol]);
-                                //}
-                            }
-                            printf("| %d ", indexTinyRow);
-                        }
-                        
-                        printf("|\n");
-                        indexTinyRow++;
-                        
-                    }
-                    else if (superCol == 1)
-                    {
-                        printf("%s", X[0][tinyRow]);
-                    }
-                    else if (superCol == 2)
-                    {
-                        printf("%s", X[0][tinyRow]);
-                    }
-                    else
-                    {
-                        // Divides each rows in a row with columns, and prints the grids insides of the 'super grid', with indexs of the side
-                        for (int col = 0; col < COLUMN; col++)
-                        {
-                            for (int _ = 0; _ < ROW; _++) // Separation lines
-                            {
-                                printf("|   +---+---+---+   ");
-                            }
-                            printf("|\n");
-
-                            for (int gridRow = 0; gridRow < ROW; gridRow++)
-                            {
-                                printf("| %d ", indexTinyRow); // Index number
-
-                                for (int gridCol = 0; gridCol < COLUMN; gridCol++)
-                                {
-                                    printf("| ");
-                                    // Prints '.' if no value, 'X' or 'O' otherwise
-                                    if (superGrid[superRow][superCol].grid[gridRow][gridCol] == 'Z')
-                                    {
-                                        printf(". ");
-                                    }
-                                    //else
-                                    //{
-                                    //    printf("%s ", superGrid[row][num].grid[gridRow][gridCol]);
-                                    //}
-                                }
-                                printf("| %d ", indexTinyRow);
-                            }
-
-                            printf("|\n");
-                            indexTinyRow++;
-                        }
-                        // Prints the last separation line
-                        for (int _ = 0; _ < ROW; _++)
-                        {
-                            printf("|   +---+---+---+   ");
-                        }
-                        printf("|\n");
-
-
-                        // Devides each rows in a row with columns, and prints the BOTTOM row of letters (for the supder grid index) and numbers (for the grid index)
-                        for (int col = 0; col < COLUMN; col++)
-                        { 
-                            printf("| %c   ", letters[superRow][superCol]);
-                            for (int num = 1; num <= ROW; num++)
-                            {
-                                printf("%d   ", num);
-                            }
-                            printf("%c ", letters[superRow][superCol]);
-                        }
-                        printf("|\n");
-                    }
-                    
-
-                    for (int tinyCol = 0; tinyCol < COLUMN; tinyCol++)
-                    {
-                        
-                    }
-                }
+                printf("%s\n", LETTERS[0][tinyRow]);
             }
             for (int tinyRow = 0; tinyRow < ROW; tinyRow++)
             {
