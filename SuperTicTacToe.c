@@ -17,6 +17,7 @@
 #define COLUMN 3
 #define P1 1
 #define P2 2
+#define NONE -1
 
 
 typedef struct Grid { char grid[ROW][COLUMN]; };
@@ -24,13 +25,24 @@ typedef struct Grid { char grid[ROW][COLUMN]; };
 typedef char List[ROW][COLUMN];
 const List letters = {{'A','B','C'}, {'D','E','F'}, {'G','H','I'}};
 
-typedef char * BigXandO[2][9];
-const BigXandO LETTERS = 
+typedef char * gridBlocks[3][9];
+const gridBlocks LETTERS = 
     {{
+    {"| %c   1   2   3   %c "},
+    {"|   +---+---+---+   "},
+    {"| 1 | %c | %c | %c + 1 "},
+    {"|   +---+---+---+   "},
+    {"| 2 | %c | %c | %c + 2 "},
+    {"|   +---+---+---+   "},
+    {"| 3 | %c | %c | %c + 3 "},
+    {"|   +---+---+---+   "},
+    {"| %c   1   2   3   %c "}
+    },
+    {
     {"|                   "},
     {"|                   "},
-    {"|      \\    /       "},
-    {"|       \\ /         "},
+    {"|       \\   /       "},
+    {"|        \\ /        "},
     {"|         X         "},
     {"|        / \\        "},
     {"|       /   \\       "},
@@ -38,15 +50,15 @@ const BigXandO LETTERS =
     {"|                   "}
     },
     {
-    {"|                   "},
-    {"|                   "},
-    {"|    /---------\\    "},
-    {"|    |         |    "},
-    {"|    |         |    "},
-    {"|    |         |    "},
-    {"|    \\---------/    "},
-    {"|                   "},
-    {"|                   "}
+    {"|                  "},
+    {"|                  "},
+    {"|     /-------\\    "},
+    {"|     |       |    "},
+    {"|     |       |    "},
+    {"|     |       |    "},
+    {"|     \\-------/    "},
+    {"|                  "},
+    {"|                  "}
     }};
     
 
@@ -132,7 +144,7 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN]) //Finished
         for (int col = 0; col < COLUMN; col++) {
             for (int gridRow = 0; gridRow < ROW; gridRow++) {
                 for (int gridCol = 0; gridCol < COLUMN; gridCol++) {
-                    superGrid[row][col].grid[gridRow][gridCol] = 'Z';
+                    superGrid[row][col].grid[gridRow][gridCol] = '.';
                 }
             }
         }
@@ -148,25 +160,32 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // NEED TO RE-DO
 {
     for (int superRow = 0; superRow < ROW; superRow++)
     {
-        int indexTinyRow = 1;
         printf("+-------------------+-------------------+-------------------+\n");
         for (int superCol = 0; superCol < COLUMN; superCol++)
         {
             int tinyRowIndex = 0;
-            
-            for (int tinyRow = 0; tinyRow < ROW; tinyRow++)
-            {
-                printf("%s\n", LETTERS[0][tinyRow]);
-            }
-            for (int tinyRow = 0; tinyRow < ROW; tinyRow++)
-            {
-                
-                
-                for (int tinyCol = 0; tinyCol < COLUMN; tinyCol++)
-                {
 
+            for (int tinyRow = 0; tinyRow < ROW; tinyRow++)
+            {
+                switch (gridComplete(superGrid, letters[superRow][superCol]))
+                {
+                case P1:
+                    printf("%s", LETTERS[P1][tinyRowIndex]);
+                    break;
+                
+                case P2:
+                    printf("%s", LETTERS[P2][tinyRowIndex]);
+                    break;
+
+                default:
+                    if (tinyRowIndex == 0 || tinyRowIndex == 8) { printf("%s", LETTERS[0][tinyRowIndex], letters[superRow][superCol], letters[superRow][superCol]); }
+                    else if (tinyRowIndex == 1 || tinyRowIndex == 3 || tinyRowIndex == 5 || tinyRowIndex == 7) { printf("%s", LETTERS[0][tinyRowIndex]); }
+                    else { printf("%s", LETTERS[0][tinyRowIndex], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3]); }
+                    break;
                 }
+                tinyRowIndex++;
             }
+            printf("|\n");
         }
     }
     printf("+-------------------+-------------------+-------------------+\n");
