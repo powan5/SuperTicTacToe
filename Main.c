@@ -118,9 +118,17 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN]) //Finished
  * 
  * @param superGrid Game's grid.
  */
-void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // NEED TO RE-DO (remove // when input is done)
+void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // NEED TO RE-DO
 {
-    
+    for (int superRow = 0; superRow < ROW; superRow++) {
+        for (int superCol = 0; superCol < COLUMN; superCol++) {
+            for (int tinyRow = 0; tinyRow < ROW; tinyRow++) {
+                for (int tinyCol = 0; tinyCol < COLUMN; tinyCol++) {
+
+                }
+            }
+        }
+    }
 }
 
 /**
