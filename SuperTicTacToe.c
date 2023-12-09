@@ -145,15 +145,15 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // Finished, but kinda broken
         "|                   ",
         "|                   "},
         {
-        "|                  ",
-        "|                  ",
-        "|     /-------\\    ",
-        "|     |       |    ",
-        "|     |       |    ",
-        "|     |       |    ",
-        "|     \\-------/    ",
-        "|                  ",
-        "|                  "}
+        "|                   ",
+        "|                   ",
+        "|     /-------\\     ",
+        "|     |       |     ",
+        "|     |       |     ",
+        "|     |       |     ",
+        "|     \\-------/     ",
+        "|                   ",
+        "|                   "}
         };
 
 
@@ -188,26 +188,27 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // Finished, but kinda broken
 
                     /* Prints the square if neither of the players has won it */
                     default:
-                        if (tinyRowIndex == 0 || tinyRowIndex == 8) /* "| %c   1   2   3   %c " */
-                        {
-                            sprintf(printableLine, LETTERS[0][tinyRowIndex], letters[superRow][tinyCol], letters[superRow][tinyCol]);
-                            printf("%s", printableLine);
-                            char printableLine[20] = "";
-                            break; 
-                        }
-                        else if (tinyRowIndex == 1 || tinyRowIndex == 3 || tinyRowIndex == 5 || tinyRowIndex == 7) /* "|   +---+---+---+   " */
-                        {
-                            printf("%s", LETTERS[0][tinyRowIndex]); 
-                            break; 
-                        }
-                        else /* "| [nb] | %c | %c | %c | [nb] " */
-                        {
-                            sprintf(printableLine, LETTERS[0][tinyRowIndex], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3]);
-                            printf("%s", printableLine); 
-                            char printableLine[20] = "";
-                            break; 
-                        }
-                        break;
+                        printf("%s", LETTERS[P2][tinyRowIndex]);
+                        //if (tinyRowIndex == 0 || tinyRowIndex == 8) /* "| %c   1   2   3   %c " */
+                        //{
+                        //    sprintf(printableLine, LETTERS[0][tinyRowIndex], letters[superRow][tinyCol], letters[superRow][tinyCol]);
+                        //    printf("%s", printableLine);
+                        //    char printableLine[20] = "";
+                        //    break; 
+                        //}
+                        //else if (tinyRowIndex == 1 || tinyRowIndex == 3 || tinyRowIndex == 5 || tinyRowIndex == 7) /* "|   +---+---+---+   " */
+                        //{
+                        //    printf("%s", LETTERS[0][tinyRowIndex]); 
+                        //    break; 
+                        //}
+                        //else /* "| [nb] | %c | %c | %c | [nb] " */
+                        //{
+                        //    sprintf(printableLine, LETTERS[0][tinyRowIndex], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3]);
+                        //    printf("%s", printableLine); 
+                        //    char printableLine[20] = "";
+                        //    break; 
+                        //}
+                        //break;
                     }
                 }
                 /* end of line */
