@@ -28,6 +28,11 @@ typedef char * gridBlocks[3][9];
 /*-- Prototypes initialisation --*/
 
 /**
+ * @brief Prints the initial welcome message.
+ */
+void welcome();
+
+/**
  * @brief Initialise "the super grid's grids values with 'Z'.
  * 
  * @param superGrid Game's grid.
@@ -78,7 +83,9 @@ int main()
 
     struct Grid grid;
     struct Grid superGrid[ROW][COLUMN];
+    int temp;
 
+    welcome();
 
     /*-- Inputs --*/
 
@@ -88,8 +95,8 @@ int main()
     /*-- Printing of the grid --*/
 
     printf("\033[2J\033[1;1H"); // Clears output terminal
-    PrintGrid(superGrid);
-
+    // PrintGrid(superGrid);
+    scanf("%d", &temp);
 
     return EXIT_SUCCESS;
 }
@@ -403,4 +410,25 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN]) // Seems done
         }
     }
     return 0;
+}
+
+/**
+ * @brief Prints the initial welcome message.
+ */
+void welcome()
+{
+    printf(" ____  _  _  ____  ____  ____    ____  __  ___     ____  __    ___     ____  __  ____ \n");
+    printf("/ ___)/ )( \\(  _ \\(  __)(  _ \\  (_  _)(  )/ __)___(_  _)/  \\  / __)___(_  _)/  \\(  __)\n");
+    printf("\\___ \\) \\/ ( ) __/ ) _)  )   /    )(   )(( (__(___) )( /    \\( (__(___) )( (    )) _) \n");
+    printf("(____/\\____/(__)  (____)(__\\_)   (__) (__)\\___)    (__)\\_/\\_/ \\___)    (__) \\__/(____)\n");
+    printf("                                                                        By @powan5(dc)\n");
+    printf("\n");
+    printf("                                       Welcome!\n");
+    printf("\n");
+    printf("                                    [1]  Rules\n");
+    printf("                                    [2]  Start a game (1P  (Coming at some point))\n");
+    printf("                                    [3]  Start a match (2P)\n");
+    printf("                                    [0]  Exit\n");
+    printf("\n");
+    printf("Please input your choice: ");
 }
