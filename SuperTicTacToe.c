@@ -11,9 +11,11 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
-// printf("\033[2J\033[1;1H"); // Clears output terminal
+/* printf("\033[2J\033[1;1H"); // Clears output terminal */
 
-/*-- Constants & Types --*/
+/****************************************************/
+/*******|         Constants & Types          |*******/
+/****************************************************/
 
 #define CLEAR_TERMINAL "\033[2J\033[1;1H"
 
@@ -25,11 +27,11 @@
 typedef struct Grid { char grid[ROW][COLUMN]; };
 
 typedef char List[ROW][COLUMN];
-const List letters = {{'A','B','C'}, {'D','E','F'}, {'G','H','I'}};
+const List LETTERS = {{'A','B','C'}, {'D','E','F'}, {'G','H','I'}};
 
 typedef char * gridBlocks[3][9];    
 
-/* Error codes (there is a logic to it, try to fint it :D) */
+/* Error codes (there is a logic to it, try to fint it I'll give you a cookie :D) */
 
 #define DEBUG 686671
 
@@ -42,7 +44,9 @@ typedef char * gridBlocks[3][9];
 #define PLAYER_ID 112105100
 
 
-/*-- Prototypes initialisation --*/
+/****************************************************/
+/***|         Prototypes Initialisation          |***/
+/****************************************************/
 
 
 /* Miscellaneous */
@@ -185,7 +189,7 @@ int main()
         } else
 
         /****************************************************/
-        /*************|    2 Player matches    |*************/
+        /**************|    2 Player match    |**************/
         /****************************************************/
 
         if (choice == 3)
@@ -245,14 +249,15 @@ int main()
                 errors(DEBUG);
                 
             printf("Wanna rematch ? [Y]/[N] ");
-            //scanf("%c", &rematch);
-            //rematch = toupper(rematch);
+            scanf("%c", &rematch);
+            rematch = toupper(rematch);
             } while (rematch != 'Y');
         }
     } while (choice == -1);
 
     return EXIT_SUCCESS;
 }
+
 
 
 /****************************************************/
@@ -271,6 +276,10 @@ void errors(int code)
 {
     switch (code)
     {
+    case DEBUG:
+        printf("Successfully reached checkpoint.\n");
+        break;
+
     case INPUT_TOO_LONG:
         printf("Error! The input is too long.\nTry again: ");
         break;
@@ -279,14 +288,14 @@ void errors(int code)
         printf("Error! Please input an integer.\nTry again: ");
         break;
 
-    case NON_CHAR_INPUT:
-        printf("Error! Please input a character.\nTry again: ");
-        break;
-
     case INT_OUT_OF_RANGE:
         printf("Error! Please input an integer between 1 & 3.\nTry again: ");
         break;
 
+    case NON_CHAR_INPUT:
+        printf("Error! Please input a character.\nTry again: ");
+        break;
+        
     case CHAR_INPUT_UNRECONIZED:
         printf("Error! Please input a character included between A & I.\nTry again: ");
         break;
@@ -295,19 +304,13 @@ void errors(int code)
         printf("Error! That cell has already been claimed.\nTry again: ");
         break;
 
-    case PLAYER_ID:
-        printf("There was an error with the players' IDs... Exiting");
-        loading();
+    case PLAYER_ID: /* If this error is reached, the program can't continue without errors, so exits it before crashing. */
+        printf("There was an error with the players' IDs... Exiting"); loading();
         exit(EXIT_FAILURE);
         break;
 
-    case DEBUG:
-        printf("Successfully reached checkpoint.\n");
-        break;
-
-    default:
-        printf("Error within the errors() function... Exiting");
-        loading();
+    default: /* This error is not supposed to happen, so exits the program before it crashs by itself. */
+        printf("Error within the errors() function... Exiting"); loading();
         exit(EXIT_FAILURE);
         break;
     }
@@ -318,6 +321,7 @@ void errors(int code)
 */
 void loading()
 {
+    /* Cuz it looks cool 😎 */
     for (int _ = 0; _ < 3; _++)
     {
         fflush(stdout);
@@ -461,7 +465,7 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
     for (int row = 0; row < ROW; row++) {
         for (int col = 0; col < COLUMN; col++) {
 
-            if (letter == letters[row][col]) /* Finds the index of the current working grid inside of 'super grid' */
+            if (letter == LETTERS[row][col]) /* Finds the index of the current working grid inside of 'super grid' */
             {
                 for (int gridRow = 0; gridRow < ROW; gridRow++) {
 
@@ -505,19 +509,19 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 
                 /*-- Checks the diagonals --*/
 
-                if (gridComplete(superGrid, letters[row][row]) == P1) { return P1; } /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
-                else if (gridComplete(superGrid, letters[row][row]) == P2) { return P2; } /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
+                if (gridComplete(superGrid, LETTERS[row][row]) == P1) { return P1; } /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
+                else if (gridComplete(superGrid, LETTERS[row][row]) == P2) { return P2; } /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
 
-                else if (gridComplete(superGrid, letters[row][invCol]) == P1) { return P1; } /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
-                else if (gridComplete(superGrid, letters[row][invCol]) == P2) { return P2; } /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
+                else if (gridComplete(superGrid, LETTERS[row][invCol]) == P1) { return P1; } /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
+                else if (gridComplete(superGrid, LETTERS[row][invCol]) == P2) { return P2; } /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
 
                 /*-- Checks the lines (Rows and Columns) --*/
 
-                else if (gridComplete(superGrid, letters[row][col]) == P1) { return P1; } /* Checks each rows for if P1 won */
-                else if (gridComplete(superGrid, letters[col][row]) == P1) { return P1; } /* Checks each columns for if P1 won */
+                else if (gridComplete(superGrid, LETTERS[row][col]) == P1) { return P1; } /* Checks each rows for if P1 won */
+                else if (gridComplete(superGrid, LETTERS[col][row]) == P1) { return P1; } /* Checks each columns for if P1 won */
 
-                else if (gridComplete(superGrid, letters[row][col]) == P2) { return P2; } /* Checks each rows for if P2 won */
-                else if (gridComplete(superGrid, letters[col][row]) == P2) { return P2; } /* Checks each columns for if P2 won */
+                else if (gridComplete(superGrid, LETTERS[row][col]) == P2) { return P2; } /* Checks each rows for if P2 won */
+                else if (gridComplete(superGrid, LETTERS[col][row]) == P2) { return P2; } /* Checks each columns for if P2 won */
             }
         }
     }
@@ -585,7 +589,7 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
                 {
                     char printableLine[20]; /* Creates a printable line for template (to be able to utilize the '%c') */
 
-                    switch (gridComplete(superGrid, letters[superRow][superCol])) /* Checks if a player has won a square of the 'super grid' or not */
+                    switch (gridComplete(superGrid, LETTERS[superRow][superCol])) /* Checks if a player has won a square of the 'super grid' or not */
                     {
                     /* Prints the square if a player has won it */
                     case P1:
@@ -600,7 +604,7 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
                     default:
                         if (tinyRowIndex == 0 || tinyRowIndex == 8) /* "| %c   1   2   3   %c |" */
                         {
-                           sprintf(printableLine, LETTERS[0][tinyRowIndex], letters[superRow][tinyCol], letters[superRow][tinyCol]);
+                           sprintf(printableLine, LETTERS[0][tinyRowIndex], LETTERS[superRow][tinyCol], LETTERS[superRow][tinyCol]);
                            printf("%s", printableLine);
                            char printableLine[20] = "";
                            break; 
@@ -664,7 +668,7 @@ void inputWhichGrid(char *adrLetter)
             for (size_t col = 0; col < COLUMN; col++)
             {
                 char upperInput = toupper(input[0]);
-                if (upperInput == letters[row][col]) /* if it is, outputs it, */
+                if (upperInput == LETTERS[row][col]) /* if it is, outputs it, */
                 {
                     *adrLetter = upperInput;
                     condition = true;
@@ -750,7 +754,7 @@ void play(struct Grid superGrid[ROW][COLUMN], int player, char letter)
     {
         for (letterColumn = 0; letterColumn < COLUMN || !foundLetter; letterColumn++)
         {
-            if (letter == letters[letterRow][letterColumn])
+            if (letter == LETTERS[letterRow][letterColumn])
             {
                 foundLetter = true;
             }
