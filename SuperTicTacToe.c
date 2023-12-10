@@ -456,7 +456,7 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN])
  * @param letter Letter of the grid to check, gives the index of said grid.
  * @return 1 if Player1 has finished it, 2 if Player2 did, 0 otherwise.
 */
-int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter) // Seems done
+int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
 {
     for (int row = 0; row < ROW; row++) {
         for (int col = 0; col < COLUMN; col++) {
@@ -497,7 +497,7 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter) // Seems done
  * @param superGrid Game's grid.
  * @return 1 if Player1 has won, 2 if Player2 did, 0 otherwise.
 */
-int superGridComplete(struct Grid superGrid[ROW][COLUMN]) // Seems done
+int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 {
     for (int row = 0; row < ROW; row++) {
         for (int col = 0; col < COLUMN; col++) {
@@ -529,7 +529,7 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN]) // Seems done
  * 
  * @param superGrid Game's grid.
 */
-void PrintGrid(struct Grid superGrid[ROW][COLUMN]) // Finished, but kinda broken for some unknown reason
+void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 {
     //printf("%s", CLEAR_TERMINAL);
 
