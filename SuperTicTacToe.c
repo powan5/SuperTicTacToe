@@ -767,6 +767,10 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
                 /* end of line */
                 tinyRowIndex++;
                 printf("|\n"); 
+                if (superGrid[0][0].grid[0][0] == 'X')
+                {
+                    errors(DEBUG);
+                }
             }
         }
     }
