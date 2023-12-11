@@ -673,6 +673,7 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 */
 void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 {
+    superGrid[0][0].grid[0][0] == 'X';
     //printf("%s", CLEAR_TERMINAL);
 
     /*-- Output template --*/
