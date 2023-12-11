@@ -725,7 +725,7 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
             {
                 for (int tinyCol = 0; tinyCol < COLUMN; tinyCol++)
                 {
-                    char printableLine[20]; /* Creates a printable line for template (to be able to utilize the '%c') */
+                    //char printableLine[20]; /* Creates a printable line for template (to be able to utilize the '%c') */
 
                     switch (gridComplete(superGrid, LETTERS[superRow][superCol])) /* Checks if a player has won a square of the 'super grid' or not */
                     {
@@ -742,24 +742,24 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
                     default:
                         if (tinyRowIndex == 0 || tinyRowIndex == 8) /* "| %c   1   2   3   %c |" */
                         {
-                           sprintf(printableLine, BLOCS[0][tinyRowIndex], LETTERS[superRow][tinyCol], LETTERS[superRow][tinyCol]);
-                           printf("%s", printableLine);
-                           char printableLine[20] = "";
-                           break; 
+                            char printableLine[20] = "";
+                            sprintf(printableLine, BLOCS[0][tinyRowIndex], LETTERS[superRow][tinyCol], LETTERS[superRow][tinyCol]);
+                            printf("%s", printableLine);
+                            break; 
                         } else
                         
                         if (tinyRowIndex == 1 || tinyRowIndex == 3 || tinyRowIndex == 5 || tinyRowIndex == 7) /* "|   +---+---+---+   |" */
                         {
-                           printf("%s", BLOCS[0][tinyRowIndex]); 
-                           break; 
+                            printf("%s", BLOCS[0][tinyRowIndex]); 
+                            break; 
                         }
 
                         else /* "| [nb] | %c | %c | %c | [nb] |" */
                         {
-                           sprintf(printableLine, BLOCS[0][tinyRowIndex], superGrid[superRow][superCol].grid[tinyRow][tinyCol], superGrid[superRow][superCol].grid[tinyRow][tinyCol], superGrid[superRow][superCol].grid[tinyRow][tinyCol]);
-                           printf("%s", printableLine); 
-                           char printableLine[20] = "";
-                           break; 
+                            char printableLine[20] = "";
+                            sprintf(printableLine, BLOCS[0][tinyRowIndex], superGrid[superRow][superCol].grid[tinyRow][tinyCol], superGrid[superRow][superCol].grid[tinyRow][tinyCol], superGrid[superRow][superCol].grid[tinyRow][tinyCol]);
+                            printf("%s", printableLine); 
+                            break; 
                         }
                         break;
                     }
