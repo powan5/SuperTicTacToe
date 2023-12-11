@@ -245,6 +245,8 @@ int main()
                     printf("\nYou are playing in the '%c' cell.\n\n", letter);
 
                     letter = play(superGrid, player, letter);
+
+                    if (superGrid[0][0].grid[0][0] == 'X') { errors(DEBUG); }
                     
                 } while (true /*superGridComplete(superGrid) == 0*/); //temp
                 errors(DEBUG);
@@ -673,7 +675,6 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 */
 void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 {
-    superGrid[0][0].grid[0][0] == 'X';
     //printf("%s", CLEAR_TERMINAL);
 
     /*-- Output template --*/
@@ -767,11 +768,7 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
                 }
                 /* end of line */
                 tinyRowIndex++;
-                printf("|\n"); 
-                if (superGrid[0][0].grid[0][0] == 'X')
-                {
-                    errors(DEBUG);
-                }
+                printf("|\n");
             }
         }
     }
