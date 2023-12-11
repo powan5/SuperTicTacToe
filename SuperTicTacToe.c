@@ -235,10 +235,8 @@ int main()
                     PrintGrid(superGrid);
 
                     /* Checks which player's turn it is */
-                    if (player == P1) { printf("%s to play, ", nameP1); player++; }
-                    else if (player == P2) { printf("%s to play, ", nameP2); player++; }
-                    else { player = P1; }
-                    
+                    if (player == P1) { printf("%s to play, ", nameP1); player = P2; }
+                    else if (player == P2) { printf("%s to play, ", nameP2); player = P1; }                    
 
                     /* If the game has just started or the supposed cell to play in is completed */
                     if (letter == 'Z' || gridComplete(superGrid, letter)) { inputWhichGrid(&letter); }
