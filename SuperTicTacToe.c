@@ -24,7 +24,9 @@
 #define P1 1
 #define P2 2
 
-typedef struct Grid { char grid[ROW][COLUMN]; };
+typedef struct Grid { 
+    char grid[ROW][COLUMN]; 
+} Grid;
 
 typedef char List[ROW][COLUMN];
 const List LETTERS = {{'A','B','C'}, {'D','E','F'}, {'G','H','I'}};
@@ -218,7 +220,7 @@ int main()
 
                 printf("%s will play 'X' & ", nameP1);
                 printf("%s will play 'O'\n", nameP2);
-
+                
                 int player = 1;
                 int turn = 0;
                 char letter = 'Z';
@@ -233,8 +235,8 @@ int main()
                     PrintGrid(superGrid);
 
                     /* Checks which player's turn it is */
-                    if (player == P1) { printf("%s to play, ", nameP1); }
-                    else if (player == P2) { printf("%s to play, ", nameP2); }
+                    if (player == P1) { printf("%s to play, ", nameP1); player++; }
+                    else if (player == P2) { printf("%s to play, ", nameP2); player++; }
                     else { player = P1; }
                     
 
@@ -245,8 +247,7 @@ int main()
                     printf("\nYou are playing in the '%c' cell.\n\n", letter);
 
                     letter = play(superGrid, player, letter);
-
-                    player++;
+                    
                 } while (true /*superGridComplete(superGrid) == 0*/); //temp
                 errors(DEBUG);
                 
