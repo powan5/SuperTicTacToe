@@ -217,7 +217,7 @@ int main()
                 namePlayer(nameP2);
 
                 printf("%s will play 'X' & ", nameP1);
-                printf("%s will play 'O'", nameP2);
+                printf("%s will play 'O'\n", nameP2);
                 
                 int player = 1;
                 int turn = 0;
@@ -956,8 +956,6 @@ char play(struct Grid superGrid[ROW][COLUMN], int player, char letter)
         {
             errors(CELL_TAKEN);
         }
-
-        
     } while (!turnCompleted);
     return LETTERS[row][column];
 }
