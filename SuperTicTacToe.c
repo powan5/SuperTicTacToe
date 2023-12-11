@@ -218,7 +218,7 @@ int main()
 
                 printf("%s will play 'X' & ", nameP1);
                 printf("%s will play 'O'\n", nameP2);
-                
+
                 int player = 1;
                 int turn = 0;
                 char letter = 'Z';
