@@ -128,8 +128,10 @@ void inputWhichCell(int *adrInput);
  * @param superGrid Game's grid.
  * @param player The players id, to know if it's 'X'or'O's turn.
  * @param letter Letter used to know the grifd in where the player plays.
+ * 
+ * @returns CHAR, letter for the next player to play in.
 */
-void play(struct Grid superGrid[ROW][COLUMN], int player, char letter);
+char play(struct Grid superGrid[ROW][COLUMN], int player, char letter);
 
 
 
@@ -144,10 +146,10 @@ int main()
     struct Grid grid;
     struct Grid superGrid[ROW][COLUMN]; 
     initSuperGrid(superGrid);
-    printf("%c\n", superGrid[1][1].grid[1][1]);
     int choice = -1;
 
     welcome();
+
 
     /*-- Main loop --*/
 
@@ -218,8 +220,8 @@ int main()
                 int player = 1;
                 int turn = 0;
                 char letter = 'Z';
-                int row, column;
 
+                fflush(stdout);
                 sleep(1);
 
                 do
@@ -240,9 +242,7 @@ int main()
                     /* Reminds which cell the player is in */
                     printf("\nYou are playing in the '%c' cell.\n\n", letter);
 
-                    play(superGrid, player, letter);
-
-                    errors(DEBUG); //temp
+                    letter = play(superGrid, player, letter);
 
                     player++;
                 } while (true /*superGridComplete(superGrid) == 0*/); //temp
@@ -462,31 +462,75 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN])
 */
 int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
 {
+    int p1_diagL2R, p1_diagR2L, p1_row, p1_col;
+    int p2_diagL2R, p2_diagR2L, p2_row, p2_col;
+
     for (int row = 0; row < ROW; row++) {
         for (int col = 0; col < COLUMN; col++) {
 
             if (letter == LETTERS[row][col]) /* Finds the index of the current working grid inside of 'super grid' */
             {
+                p1_diagL2R = 0, p1_diagR2L = 0, p2_diagL2R = 0, p2_diagR2L = 0;
+
                 for (int gridRow = 0; gridRow < ROW; gridRow++) {
+                    p1_row = 0, p1_col = 0, p2_row = 0, p2_col = 0;
 
                     /*-- Checks the diagonals --*/
 
-                    if (superGrid[row][col].grid[gridRow][gridRow] == 'X') { return P1; } /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
-                    if (superGrid[row][col].grid[gridRow][gridRow] == 'O') { return P2; } /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
+                    if (superGrid[row][col].grid[gridRow][gridRow] == 'X') /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
+                    { 
+                        p1_diagL2R++; 
+                    }
+                    if (superGrid[row][col].grid[gridRow][gridRow] == 'O') /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
+                    { 
+                        p2_diagL2R++; 
+                    }
 
-                    for (int gridDiag = 2; gridDiag >=0; gridDiag--) {
-                        if (superGrid[row][col].grid[gridRow][gridDiag] == 'X') { return P1; } /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
-                        if (superGrid[row][col].grid[gridRow][gridDiag] == 'O') { return P2; } /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
+                    for (int gridDiag = 2; gridDiag >=0; gridDiag--) 
+                    {
+                        if (superGrid[row][col].grid[gridRow][gridDiag] == 'X') /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
+                        { 
+                            p1_diagR2L++; 
+                        } 
+                        if (superGrid[row][col].grid[gridRow][gridDiag] == 'O') /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
+                        {
+                            p2_diagR2L++;
+                        }
                     }
 
                     /*-- Checks the lines (Rows and Columns) --*/
 
-                    for (int gridCol = 0; gridCol < COLUMN; gridCol++) {
-                        if (superGrid[row][col].grid[gridRow][gridCol] == 'X') { return P1; } /* Checks each rows for if P1 won */
-                        else if (superGrid[row][col].grid[gridCol][gridRow] == 'X') { return P1; } /* Checks each columns for if P1 won */
+                    for (int gridCol = 0; gridCol < COLUMN; gridCol++)
+                    {
+                        if (superGrid[row][col].grid[gridRow][gridCol] == 'X') /* Checks each rows for if P1 won */
+                        {
+                            p1_row++;
+                        } 
+                        
+                        if (superGrid[row][col].grid[gridCol][gridRow] == 'X') /* Checks each columns for if P1 won */
+                        {
+                            p1_col++;
+                        } 
 
-                        if (superGrid[row][col].grid[gridRow][gridCol] == 'O') { return P2; } /* Checks each rows for if P2 won */
-                        else if (superGrid[row][col].grid[gridCol][gridRow] == 'O') { return P2; } /* Checks each columns for if P2 won */
+
+                        if (superGrid[row][col].grid[gridRow][gridCol] == 'O') /* Checks each rows for if P2 won */
+                        { 
+                            p2_row++;
+                        } 
+                        
+                        if (superGrid[row][col].grid[gridCol][gridRow] == 'O') /* Checks each columns for if P2 won */
+                        {
+                            p2_col++;
+                        }
+
+                        if (p1_diagR2L == 3 || p1_diagL2R == 3 || p1_row == 3 || p1_col == 3)
+                        {
+                            return P1;
+                        }
+                        if (p2_diagR2L == 3 || p2_diagL2R == 3 || p2_row == 3 || p2_col == 3)
+                        {
+                            return P2;
+                        }
                     }
                 }
             }
@@ -503,25 +547,63 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
 */
 int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 {
-    for (int row = 0; row < ROW; row++) {
-        for (int col = 0; col < COLUMN; col++) {
-            for (int invCol = 0; invCol < ROW; invCol--) {
+    int p1_superDiagL2R, p1_superDiagR2L, p1_superRow, p1_superCol;
+    int p2_superDiagL2R, p2_superDiagR2L, p2_superRow, p2_superCol;
+
+    for (int row = 0; row < ROW; row++)
+    {
+        p1_superRow = 0, p2_superRow = 0;
+
+        for (int col = 0; col < COLUMN; col++)
+        {
+            p1_superCol = 0, p2_superCol = 0;
+
+            for (int invCol = 0; invCol < COLUMN; invCol--)
+            {
 
                 /*-- Checks the diagonals --*/
 
-                if (gridComplete(superGrid, LETTERS[row][row]) == P1) { return P1; } /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
-                else if (gridComplete(superGrid, LETTERS[row][row]) == P2) { return P2; } /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
+                if (gridComplete(superGrid, LETTERS[row][row]) == P1) /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
+                { 
+                    p1_superDiagL2R++;
+                } 
+                
+                if (gridComplete(superGrid, LETTERS[row][row]) == P2) /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
+                { 
+                    p2_superDiagL2R++; 
+                } 
 
-                else if (gridComplete(superGrid, LETTERS[row][invCol]) == P1) { return P1; } /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
-                else if (gridComplete(superGrid, LETTERS[row][invCol]) == P2) { return P2; } /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
+                if (gridComplete(superGrid, LETTERS[row][invCol]) == P1) /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
+                { 
+                    p1_superDiagR2L++; 
+                } 
+                
+                if (gridComplete(superGrid, LETTERS[row][invCol]) == P2) /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
+                {
+                    p2_superDiagR2L++;
+                } 
 
-                /*-- Checks the lines (Rows and Columns) --*/
+            /*-- Checks the lines (Rows and Columns) --*/
 
-                else if (gridComplete(superGrid, LETTERS[row][col]) == P1) { return P1; } /* Checks each rows for if P1 won */
-                else if (gridComplete(superGrid, LETTERS[col][row]) == P1) { return P1; } /* Checks each columns for if P1 won */
+            if (gridComplete(superGrid, LETTERS[row][col]) == P1) /* Checks each rows for if P1 won */
+            {
+                return P1;
+            }
 
-                else if (gridComplete(superGrid, LETTERS[row][col]) == P2) { return P2; } /* Checks each rows for if P2 won */
-                else if (gridComplete(superGrid, LETTERS[col][row]) == P2) { return P2; } /* Checks each columns for if P2 won */
+            if (gridComplete(superGrid, LETTERS[col][row]) == P1) /* Checks each columns for if P1 won */
+            {
+                return P1;
+            } 
+
+            if (gridComplete(superGrid, LETTERS[row][col]) == P2) /* Checks each rows for if P2 won */
+            {
+                return P2;
+            }
+
+            if (gridComplete(superGrid, LETTERS[col][row]) == P2) /* Checks each columns for if P2 won */
+            { 
+                return P2;
+            } 
             }
         }
     }
@@ -539,7 +621,7 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 
     /*-- Output template --*/
 
-    gridBlocks LETTERS = {
+    gridBlocks BLOCS = {
         { /* Main grid */
         "| %c   1   2   3   %c ",
         "|   +---+---+---+   ",
@@ -593,30 +675,32 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
                     {
                     /* Prints the square if a player has won it */
                     case P1:
-                        printf("%s", LETTERS[P1][tinyRowIndex]);
+                        printf("%s", BLOCS[P1][tinyRowIndex]);
                         break;
                     
                     case P2:
-                        printf("%s", LETTERS[P2][tinyRowIndex]);
+                        printf("%s", BLOCS[P2][tinyRowIndex]);
                         break;
 
                     /* Prints the square if neither of the players has won it */
                     default:
                         if (tinyRowIndex == 0 || tinyRowIndex == 8) /* "| %c   1   2   3   %c |" */
                         {
-                           sprintf(printableLine, LETTERS[0][tinyRowIndex], LETTERS[superRow][tinyCol], LETTERS[superRow][tinyCol]);
+                           sprintf(printableLine, BLOCS[0][tinyRowIndex], LETTERS[superRow][tinyCol], LETTERS[superRow][tinyCol]);
                            printf("%s", printableLine);
                            char printableLine[20] = "";
                            break; 
-                        }
-                        else if (tinyRowIndex == 1 || tinyRowIndex == 3 || tinyRowIndex == 5 || tinyRowIndex == 7) /* "|   +---+---+---+   |" */
+                        } else
+                        
+                        if (tinyRowIndex == 1 || tinyRowIndex == 3 || tinyRowIndex == 5 || tinyRowIndex == 7) /* "|   +---+---+---+   |" */
                         {
-                           printf("%s", LETTERS[0][tinyRowIndex]); 
+                           printf("%s", BLOCS[0][tinyRowIndex]); 
                            break; 
                         }
+
                         else /* "| [nb] | %c | %c | %c | [nb] |" */
                         {
-                           sprintf(printableLine, LETTERS[0][tinyRowIndex], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3]);
+                           sprintf(printableLine, BLOCS[0][tinyRowIndex], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3], superGrid[superRow][superCol].grid[tinyRow][tinyRowIndex%3]);
                            printf("%s", printableLine); 
                            char printableLine[20] = "";
                            break; 
@@ -744,27 +828,38 @@ void inputWhichCell(int *adrInput)
  * @param superGrid Game's grid.
  * @param player The players id, to know if it's 'X'or'O's turn.
  * @param letter Letter used to know the grifd in where the player plays.
+ * 
+ * @returns CHAR, letter for the next player to play in.
 */
-void play(struct Grid superGrid[ROW][COLUMN], int player, char letter)
+char play(struct Grid superGrid[ROW][COLUMN], int player, char letter)
 {
+    printf("%c\n", superGrid[0][0].grid[0][0]); //temp
+
     /*-- Finds the indexs of the letter --*/
-    int letterRow, letterColumn;
+    int letterRow = 0, letterColumn = 0;
+    int superGridRow, superGridColumn;
     bool foundLetter = false;
-    for (letterRow = 0; letterRow < ROW || !foundLetter; letterRow++)
+
+    while (letterRow < ROW || !foundLetter)
     {
-        for (letterColumn = 0; letterColumn < COLUMN || !foundLetter; letterColumn++)
+        while (letterColumn < COLUMN || !foundLetter)
         {
             if (letter == LETTERS[letterRow][letterColumn])
             {
                 foundLetter = true;
+                superGridRow = letterRow;
+                superGridColumn = letterColumn;
             }
+            letterColumn++;
         }
+        letterRow++;
     }
+    
     
     /*-- Asks row & column, and checks if it's a correct cell to play in --*/
 
-    bool condition = false;
-    int row, column;
+    bool turnCompleted = false;
+    int row = -1, column = -1;
 
     do
     {
@@ -772,34 +867,37 @@ void play(struct Grid superGrid[ROW][COLUMN], int player, char letter)
 
         printf("Please give the row index: ");
         inputWhichCell(&row);
-        row--;
         printf("Please give the column index: ");
         inputWhichCell(&column);
-        column--;
-
 
         /*-- Checks if the choosen cell is available --*/
 
-        if (superGrid[letterRow][letterColumn].grid[row][column] == '.') /* If it is, changes it to the player's letter */
+        if (superGrid[superGridRow][superGridColumn].grid[row][column] == '.') /* If it is, changes it to the player's letter */
         {
+            
+
             if (player == P1)
             {
-                superGrid[letterRow][letterColumn].grid[row][column] == 'X'; condition = true;
+                superGrid[superGridRow][superGridColumn].grid[row][column] = 'X'; turnCompleted = true;
             } else
 
             if (player == P2)
             {
-                superGrid[letterRow][letterColumn].grid[row][column] == 'O'; condition = true;
+                superGrid[superGridRow][superGridColumn].grid[row][column] = 'O'; turnCompleted = true;
             }
-
-            else { errors(PLAYER_ID); } /* In case there somehow is an error with the players' IDs */
+            
+            else /* In case there somehow is an error with the players' IDs */
+            { 
+                errors(PLAYER_ID); 
+            }
         }
 
         else /* Prints an error otherwise */
         {
-            printf("%c", superGrid[letterRow][letterColumn].grid[row][column]); //temp
             errors(CELL_TAKEN);
         }
+
         
-    } while (!condition);
+    } while (!turnCompleted);
+    return LETTERS[row][column];
 }
