@@ -135,7 +135,7 @@ void inputWhichCell(int *);
  * 
  * @returns CHAR, letter for the next player to play in.
 */
-char play(struct Grid superGrid[ROW][COLUMN], int, char);
+char play(struct Grid superGrid[ROW][COLUMN], int, char, int *, int *);
 
 
 
@@ -221,8 +221,8 @@ int main()
                 printf("%s will play 'X' & ", nameP1);
                 printf("%s will play 'O'\n", nameP2);
                 
-                int player = 1;
-                int turn = 0;
+                int player = 1, playerRow = 0, playerCol = 0;
+                int turns = 0;
                 char letter = 'Z';
 
                 fflush(stdout);
@@ -230,13 +230,14 @@ int main()
 
                 do
                 {
-                    turn++; /* REMEMBER TO GIVE THE NB OF TURNS AT THE END */
+                    turns++; /* REMEMBER TO GIVE THE NB OF TURNS AT THE END */
 
+                    fflush(stdout);
                     PrintGrid(superGrid);
 
                     /* Checks which player's turn it is */
-                    if (player == P1) { printf("%s to play, ", nameP1); player = P2; }
-                    else if (player == P2) { printf("%s to play, ", nameP2); player = P1; }                    
+                    if (player == P1) { printf("%s to play, ", nameP1); }
+                    else if (player == P2) { printf("%s to play, ", nameP2); }                    
 
                     /* If the game has just started or the supposed cell to play in is completed */
                     if (letter == 'Z' || gridComplete(superGrid, letter)) { inputWhichGrid(&letter); }
@@ -244,16 +245,50 @@ int main()
                     /* Reminds which cell the player is in */
                     printf("\nYou are playing in the '%c' cell.\n\n", letter);
 
-                    letter = play(superGrid, player, letter);
+                    letter = play(superGrid, player, letter, &playerRow, &playerCol);
 
-                    if (superGrid[0][0].grid[0][0] == 'X') { errors(DEBUG); }
+
+                    bool foundLetter = false;
+                    int letterRow = 0, letterColumn = 0;
+                    int superGridRow, superGridColumn;
+
+                    while (letterRow < ROW || !foundLetter)
+                    {
+                        while (letterColumn < COLUMN || !foundLetter)
+                        {
+                            if (letter == LETTERS[letterRow][letterColumn])
+                            {
+                                foundLetter = true;
+                                superGridRow = letterRow;
+                                superGridColumn = letterColumn;
+                            }
+                            letterColumn++;
+                        }
+                        letterRow++;
+                    }
                     
-                } while (true /*superGridComplete(superGrid) == 0*/); //temp
+                    if (player == P1)
+                    {
+                        //errors(DEBUG);
+                        superGrid[superGridRow][superGridColumn].grid[playerRow][playerCol] = 'X';
+                        printf("%c", superGrid[superGridRow][superGridColumn].grid[playerRow][playerCol]);
+                        player = P2;
+                    } else
+
+                    if (player == P2)
+                    {
+                        superGrid[superGridRow][superGridColumn].grid[playerRow][playerCol] = 'O';
+                        player = P1;
+                    }
+
+                } while (superGridComplete(superGrid) == 0);
                 errors(DEBUG);
+
+                printf("You played for %d turns.\n", turns);
                 
-            printf("Wanna rematch ? [Y]/[N] ");
-            scanf("%c", &rematch);
-            rematch = toupper(rematch);
+                printf("Wanna rematch ? [Y]/[N] ");
+                scanf("%c", &rematch);
+                rematch = toupper(rematch);
             } while (rematch != 'Y');
         }
     } while (choice == -1);
@@ -761,7 +796,7 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
                             char printableLine[20] = "";
                             sprintf(printableLine, BLOCS[0][tinyRowIndex], superGrid[superRow][superCol].grid[tinyRow][tinyCol], superGrid[superRow][superCol].grid[tinyRow][tinyCol], superGrid[superRow][superCol].grid[tinyRow][tinyCol]);
                             printf("%s", printableLine); 
-                            break; 
+                            break;
                         }
                         break;
                     }
@@ -889,13 +924,13 @@ void inputWhichCell(int *adrInput)
  * 
  * @returns CHAR, letter for the next player to play in.
 */
-char play(struct Grid superGrid[ROW][COLUMN], int player, char letter)
+char play(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *adrPlayerRow, int *adrPlayerCol)
 {
     /*-- Finds the indexs of the letter --*/
-    int letterRow = 0, letterColumn = 0;
     int superGridRow, superGridColumn;
-    bool foundLetter = false;
 
+    bool foundLetter = false;
+    int letterRow = 0, letterColumn = 0;
     while (letterRow < ROW || !foundLetter)
     {
         while (letterColumn < COLUMN || !foundLetter)
@@ -934,17 +969,19 @@ char play(struct Grid superGrid[ROW][COLUMN], int player, char letter)
 
             if (player == P1)
             {
-                printf("%c\n", superGrid[superGridRow][superGridColumn].grid[row][column]);
-                superGrid[superGridRow][superGridColumn].grid[row][column] = 'X'; turnCompleted = true;
-                errors(DEBUG);
-                printf("%c\n", superGrid[superGridRow][superGridColumn].grid[row][column]);
-                errors(DEBUG);
+                /* X */
+                *adrPlayerRow = row;
+                *adrPlayerCol = column;
+                turnCompleted = true;
 
             } else
 
             if (player == P2)
             {
-                superGrid[superGridRow][superGridColumn].grid[row][column] = 'O'; turnCompleted = true;
+                /* O */
+                *adrPlayerRow = row;
+                *adrPlayerCol = column;
+                turnCompleted = true;
             }
             
             else /* In case there somehow is an error with the players' IDs */
