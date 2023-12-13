@@ -24,7 +24,8 @@
 #define P1 1
 #define P2 2
 
-typedef struct Grid { 
+typedef struct Grid
+{ 
     char grid[ROW][COLUMN]; 
 } Grid;
 
@@ -234,6 +235,7 @@ int main()
 
                     fflush(stdout);
                     PrintGrid(superGrid);
+                    //PrintDebug(superGrid);
 
                     /* Checks which player's turn it is */
                     if (player == P1) { printf("%s to play, ", nameP1); }
@@ -245,7 +247,6 @@ int main()
                     /* Reminds which cell the player is in */
                     printf("\nYou are playing in the '%c' cell.\n\n", letter);
 
-                    letter = play(superGrid, player, letter, &playerRow, &playerCol);
 
 
                     bool foundLetter = false;
@@ -266,6 +267,8 @@ int main()
                         }
                         letterRow++;
                     }
+                    
+                    letter = play(superGrid, player, letter, &playerRow, &playerCol);
                     
                     if (player == P1)
                     {
@@ -710,7 +713,7 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 */
 void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 {
-    //printf("%s", CLEAR_TERMINAL);
+    printf("%s", CLEAR_TERMINAL);
 
     /*-- Output template --*/
 
@@ -747,67 +750,62 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
         "|                   "}
         };
 
-    /**-- Main loop --*/
 
-    /* Divides the 'super grid' in rows and columns */
+    /**-- Main loop --*/
     for (int superRow = 0; superRow < ROW; superRow++)
     {
         printf("+-------------------+-------------------+-------------------+\n"); /* Dividers for the 'super grid' */
-        int tinyRowIndex = 0; /* Counter to divide each tinyRow in 9 lines */
-
-        for (int superCol = 0; superCol < COLUMN; superCol++)
+        for (int blocRowIndex = 0; blocRowIndex < 9; blocRowIndex++)
         {
-            /* Divides each square of the 'super grid' in sets of rows and columns */
-            for (int tinyRow = 0; tinyRow < ROW; tinyRow++)
+            for (int superCol = 0; superCol < COLUMN; superCol++)
             {
-                for (int tinyCol = 0; tinyCol < COLUMN; tinyCol++)
+                switch (gridComplete(superGrid, LETTERS[superRow][superCol])) /* Checks if a player has won a square of the 'super grid' or not */
                 {
-                    //char printableLine[20]; /* Creates a printable line for template (to be able to utilize the '%c') */
-
-                    switch (gridComplete(superGrid, LETTERS[superRow][superCol])) /* Checks if a player has won a square of the 'super grid' or not */
-                    {
                     /* Prints the square if a player has won it */
                     case P1:
-                        printf("%s", BLOCS[P1][tinyRowIndex]);
+                        printf("%s", BLOCS[P1][blocRowIndex]);
                         break;
                     
                     case P2:
-                        printf("%s", BLOCS[P2][tinyRowIndex]);
+                        printf("%s", BLOCS[P2][blocRowIndex]);
                         break;
 
                     /* Prints the square if neither of the players has won it */
                     default:
-                        if (tinyRowIndex == 0 || tinyRowIndex == 8) /* "| %c   1   2   3   %c |" */
+                        if (blocRowIndex == 0 || blocRowIndex == 8) /* "| %c   1   2   3   %c |" */
                         {
                             char printableLine[20] = "";
-                            sprintf(printableLine, BLOCS[0][tinyRowIndex], LETTERS[superRow][tinyCol], LETTERS[superRow][tinyCol]);
+                            sprintf(printableLine, BLOCS[0][blocRowIndex], LETTERS[superRow][superCol], LETTERS[superRow][superCol]);
                             printf("%s", printableLine);
                             break; 
                         } else
                         
-                        if (tinyRowIndex == 1 || tinyRowIndex == 3 || tinyRowIndex == 5 || tinyRowIndex == 7) /* "|   +---+---+---+   |" */
+                        if (blocRowIndex == 1 || blocRowIndex == 3 || blocRowIndex == 5 || blocRowIndex == 7) /* "|   +---+---+---+   |" */
                         {
-                            printf("%s", BLOCS[0][tinyRowIndex]); 
+                            printf("%s", BLOCS[0][blocRowIndex]); 
                             break; 
                         }
 
                         else /* "| [nb] | %c | %c | %c | [nb] |" */
                         {
-                            char printableLine[20] = "";
-                            sprintf(printableLine, BLOCS[0][tinyRowIndex], superGrid[superRow][superCol].grid[tinyRow][tinyCol], superGrid[superRow][superCol].grid[tinyRow][tinyCol], superGrid[superRow][superCol].grid[tinyRow][tinyCol]);
-                            printf("%s", printableLine); 
+                            printf("| %d ", (blocRowIndex/2));
+
+                            for (int tinyCol = 0; tinyCol < COLUMN; tinyCol++)
+                            {
+                                printf("| %c ", superGrid[superRow][superCol].grid[(blocRowIndex/2)-1][tinyCol]);
+                            }
+
+                            printf("| %d ", blocRowIndex/2);
                             break;
                         }
                         break;
-                    }
                 }
-                /* end of line */
-                tinyRowIndex++;
-                printf("|\n");
+
             }
+            printf("|\n");
         }
     }
-    printf("+-------------------+-------------------+-------------------+\n"); /* end of the grid */
+    printf("+-------------------+-------------------+-------------------+\n\n");
 }
 
 
@@ -866,7 +864,7 @@ void inputWhichGrid(char *adrLetter)
 */
 void inputWhichCell(int *adrInput)
 {
-    printf("In which square do you wish to play (From 1 to 3): ");
+    printf("(From 1 to 3): ");
     
     bool condition = false;
 
@@ -956,9 +954,9 @@ char play(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *adrP
     {
         /*-- Asks for row & column, makes it from [1-3] to [0-2] --*/
 
-        printf("Please give the row index: ");
+        printf("Please give the row index ");
         inputWhichCell(&row);
-        printf("Please give the column index: ");
+        printf("Please give the column index ");
         inputWhichCell(&column);
 
         /*-- Checks if the choosen cell is available --*/
