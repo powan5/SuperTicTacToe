@@ -582,7 +582,7 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
 
                 for (int gridRow = 0; gridRow < ROW; gridRow++)
                 {
-                    p1_row = 0, p2_row = 0;
+                    p1_row = 0, p2_row = 0; 
 
                     for (int gridCol = 0; gridCol < COLUMN; gridCol++)
                     {
@@ -607,6 +607,7 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
                         if (superGrid[row][col].grid[gridCol][gridRow] == 'X') 
                         {
                             p1_col++;
+                            errors(DEBUG);
                         } else
 
                         /* Checks each columns for if P2 won */
