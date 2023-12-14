@@ -253,12 +253,25 @@ int main()
                         else if (player == P2) { printf("%s to play, ", nameP2); }                    
 
                         /* If the game has just started */
-                        if (letter == 'Z') { inputWhichGrid(&letter); }
+                        if (letter == 'Z')
+                        {
+                            inputWhichGrid(&letter);
+                        } else
                         
-                        /* Reminds which grid the player is in */
-                        printf("\nYou are playing in the '%c' grid.\n\n", letter);
+                        /* If the supposed grid to play in is completed */
+                        if (gridComplete(superGrid, letter)) 
+                        {
+                            printf("The supposed grid already full, so ");
+                            inputWhichGrid(&letter);
+                        }
 
-                        /* Finding letter indexs */
+                        /* Reminds which grid the player is in */
+                        else
+                        {
+                            printf("\nYou are playing in the '%c' grid.\n\n", letter);
+                        }
+
+                        /* Finds the letter indexs */
                         bool foundLetter = false;
                         int superGridRow, superGridColumn;
 
@@ -276,12 +289,6 @@ int main()
                         }
                         
                         letter = play(superGrid, player, letter, &playerRow, &playerCol);
-                        /* If the supposed grid to play in is completed */
-                        if (gridComplete(superGrid, letter) != DEFAULT) 
-                        {
-                            printf("The supposed grid already full, so ");
-                            inputWhichGrid(&letter);
-                        }
 
                         switch (player)
                         {
