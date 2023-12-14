@@ -277,7 +277,7 @@ int main()
                         
                         letter = play(superGrid, player, letter, &playerRow, &playerCol);
                         /* If the supposed grid to play in is completed */
-                        if (gridComplete(superGrid, letter)) 
+                        if (gridComplete(superGrid, letter) != DEFAULT) 
                         {
                             printf("The supposed grid already full, so ");
                             inputWhichGrid(&letter);
