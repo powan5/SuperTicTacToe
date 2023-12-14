@@ -253,9 +253,9 @@ int main()
                     int letterRow = 0, letterColumn = 0;
                     int superGridRow, superGridColumn;
 
-                    while (letterRow < ROW || !foundLetter)
+                    for (int letterRow = 0; letterRow < ROW && !foundLetter; letterRow++)
                     {
-                        while (letterColumn < COLUMN || !foundLetter)
+                        for (int letterColumn = 0; letterColumn < COLUMN && !foundLetter; letterColumn++)
                         {
                             if (letter == LETTERS[letterRow][letterColumn])
                             {
@@ -263,18 +263,29 @@ int main()
                                 superGridRow = letterRow;
                                 superGridColumn = letterColumn;
                             }
-                            letterColumn++;
                         }
-                        letterRow++;
                     }
+                    
+                    // while (letterRow < ROW || !foundLetter)
+                    // {
+                    //     while (letterColumn < COLUMN || !foundLetter)
+                    //     {
+                    //         if (letter == LETTERS[letterRow][letterColumn])
+                    //         {
+                    //             foundLetter = true;
+                    //             superGridRow = letterRow;
+                    //             superGridColumn = letterColumn;
+                    //         }
+                    //         letterColumn++;
+                    //     }
+                    //     letterRow++;
+                    // }
                     
                     letter = play(superGrid, player, letter, &playerRow, &playerCol);
                     
                     if (player == P1)
                     {
-                        //errors(DEBUG);
                         superGrid[superGridRow][superGridColumn].grid[playerRow][playerCol] = 'X';
-                        printf("%c", superGrid[superGridRow][superGridColumn].grid[playerRow][playerCol]);
                         player = P2;
                     } else
 
@@ -285,7 +296,6 @@ int main()
                     }
 
                 } while (superGridComplete(superGrid) == 0);
-                errors(DEBUG);
 
                 printf("You played for %d turns.\n", turns);
                 
