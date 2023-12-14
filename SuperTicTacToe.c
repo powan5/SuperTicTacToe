@@ -2,7 +2,7 @@
  * @brief Program to play Super Tic-Tac-Toe, a variation of tic-tac-toe where players need to complete a grid in order to claim a square of the main grid ('super grid')
  * 
  * @author Powan
- * @version Alpha 1.0.3
+ * @version 1.0.1
 */
 
 #include <stdlib.h>
@@ -57,10 +57,10 @@ enum error_codes /* There is a logic to it, try to fint it I'll give you a cooki
 
 enum choices /* Same logic here */
 {
-    RULES = 828576,
-    MATCH_1P = 774980,
-    MATCH_2P = 775080,
-    EXIT = 698884,
+    RULES = 1,
+    MATCH_1P = 2,
+    MATCH_2P = 3,
+    EXIT = 0,
     DEFAULT = 687084
 };
 
@@ -108,14 +108,14 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN]);
  * 
  * @param superGrid Game's grid.
  * @param letter Letter of the grid to check, gives the index of said grid.
- * @return 1 if Player1 has finished it, 2 if Player2 did, 0 otherwise.
+ * @return 1 if Player1 has finished it, 2 if Player2 did, DEFAULT otherwise.
 */
 int gridComplete(struct Grid superGrid[ROW][COLUMN], char);
 /**
  * @brief Checks if the 'super grid' is completed, so if the game finished.
  * 
  * @param superGrid Game's grid.
- * @return 1 if Player1 has won, 2 if Player2 did, 0 otherwise.
+ * @return 1 if Player1 has won, 2 if Player2 did, DEFAULT otherwise.
 */
 int superGridComplete(struct Grid superGrid[ROW][COLUMN]);
 /**
@@ -160,6 +160,7 @@ int main()
 {
     /*-- Variables --*/
     int choice = DEFAULT;
+    int winCondition = DEFAULT;
 
     welcome();
 
@@ -210,6 +211,8 @@ int main()
                 printf("%s", CLEAR_TERMINAL);
                 printf("Initialising");
                 loading();
+    
+
 
                 do
                 {
@@ -257,7 +260,6 @@ int main()
 
                         /* Finding letter indexs */
                         bool foundLetter = false;
-                        int letterRow = 0, letterColumn = 0;
                         int superGridRow, superGridColumn;
 
                         for (int letterRow = 0; letterRow < ROW && !foundLetter; letterRow++)
@@ -298,7 +300,7 @@ int main()
                                 break;
                         }
 
-                    } while (superGridComplete(superGrid) == 0);
+                    } while (winCondition == DEFAULT);
 
                     printf("You played for %d turns.\n", turns);
                     
@@ -382,7 +384,7 @@ void errors(int code)
 void loading()
 {
     /* Cuz it looks cool 😎 */
-    for (int _ = 0; _ < 3; _++)
+    for (int _ = 0; _ < 4; _++)
     {
         fflush(stdout);
         sleep(1);
@@ -518,7 +520,7 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN])
  * 
  * @param superGrid Game's grid.
  * @param letter Letter of the grid to check, gives the index of said grid.
- * @return 1 if Player1 has finished it, 2 if Player2 did, 0 otherwise.
+ * @return 1 if Player1 has finished it, 2 if Player2 did, DEFAULT otherwise.
 */
 int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
 {
@@ -623,7 +625,7 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
             }
         }
     }
-    return 0;
+    return DEFAULT;
 }
 
 /**
@@ -722,7 +724,7 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
             }
         }
     }
-    return 0;
+    return DEFAULT;
 }
 
 /**
