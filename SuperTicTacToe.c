@@ -590,39 +590,39 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
 
                         /* Checks each rows for if P1 won */
 
-                        if (superGrid[row][col].grid[gridRow][gridCol] == 'X') 
+                        if (superGrid[row][col].grid[gridRow][gridCol] == 'X')
                         {
                             p1_row++;
                         } else
 
                         /* Checks each rows for if P2 won */
 
-                        if (superGrid[row][col].grid[gridRow][gridCol] == 'O') 
-                        { 
+                        if (superGrid[row][col].grid[gridRow][gridCol] == 'O')
+                        {
                             p2_row++;
-                        } 
+                        }
 
                         /* Checks each columns for if P1 won */
 
-                        if (superGrid[row][col].grid[gridCol][gridRow] == 'X') 
+                        if (superGrid[row][col].grid[gridCol][gridRow] == 'X')
                         {
                             p1_col++;
                         } else
 
                         /* Checks each columns for if P2 won */
 
-                        if (superGrid[row][col].grid[gridCol][gridRow] == 'O') 
+                        if (superGrid[row][col].grid[gridCol][gridRow] == 'O')
                         {
                             p2_col++;
                         }
 
-                        /*-- Checks if a player won --*/printf("%d", p1_col);
+                        /*-- Checks if a player won --*/
 
                         if (p1_diagR2L == 3 || p1_diagL2R == 3 || p1_row == 3 || p1_col == 3)
                         {
                             return P1;
                         } else
-                        
+
                         if (p2_diagR2L == 3 || p2_diagL2R == 3 || p2_row == 3 || p2_col == 3)
                         {
                             return P2;
@@ -649,11 +649,12 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
     for (int row = 0; row < ROW; row++)
     {
         p1_superRow = 0, p2_superRow = 0;
+        p1_superCol = 0, p2_superCol = 0;
 
         for (int col = 0; col < COLUMN; col++)
         {
-            p1_superCol = 0, p2_superCol = 0;
-
+            p1_superDiagL2R = 0, p1_superDiagR2L = 0, p2_superDiagL2R = 0, p2_superDiagR2L = 0;
+            
             for (int diag = 0, invDiag = 2; diag < DIAG; diag++, invDiag--)
             {
 
