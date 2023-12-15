@@ -243,12 +243,12 @@ int main()
 
                     do
                     {
-                        turns++; /* REMEMBER TO GIVE THE NB OF TURNS AT THE END */
+                        turns++;
                         winCondition = superGridComplete(superGrid);
+                        printf("%d\n", winCondition);
 
                         fflush(stdout);
                         PrintGrid(superGrid);
-                        //PrintDebug(superGrid);
 
                         /* Checks which player's turn it is */
                         if (player == P1) { printf("%s to play, ", nameP1); }
@@ -403,12 +403,14 @@ void errors(int code)
 void loading()
 {
     /* Cuz it looks cool 😎 */
-    for (int _ = 0; _ < 4; _++)
+    for (int _ = 0; _ < 3; _++)
     {
         fflush(stdout);
         sleep(1);
         printf(".");
     }
+    fflush(stdout);
+    sleep(1);
     printf("\n");
 }
 
@@ -754,7 +756,7 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 */
 void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 {
-    printf("%s", CLEAR_TERMINAL);
+    //printf("%s", CLEAR_TERMINAL);
 
     /*-- Output template --*/
 
