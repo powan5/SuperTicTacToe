@@ -244,6 +244,7 @@ int main()
                     do
                     {
                         turns++; /* REMEMBER TO GIVE THE NB OF TURNS AT THE END */
+                        winCondition = superGridComplete(superGrid);
 
                         fflush(stdout);
                         PrintGrid(superGrid);
@@ -657,98 +658,91 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
     int p1_superDiagL2R, p1_superDiagR2L, p1_superRow, p1_superCol;
     int p2_superDiagL2R, p2_superDiagR2L, p2_superRow, p2_superCol;
 
-    for (int _ = 0; _ < ROW; _++)
+    for (int row = 0; row < ROW; row++)
     {
-        for (int _ = 0; _ < COLUMN; _++)
+        p1_superRow = 0, p2_superRow = 0;
+        p1_superCol = 0, p2_superCol = 0;
+
+        for (int col = 0; col < COLUMN; col++)
         {
-            for (int row = 0; row < ROW; row++)
+            p1_superDiagL2R = 0, p1_superDiagR2L = 0, p2_superDiagL2R = 0, p2_superDiagR2L = 0;
+
+            for (int diag = 0, invDiag = 2; diag < DIAG; diag++, invDiag--)
             {
-                p1_superRow = 0, p2_superRow = 0;
-                p1_superCol = 0, p2_superCol = 0;
 
-                for (int col = 0; col < COLUMN; col++)
+                /*-- Checks the diagonals --*/
+                
+                /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
+
+                if (gridComplete(superGrid, LETTERS[diag][diag]) == P1) 
+                { 
+                    p1_superDiagL2R++;
+                } else
+                
+                /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
+                
+                if (gridComplete(superGrid, LETTERS[diag][diag]) == P2) 
+                { 
+                    p2_superDiagL2R++; 
+                } 
+                
+                /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
+
+                if (gridComplete(superGrid, LETTERS[diag][invDiag]) == P1) 
+                { 
+                    p1_superDiagR2L++; 
+                } else
+                
+                /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
+                
+                if (gridComplete(superGrid, LETTERS[diag][invDiag]) == P2) 
                 {
-                    p1_superDiagL2R = 0, p1_superDiagR2L = 0, p2_superDiagL2R = 0, p2_superDiagR2L = 0;
-
-                    for (int diag = 0, invDiag = 2; diag < DIAG; diag++, invDiag--)
-                    {
-
-                        /*-- Checks the diagonals --*/
-                        
-                        /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
-
-                        if (gridComplete(superGrid, LETTERS[diag][diag]) == P1) 
-                        { 
-                            p1_superDiagL2R++;
-                        } else
-                        
-                        /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
-                        
-                        if (gridComplete(superGrid, LETTERS[diag][diag]) == P2) 
-                        { 
-                            p2_superDiagL2R++; 
-                        } 
-                        
-                        /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
-
-                        if (gridComplete(superGrid, LETTERS[diag][invDiag]) == P1) 
-                        { 
-                            p1_superDiagR2L++; 
-                        } else
-                        
-                        /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
-                        
-                        if (gridComplete(superGrid, LETTERS[diag][invDiag]) == P2) 
-                        {
-                            p2_superDiagR2L++;
-                        }
-                    }
-
-                    /*-- Checks the lines (Rows and Columns) --*/
-                    
-                    /* Checks each rows for if P1 won */
-
-                    if (gridComplete(superGrid, LETTERS[row][col]) == P1) 
-                    {
-                        p1_superRow++;
-                    } else
-                    
-                    /* Checks each rows for if P2 won */
-
-                    if (gridComplete(superGrid, LETTERS[row][col]) == P2) 
-                    {
-                        p2_superRow++;
-                    }
-                    
-                    /* Checks each columns for if P1 won */
-                    
-                    if (gridComplete(superGrid, LETTERS[col][row]) == P1) 
-                    {
-                        p1_superCol++;
-                    } else
-                    
-                    /* Checks each columns for if P2 won */
-
-                    if (gridComplete(superGrid, LETTERS[col][row]) == P2) 
-                    { 
-                        p2_superCol++;
-                    }
-
-                    /*-- Checks if a player won --*/
-
-                    if (p1_superDiagL2R == 3 || p1_superDiagR2L == 3 || p1_superRow == 3 || p1_superCol == 3)
-                    {
-                        return P1;
-                    } else
-
-                    if (p2_superDiagL2R == 3 || p2_superDiagR2L == 3 || p2_superRow == 3 || p2_superCol == 3)
-                    {
-                        return P2;
-                    }
+                    p2_superDiagR2L++;
                 }
             }
+
+            /*-- Checks the lines (Rows and Columns) --*/
+            
+            /* Checks each rows for if P1 won */
+
+            if (gridComplete(superGrid, LETTERS[row][col]) == P1) 
+            {
+                p1_superRow++;
+            } else
+            
+            /* Checks each rows for if P2 won */
+
+            if (gridComplete(superGrid, LETTERS[row][col]) == P2) 
+            {
+                p2_superRow++;
+            }
+            
+            /* Checks each columns for if P1 won */
+            
+            if (gridComplete(superGrid, LETTERS[col][row]) == P1) 
+            {
+                p1_superCol++;
+            } else
+            
+            /* Checks each columns for if P2 won */
+
+            if (gridComplete(superGrid, LETTERS[col][row]) == P2) 
+            { 
+                p2_superCol++;
+            }
+
+            /*-- Checks if a player won --*/
+
+            if (p1_superDiagL2R == 3 || p1_superDiagR2L == 3 || p1_superRow == 3 || p1_superCol == 3)
+            {
+                return P1;
+            } else
+
+            if (p2_superDiagL2R == 3 || p2_superDiagR2L == 3 || p2_superRow == 3 || p2_superCol == 3)
+            {
+                return P2;
+            }
         }
-        
     }
     return DEFAULT;
 }
