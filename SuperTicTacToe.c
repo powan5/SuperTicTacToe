@@ -91,7 +91,7 @@ void rules();
 /**
  * @brief Asks the User for a CHAR input, for his pseudo.
  * 
- * @param adrInput Adress of the input variable.
+ * @param ptrInput Pointer of the input variable.
 */
 void namePlayer(char *);
 
@@ -108,14 +108,14 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN]);
  * 
  * @param superGrid Game's grid.
  * @param letter Letter of the grid to check, gives the index of said grid.
- * @return 1 if Player1 has finished it, 2 if Player2 did, DEFAULT otherwise.
+ * @returns 1 if Player1 has finished it, 2 if Player2 did, DEFAULT otherwise.
 */
 int gridComplete(struct Grid superGrid[ROW][COLUMN], char);
 /**
  * @brief Checks if the 'super grid' is completed, so if the game finished.
  * 
  * @param superGrid Game's grid.
- * @return 1 if Player1 has won, 2 if Player2 did, DEFAULT otherwise.
+ * @returns 1 if Player1 has won, 2 if Player2 did, DEFAULT otherwise.
 */
 int superGridComplete(struct Grid superGrid[ROW][COLUMN]);
 /**
@@ -130,13 +130,13 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN]);
 /**
  * @brief Asks the User for a CHAR input in order to choose where to play in the 'super grid'.
  * 
- * @param adrInput adress of the input variable (CHAR).
+ * @param ptrInput Pointer of the input variable (CHAR).
 */
 void inputWhichGrid(char *);
 /**
  * @brief Asks the User for an INT input in order to choose where to play in the grid inside the 'super grid'.
  * 
- * @param adrInput Adress of the input variable (INT).
+ * @param ptrInput Pointer of the input variable (INT).
 */
 void inputWhichCell(int *);
 /**
@@ -458,9 +458,9 @@ void rules()
 /**
  * @brief Asks the User for a CHAR input, for his pseudo.
  * 
- * @param adrInput Adress of the input variable.
+ * @param ptrInput Pointer of the input variable.
 */
-void namePlayer(char *adrInput)
+void namePlayer(char *ptrInput)
 {
     bool condition = false;
 
@@ -491,11 +491,11 @@ void namePlayer(char *adrInput)
         {
             // temp
             printf("This functionality is yet to be implemented, please choose a pseudo (excluding '*').\n");
-            namePlayer(adrInput); // Calls the function again until input != '*' cuz this isn't done
+            namePlayer(ptrInput); // Calls the function again until input != '*' cuz this isn't done
         }
         else /* Gives the choosen pseudo otherwise */
         {
-            strcpy(adrInput, input);
+            strcpy(ptrInput, input);
             condition = true;
         }
     } while (!condition);
@@ -527,7 +527,7 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN])
  * 
  * @param superGrid Game's grid.
  * @param letter Letter of the grid to check, gives the index of said grid.
- * @return 1 if Player1 has finished it, 2 if Player2 did, DEFAULT otherwise.
+ * @returns 1 if Player1 has finished it, 2 if Player2 did, DEFAULT otherwise.
 */
 int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
 {
@@ -640,7 +640,7 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
  * @brief Checks if the 'super grid' is completed, so if the game finished.
  * 
  * @param superGrid Game's grid.
- * @return 1 if Player1 has won, 2 if Player2 did, 0 otherwise.
+ * @returns 1 if Player1 has won, 2 if Player2 did, 0 otherwise.
 */
 int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 {
@@ -720,6 +720,7 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
             }
 
             /*-- Checks if a player won --*/
+            printf("%d", p1_superCol);
 
             if (p1_superDiagL2R == 3 || p1_superDiagR2L == 3 || p1_superRow == 3 || p1_superCol == 3)
             {
@@ -843,9 +844,9 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 /**
  * @brief Asks the User for a CHAR input in order to choose where to play in the 'super grid'.
  * 
- * @param adrInput adress of the input variable.
+ * @param ptrInput Pointer of the input variable.
 */
-void inputWhichGrid(char *adrLetter)
+void inputWhichGrid(char *ptrLetter)
 {
     printf("In which grid do you wish to play (From 'A' to 'I'): \n");
     
@@ -874,7 +875,7 @@ void inputWhichGrid(char *adrLetter)
                 char upperInput = toupper(input[0]);
                 if (upperInput == LETTERS[row][col]) /* if it is, outputs it, */
                 {
-                    *adrLetter = upperInput;
+                    *ptrLetter = upperInput;
                     condition = true;
                 }
             }
@@ -889,9 +890,9 @@ void inputWhichGrid(char *adrLetter)
 /**
  * @brief Asks the User for an INT input in order to choose where to play in the grid inside the 'super grid'.
  * 
- * @param adrInput Adress of the input variable.
+ * @param ptrInput Pointer of the input variable.
 */
-void inputWhichCell(int *adrInput)
+void inputWhichCell(int *ptrInput)
 {
     printf("(From 1 to 3): \n");
     
@@ -925,7 +926,7 @@ void inputWhichCell(int *adrInput)
             if (value >= 1 && value <= 3) /* Checks if it's a correct number, */
             {
                 value--;
-                *adrInput = value; /* attributes it to the variable if correct, */
+                *ptrInput = value; /* attributes it to the variable if correct, */
                 condition = true;
             }
             else /* prints an error otherwise, asking the user to try again */
@@ -951,7 +952,7 @@ void inputWhichCell(int *adrInput)
  * 
  * @returns CHAR, letter for the next player to play in.
 */
-char play(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *adrPlayerRow, int *adrPlayerCol)
+char play(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *ptrPlayerRow, int *ptrPlayerCol)
 {
     /*-- Finds the indexs of the letter --*/
     int superGridRow, superGridColumn;
@@ -997,8 +998,8 @@ char play(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *adrP
             if (player == P1)
             {
                 /* X */
-                *adrPlayerRow = row;
-                *adrPlayerCol = column;
+                *ptrPlayerRow = row;
+                *ptrPlayerCol = column;
                 turnCompleted = true;
 
             } else
@@ -1006,8 +1007,8 @@ char play(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *adrP
             if (player == P2)
             {
                 /* O */
-                *adrPlayerRow = row;
-                *adrPlayerCol = column;
+                *ptrPlayerRow = row;
+                *ptrPlayerCol = column;
                 turnCompleted = true;
             }
             
