@@ -52,6 +52,7 @@ enum error_codes /* There is a logic to it, try to fint it I'll give you a cooki
     NON_CHAR_INPUT = 786773,
     CHAR_INPUT_UNRECONIZED = 677385,
     CELL_TAKEN = 678475,
+    GRID_TAKEN = 718475,
     PLAYER_ID = 807368
 };
 
@@ -259,10 +260,16 @@ int main()
                         } else
                         
                         /* If the supposed grid to play in is completed */
-                        if (gridComplete(superGrid, letter)) 
+                        if (gridComplete(superGrid, letter) != DEFAULT) 
                         {
                             printf("The supposed grid already full, so ");
                             inputWhichGrid(&letter);
+                            
+                            while (gridComplete(superGrid, letter) != DEFAULT)
+                            {
+                                errors(GRID_TAKEN);
+                                inputWhichGrid(&letter);
+                            }
                         }
 
                         /* Reminds which grid the player is in */
@@ -303,7 +310,7 @@ int main()
                                 break;
 
                             default:
-                            errors(PLAYER_ID);
+                                errors(PLAYER_ID);
                                 break;
                         }
 
@@ -371,6 +378,10 @@ void errors(int code)
 
     case CELL_TAKEN:
         printf("Error! That cell has already been claimed.\nTry again: ");
+        break;
+
+    case GRID_TAKEN:
+        printf("Error! That grid has already been claimed.\nTry again: ");
         break;
 
     case PLAYER_ID: /* If this error is reached, the program can't continue without errors, so exits it before crashing. */
@@ -654,7 +665,7 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
         for (int col = 0; col < COLUMN; col++)
         {
             p1_superDiagL2R = 0, p1_superDiagR2L = 0, p2_superDiagL2R = 0, p2_superDiagR2L = 0;
-            
+
             for (int diag = 0, invDiag = 2; diag < DIAG; diag++, invDiag--)
             {
 
