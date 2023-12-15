@@ -583,10 +583,10 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
                 for (int gridRow = 0; gridRow < ROW; gridRow++)
                 {
                     p1_row = 0, p2_row = 0; 
-
+                    p1_col = 0, p2_col = 0;
+                    
                     for (int gridCol = 0; gridCol < COLUMN; gridCol++)
                     {
-                        p1_col = 0, p2_col = 0;
 
                         /* Checks each rows for if P1 won */
 
@@ -607,7 +607,6 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
                         if (superGrid[row][col].grid[gridCol][gridRow] == 'X') 
                         {
                             p1_col++;
-                            errors(DEBUG);
                         } else
 
                         /* Checks each columns for if P2 won */
@@ -617,7 +616,7 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
                             p2_col++;
                         }
 
-                        /*-- Checks if a player won --*/
+                        /*-- Checks if a player won --*/printf("%d", p1_col);
 
                         if (p1_diagR2L == 3 || p1_diagL2R == 3 || p1_row == 3 || p1_col == 3)
                         {
@@ -720,7 +719,6 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
             }
 
             /*-- Checks if a player won --*/
-            printf("%d", p1_superCol);
 
             if (p1_superDiagL2R == 3 || p1_superDiagR2L == 3 || p1_superRow == 3 || p1_superCol == 3)
             {
