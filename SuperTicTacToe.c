@@ -65,90 +65,39 @@ enum choices /* Same logic here */
     DEFAULT = 687084
 };
 
+/* COLORS YAY */
+#define RED "\x1B[31m"
+#define GREEN "\x1B[32m"
+#define YELLOW "\x1B[33m"
+#define BLUE "\x1B[34m"
+#define MAGENTA "\x1B[35m"
+#define CYAN "\x1B[36m"
+
+#define RESET "\x1B[0m"
+
 /****************************************************/
 /***|         Prototypes Initialisation          |***/
 /****************************************************/
 
 /* Miscellaneous */
 
-/**
- * @brief Prints the error messages.
- * 
- * @param code Error code, int.
-*/
 void errors(int);
-/**
- * @brief Prints a little loading animation.
-*/
 void loading();
-/**
- * @brief Prints the initial welcome message.
-*/
 void welcome();
-/**
- * @brief Prints the rules of the Super Tic-Tac-Toe.
-*/
 void rules();
-/**
- * @brief Asks the User for a CHAR input, for his pseudo.
- * 
- * @param ptrInput Pointer of the input variable.
-*/
 void namePlayer(char *);
 
 /* Super Grid & Grids related stuff */
 
-/**
- * @brief Initialise "the super grid's grids values with 'Z'.
- * 
- * @param superGrid Game's grid.
-*/
 void initSuperGrid(struct Grid superGrid[ROW][COLUMN]);
-/**
- * @brief Checks if the given grid inside 'super grid' is complete.
- * 
- * @param superGrid Game's grid.
- * @param letter Letter of the grid to check, gives the index of said grid.
- * @returns 1 if Player1 has finished it, 2 if Player2 did, DEFAULT otherwise.
-*/
 int gridComplete(struct Grid superGrid[ROW][COLUMN], char);
-/**
- * @brief Checks if the 'super grid' is completed, so if the game finished.
- * 
- * @param superGrid Game's grid.
- * @returns 1 if Player1 has won, 2 if Player2 did, DEFAULT otherwise.
-*/
 int superGridComplete(struct Grid superGrid[ROW][COLUMN]);
-/**
- * @brief Prints the game's grid in the terminal.
- * 
- * @param superGrid Game's grid.
-*/
 void PrintGrid(struct Grid superGrid[ROW][COLUMN]);
 
 /* Inputs */
 
-/**
- * @brief Asks the User for a CHAR input in order to choose where to play in the 'super grid'.
- * 
- * @param ptrInput Pointer of the input variable (CHAR).
-*/
 void inputWhichGrid(char *);
-/**
- * @brief Asks the User for an INT input in order to choose where to play in the grid inside the 'super grid'.
- * 
- * @param ptrInput Pointer of the input variable (INT).
-*/
 void inputWhichCell(int *);
-/**
- * @brief Have a player takes his turn and play.
- * 
- * @param superGrid Game's grid.
- * @param player The players id, to know if it's 'X'or'O's turn.
- * @param letter Letter used to know the grifd in where the player plays.
- * 
- * @returns CHAR, letter for the next player to play in.
-*/
 char play(struct Grid superGrid[ROW][COLUMN], int, char, int *, int *);
 
 
@@ -161,7 +110,6 @@ int main()
 {
     /*-- Variables --*/
     int choice = DEFAULT;
-    int winCondition = DEFAULT;
 
     welcome();
 
@@ -200,20 +148,18 @@ int main()
             case MATCH_1P:
                 welcome();
                 printf("This option is yet to be available. 2 players matches is the only option for now.\n");
-                choice = -1;
-                break;
+                choice = DEFAULT;
+                break; /* From the switch */
 
             /****************************************************/
             /**************|    2 Players match    |*************/
             /****************************************************/
 
             case MATCH_2P:
-                char rematch;
+                char rematch = 'N';
                 printf("%s", CLEAR_TERMINAL);
                 printf("Initialising");
                 loading();
-    
-
 
                 do
                 {
@@ -230,13 +176,14 @@ int main()
                     namePlayer(nameP1);
                     printf("Player 2 please choose you pseudo ('*' for a random one): \n");
                     namePlayer(nameP2);
-
-                    printf("%s will play 'X' & ", nameP1);
-                    printf("%s will play 'O'\n", nameP2);
                     
                     int player = 1, playerRow = 0, playerCol = 0;
                     int turns = 0;
                     char letter = 'Z';
+                    int winCondition = DEFAULT;
+
+                    printf("%s will play 'X' & ", nameP1);
+                    printf("%s will play 'O'\n", nameP2);
 
                     fflush(stdout);
                     sleep(2);
@@ -244,15 +191,13 @@ int main()
                     do
                     {
                         turns++;
-                        winCondition = superGridComplete(superGrid);
-                        printf("%d\n", winCondition);
 
                         fflush(stdout);
                         PrintGrid(superGrid);
 
                         /* Checks which player's turn it is */
-                        if (player == P1) { printf("%s to play, ", nameP1); }
-                        else if (player == P2) { printf("%s to play, ", nameP2); }                    
+                        if (player == P1) { printf(RED "%s " RESET "to play, ", nameP1); }
+                        else if (player == P2) { printf(RED "%s " RESET "to play, ", nameP2); }                    
 
                         /* If the game has just started */
                         if (letter == 'Z')
@@ -270,8 +215,7 @@ int main()
                             {
                                 errors(GRID_TAKEN);
                                 inputWhichGrid(&letter);
-                            }
-                        }
+                        }}
 
                         /* Reminds which grid the player is in */
                         else
@@ -292,9 +236,7 @@ int main()
                                     foundLetter = true;
                                     superGridRow = letterRow;
                                     superGridColumn = letterColumn;
-                                }
-                            }
-                        }
+                        }}}
                         
                         letter = play(superGrid, player, letter, &playerRow, &playerCol);
 
@@ -315,18 +257,28 @@ int main()
                                 break;
                         }
 
+                        winCondition = superGridComplete(superGrid);
                     } while (winCondition == DEFAULT);
 
                     printf("You played for %d turns.\n", turns);
                     
-                    printf("Wanna rematch ? [Y]/[N] ");
+                    printf("Do you want to play again ? [Y]/[N] ");
                     scanf("%c", &rematch);
                     rematch = toupper(rematch);
-                } while (rematch != 'Y');
-                break;
+                    if (rematch == 'Y')
+                    {
+                        printf("%s", CLEAR_TERMINAL);
+                        printf("Reinitialising");
+                        loading();
+                    }
+
+                } while (rematch == 'Y');
+                choice = DEFAULT;
+                break; /* From the switch */
             
             default:
                 choice = DEFAULT;
+                welcome();
                 break;
         }
 
@@ -354,44 +306,44 @@ void errors(int code)
     switch (code)
     {
     case DEBUG:
-        printf("Successfully reached checkpoint.\n");
+        perror(RED "Successfully reached checkpoint.\n" RESET );
         break;
 
     case INPUT_TOO_LONG:
-        printf("Error! The input is too long.\nTry again: ");
+        perror(RED "Error! " RESET "The " MAGENTA "input" RESET " is " MAGENTA "too long" RESET ".\nTry again: ");
         break;
 
     case NON_INT_INPUT:
-        printf("Error! Please input an integer.\nTry again: ");
+        perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " an " MAGENTA "integer" RESET ".\nTry again: ");
         break;
 
     case INT_OUT_OF_RANGE:
-        printf("Error! Please input an integer between 1 & 3.\nTry again: ");
+        perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " an integer " MAGENTA "between 1 & 3" RESET ".\nTry again: ");
         break;
 
     case NON_CHAR_INPUT:
-        printf("Error! Please input a character.\nTry again: ");
+        perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " a " MAGENTA "character" RESET ".\nTry again: ");
         break;
         
     case CHAR_INPUT_UNRECONIZED:
-        printf("Error! Please input a character included between A & I.\nTry again: ");
+        perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " a character included " MAGENTA "between A & I" RESET ".\nTry again: ");
         break;
 
     case CELL_TAKEN:
-        printf("Error! That cell has already been claimed.\nTry again: ");
+        perror(RED "Error! " RESET "That " MAGENTA "cell" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: ");
         break;
 
     case GRID_TAKEN:
-        printf("Error! That grid has already been claimed.\nTry again: ");
+        perror(RED "Error! " RESET "That " MAGENTA "grid" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: ");
         break;
 
     case PLAYER_ID: /* If this error is reached, the program can't continue without errors, so exits it before crashing. */
-        printf("There was an error with the players' IDs... Exiting"); loading();
+        perror(RED "There was an error with the players' IDs... Exiting" RESET); loading();
         exit(EXIT_FAILURE);
         break;
 
     default: /* This error is not supposed to happen, so exits the program before it crashs by itself. */
-        printf("Error within the errors() function... Exiting"); loading();
+        perror("Error within the errors() function... Exiting"); loading();
         exit(EXIT_FAILURE);
         break;
     }
@@ -665,15 +617,13 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
         p1_superRow = 0, p2_superRow = 0;
         p1_superCol = 0, p2_superCol = 0;
 
+            p1_superDiagL2R = 0, p1_superDiagR2L = 0, p2_superDiagL2R = 0, p2_superDiagR2L = 0;
         for (int col = 0; col < COLUMN; col++)
         {
-            p1_superDiagL2R = 0, p1_superDiagR2L = 0, p2_superDiagL2R = 0, p2_superDiagR2L = 0;
-
+            
+            /*-- Checks the diagonals --*/
             for (int diag = 0, invDiag = 2; diag < DIAG; diag++, invDiag--)
             {
-
-                /*-- Checks the diagonals --*/
-                
                 /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
 
                 if (gridComplete(superGrid, LETTERS[diag][diag]) == P1) 
@@ -685,7 +635,7 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
                 
                 if (gridComplete(superGrid, LETTERS[diag][diag]) == P2) 
                 { 
-                    p2_superDiagL2R++; 
+                    p2_superDiagL2R++;
                 } 
                 
                 /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
@@ -756,48 +706,48 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 */
 void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 {
-    //printf("%s", CLEAR_TERMINAL);
+    printf("%s", CLEAR_TERMINAL);
 
     /*-- Output template --*/
 
     gridBlocks BLOCS = {
         { /* Main grid */
-        "| %c   1   2   3   %c ",
-        "|   +---+---+---+   ",
-        "| 1 | %c | %c | %c | 1 ",
-        "|   +---+---+---+   ",
-        "| 2 | %c | %c | %c | 2 ",
-        "|   +---+---+---+   ",
-        "| 3 | %c | %c | %c | 3 ",
-        "|   +---+---+---+   ",
-        "| %c   1   2   3   %c "},
+        YELLOW "|" GREEN " %c  " CYAN " 1   2   3 " GREEN "  %c " RESET,
+        YELLOW "|" BLUE  "   +---+---+---+   " RESET,
+        YELLOW "| 1 | %c | %c | %c | 1 ",
+        YELLOW "|" BLUE  "   +---+---+---+   " RESET,
+        YELLOW "| 2 | %c | %c | %c | 2 ",
+        YELLOW "|" BLUE  "   +---+---+---+   " RESET,
+        YELLOW "| 3 | %c | %c | %c | 3 ",
+        YELLOW "|" BLUE  "   +---+---+---+   " RESET,
+        YELLOW "|" GREEN " %c  " CYAN  " 1   2   3 " GREEN "  %c "},
         { /* Grid completed by P1 */
-        "|                   ",
-        "|                   ",
-        "|       \\   /       ",
-        "|        \\ /        ",
-        "|         X         ",
-        "|        / \\        ",
-        "|       /   \\       ",
-        "|                   ",
-        "|                   "},
+        YELLOW "| " RED "                  " RESET,
+        YELLOW "| " RED "                  " RESET,
+        YELLOW "| " RED "      \\   /       " RESET,
+        YELLOW "| " RED "       \\ /        " RESET,
+        YELLOW "| " RED "        X         " RESET,
+        YELLOW "| " RED "       / \\        " RESET,
+        YELLOW "| " RED "      /   \\       " RESET,
+        YELLOW "| " RED "                  " RESET,
+        YELLOW "| " RED "                  " RESET},
         { /* Grid completed by P2 */
-        "|                   ",
-        "|                   ",
-        "|     /-------\\     ",
-        "|     |       |     ",
-        "|     |       |     ",
-        "|     |       |     ",
-        "|     \\-------/     ",
-        "|                   ",
-        "|                   "}
+        YELLOW "| " BLUE "                  " RESET,
+        YELLOW "| " BLUE "                  " RESET,
+        YELLOW "| " BLUE "    /-------\\     " RESET,
+        YELLOW "| " BLUE "    |       |     " RESET,
+        YELLOW "| " BLUE "    |       |     " RESET,
+        YELLOW "| " BLUE "    |       |     " RESET,
+        YELLOW "| " BLUE "    \\-------/     " RESET,
+        YELLOW "| " BLUE "                  " RESET,
+        YELLOW "| " BLUE "                  " RESET}
         };
 
 
     /**-- Main loop --*/
     for (int superRow = 0; superRow < ROW; superRow++)
     {
-        printf("+-------------------+-------------------+-------------------+\n"); /* Dividers for the 'super grid' */
+        printf(YELLOW "+-------------------+-------------------+-------------------+\n"); /* Dividers for the 'super grid' */
         for (int blocRowIndex = 0; blocRowIndex < 9; blocRowIndex++)
         {
             for (int superCol = 0; superCol < COLUMN; superCol++)
@@ -817,7 +767,7 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
                     default:
                         if (blocRowIndex == 0 || blocRowIndex == 8) /* "| %c   1   2   3   %c |" */
                         {
-                            char printableLine[20] = "";
+                            char printableLine[70] = "";
                             sprintf(printableLine, BLOCS[0][blocRowIndex], LETTERS[superRow][superCol], LETTERS[superRow][superCol]);
                             printf("%s", printableLine);
                             break; 
@@ -831,24 +781,24 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 
                         else /* "| [nb] | %c | %c | %c | [nb] |" */
                         {
-                            printf("| %d ", (blocRowIndex/2));
+                            printf(YELLOW "| " CYAN "%d " RESET, (blocRowIndex/2));
 
                             for (int tinyCol = 0; tinyCol < COLUMN; tinyCol++)
                             {
-                                printf("| %c ", superGrid[superRow][superCol].grid[(blocRowIndex/2)-1][tinyCol]);
+                                printf(BLUE "| " RESET "%c ", superGrid[superRow][superCol].grid[(blocRowIndex/2)-1][tinyCol]);
                             }
 
-                            printf("| %d ", blocRowIndex/2);
+                            printf(BLUE "| " CYAN "%d ", blocRowIndex/2);
                             break;
                         }
                         break;
                 }
 
             }
-            printf("|\n");
+            printf( YELLOW "|\n" RESET);
         }
     }
-    printf("+-------------------+-------------------+-------------------+\n\n");
+    printf(YELLOW "+-------------------+-------------------+-------------------+\n\n" RESET);
 }
 
 
@@ -957,7 +907,7 @@ void inputWhichCell(int *ptrInput)
 }
 
 /**
- * @brief Have a player takes his turn and play.
+ * @brief Have a player take his turn and play.
  * 
  * @param superGrid Game's grid.
  * @param player The players id, to know if it's 'X'or'O's turn.
