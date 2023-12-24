@@ -5,12 +5,8 @@
  * @version 1.0.1
 */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <unistd.h>
-#include <string.h>
-#include <ctype.h>
+#include "./includes.h"
+
 /* printf("\033[2J\033[1;1H"); // Clears output terminal */
 
 /****************************************************/
@@ -41,6 +37,8 @@ typedef bool ListBool[ROW][COLUMN];
 
 typedef char * gridBlocks[3][9];
 
+typedef char* gamertag;
+
 const int DIAG = 3;
 
 enum error_codes /* There is a logic to it, try to fint it I'll give you a cookie :D */
@@ -53,7 +51,9 @@ enum error_codes /* There is a logic to it, try to fint it I'll give you a cooki
     CHAR_INPUT_UNRECONIZED = 677385,
     CELL_TAKEN = 678475,
     GRID_TAKEN = 718475,
-    PLAYER_ID = 807368
+    PLAYER_ID = 807368,
+
+    UNEXPECTED = 856984
 };
 
 enum choices /* Same logic here */
@@ -64,6 +64,36 @@ enum choices /* Same logic here */
     EXIT = 0,
     DEFAULT = 687084
 };
+
+/* For the random name */
+const char* vowels[6] = {"a","e","i","o","u","y"};
+const char* consonant[20] = {"b","c","d","f","g","h","j","k","l","m","n","p","q","r","s","t","v","w","x","z"};
+const char* memeNames[23] = {
+    "Pomni", 
+    "Xddcc", 
+    "PvZGamer", 
+    "ElGato", 
+    "RickAstley", 
+    "BadLuckBrian", 
+    "GoodGuyGreg", 
+    "Fred", 
+    "ForeverAlone", 
+    "Pepega", 
+    "Area51Raider", 
+    "BitcoinMiner", 
+    "TheCakeIsALie", 
+    "JohnCena", 
+    "E", 
+    "Shrek", 
+    "StonksMan", 
+    "Karen",
+    "Shaggy",
+    "CrazyFrog",
+    "LittleRedShit",
+    "LampLover",
+    "UsernameWasTaken"
+};
+const int nbOfNames = 23;
 
 /* COLORS YAY */
 #define RED "\x1B[31m"
@@ -86,6 +116,7 @@ void loading();
 void welcome();
 void rules();
 void namePlayer(char *);
+gamertag generateXboxName();
 
 /* Super Grid & Grids related stuff */
 
@@ -169,8 +200,9 @@ int main()
                     printf("%s", CLEAR_TERMINAL);
 
                     /* Get the pseudo for both players */
-                    char nameP1[20] = "";
-                    char nameP2[20] = "";
+                    char* nameP1 = "";
+                    char* nameP2 = "";
+
                     while (getchar() != '\n'); /* Clears entry buffer */
                     printf("Player 1 please choose you pseudo ('*' for a random one): \n");
                     namePlayer(nameP1);
@@ -305,47 +337,52 @@ void errors(int code)
 {
     switch (code)
     {
-    case DEBUG:
-        perror(RED "Successfully reached checkpoint.\n" RESET );
-        break;
+        case DEBUG: /* Prints a message to know if a set checkpoint has been reached or if the code is broken there */
+            perror(RED "Successfully reached checkpoint.\n" RESET );
+            break;
 
-    case INPUT_TOO_LONG:
-        perror(RED "Error! " RESET "The " MAGENTA "input" RESET " is " MAGENTA "too long" RESET ".\nTry again: ");
-        break;
+        case INPUT_TOO_LONG:
+            perror(RED "Error! " RESET "The " MAGENTA "input" RESET " is " MAGENTA "too long" RESET ".\nTry again: ");
+            break;
 
-    case NON_INT_INPUT:
-        perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " an " MAGENTA "integer" RESET ".\nTry again: ");
-        break;
+        case NON_INT_INPUT:
+            perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " an " MAGENTA "integer" RESET ".\nTry again: ");
+            break;
 
-    case INT_OUT_OF_RANGE:
-        perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " an integer " MAGENTA "between 1 & 3" RESET ".\nTry again: ");
-        break;
+        case INT_OUT_OF_RANGE:
+            perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " an integer " MAGENTA "between 1 & 3" RESET ".\nTry again: ");
+            break;
 
-    case NON_CHAR_INPUT:
-        perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " a " MAGENTA "character" RESET ".\nTry again: ");
-        break;
+        case NON_CHAR_INPUT:
+            perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " a " MAGENTA "character" RESET ".\nTry again: ");
+            break;
+            
+        case CHAR_INPUT_UNRECONIZED:
+            perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " a character included " MAGENTA "between A & I" RESET ".\nTry again: ");
+            break;
+
+        case CELL_TAKEN:
+            perror(RED "Error! " RESET "That " MAGENTA "cell" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: ");
+            break;
+
+        case GRID_TAKEN:
+            perror(RED "Error! " RESET "That " MAGENTA "grid" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: ");
+            break;
+
+        case PLAYER_ID: /* If this error is reached, the program can't continue without errors, so exits it before crashing. */
+            perror(RED "There was an error with the players' IDs... Exiting"); loading();
+            exit(EXIT_FAILURE);
+            break;
         
-    case CHAR_INPUT_UNRECONIZED:
-        perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " a character included " MAGENTA "between A & I" RESET ".\nTry again: ");
-        break;
+        case UNEXPECTED: /* If this error is reached, a part of the code didn't run properly and a condition wasn't completed even though it should have been (Ex in giveMemeName(){}). */
+            perror(RED "Unexpected error... Exiting"); loading();
+            exit(EXIT_FAILURE);
+            break;
 
-    case CELL_TAKEN:
-        perror(RED "Error! " RESET "That " MAGENTA "cell" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: ");
-        break;
-
-    case GRID_TAKEN:
-        perror(RED "Error! " RESET "That " MAGENTA "grid" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: ");
-        break;
-
-    case PLAYER_ID: /* If this error is reached, the program can't continue without errors, so exits it before crashing. */
-        perror(RED "There was an error with the players' IDs... Exiting" RESET); loading();
-        exit(EXIT_FAILURE);
-        break;
-
-    default: /* This error is not supposed to happen, so exits the program before it crashs by itself. */
-        perror("Error within the errors() function... Exiting"); loading();
-        exit(EXIT_FAILURE);
-        break;
+        default: /* This error is not supposed to happen, so exits the program. */
+            perror(RED "Error within the errors() function... Exiting"); loading();
+            exit(EXIT_FAILURE);
+            break;
     }
 }
 
@@ -435,7 +472,6 @@ void namePlayer(char *ptrInput)
         char input[20] = "";
 
         fgets(input, sizeof(input), stdin);
-        fflush(stdin);
 
         /*-- Makes sures the input is not longer than 20 --*/
 
@@ -451,15 +487,62 @@ void namePlayer(char *ptrInput)
         }
 
         /*-- Gives the input as pseudo for the player --*/
-        
-        
+
         if (input[0] == '*') /* Gets a random pseudo to the player if he so desires */
         {
-            // temp
-            printf("This functionality is yet to be implemented, please choose a pseudo (excluding '*').\n");
-            namePlayer(ptrInput); // Calls the function again until input != '*' cuz this isn't done
+            char name[5] = "";
+            srand(time(NULL));
+            
+            int method = rand() % 3;
+
+            switch (method)
+            {
+                case 0:
+                    for (int nb = 0; nb < 2; nb++)
+                    {
+                        strcat(name, consonant[(rand()%19)]);
+                        strcat(name, vowels[(rand()%5)]);
+                    }
+                    strcat(name, consonant[(rand()%19)]);
+
+                    name[0] = toupper(name[0]);
+
+                    strcpy(ptrInput, name);
+                    condition = true;
+                    break;
+            
+                case 1:
+                    for (int nb = 0; nb < 2; nb++)
+                    {
+                        strcat(name, vowels[(rand()%5)]);
+                        strcat(name, consonant[(rand()%19)]);
+                    }
+                    strcat(name, vowels[(rand()%5)]);
+
+                    name[0] = toupper(name[0]);
+
+                    strcpy(ptrInput, name);
+                    condition = true;
+                    break;
+
+                case 2:
+                    gamertag xboxGamertag = generateXboxName();
+                    strcpy(ptrInput, xboxGamertag);
+                    condition = true;
+                    break;
+            
+                default:
+                    errors(UNEXPECTED);
+                    break;
+            }
+
+            if ((rand()%100) == 69) /* 1/100 chance of giving a meme name cuz ahah funni :) */
+            {
+                strcpy(ptrInput, memeNames[(rand()%nbOfNames)]);
+            }
         }
-        else /* Gives the choosen pseudo otherwise */
+
+        else /* Gives the chosen pseudo otherwise */
         {
             strcpy(ptrInput, input);
             condition = true;
@@ -467,6 +550,33 @@ void namePlayer(char *ptrInput)
     } while (!condition);
 }
 
+
+/**
+ * @brief Generate an Xbox-like gamertag.
+ * 
+ * @returns CHAR*, the generated gamertag.
+*/
+gamertag generateXboxName()
+{
+    char* gamertag = "";
+    srand(time(NULL));
+
+    char* flair1;
+    char* prefix;
+    char* mainName;
+    char* flair2;
+    strcat(flair1, Flairs[(rand()%nbFlaires)][0]);
+    strcat(prefix, Prefixes[(rand()%nbPrefixes)]);
+    strcat(mainName, MainName[(rand()%nbMainName)]);
+    strcat(flair2, Flairs[(rand()%nbFlaires)][1]);
+
+    strcat(gamertag, flair1);
+    strcat(gamertag, prefix);
+    strcat(gamertag, mainName);
+    strcat(gamertag, flair2);
+
+    return gamertag;
+}
 
 /* Super Grid & Grids related stuff */
 
