@@ -43,26 +43,26 @@ const int DIAG = 3;
 
 enum error_codes /* There is a logic to it, try to fint it I'll give you a cookie :D */
 {
-    DEBUG = 686671,
-    INPUT_TOO_LONG = 738476,
-    NON_INT_INPUT = 787373,
-    INT_OUT_OF_RANGE = 737982,
-    NON_CHAR_INPUT = 786773,
+    INPUT_TOO_LONG         = 738476,
+    NON_INT_INPUT          = 787373,
+    INT_OUT_OF_RANGE       = 737982,
+    NON_CHAR_INPUT         = 786773,
     CHAR_INPUT_UNRECONIZED = 677385,
-    CELL_TAKEN = 678475,
-    GRID_TAKEN = 718475,
-    PLAYER_ID = 807368,
-
-    UNEXPECTED = 856984
+    CELL_TAKEN             = 678475,
+    GRID_TAKEN             = 718475,
+    PLAYER_ID              = 807368,
+    
+    DEBUG                  = 686671,
+    UNEXPECTED             = 856984
 };
 
 enum choices /* Same logic here */
 {
-    RULES = 1,
+    RULES    = 1,
     MATCH_1P = 2,
     MATCH_2P = 3,
-    EXIT = 0,
-    DEFAULT = 687084
+    EXIT     = 0,
+    DEFAULT  = 687084
 };
 
 /* For the random name */
@@ -539,8 +539,7 @@ void namePlayer(char *ptrInput)
             if ((rand()%100) == 69) /* 1/100 chance of giving a meme name cuz ahah funni :) */
             {
                 strcpy(ptrInput, memeNames[(rand()%nbOfNames)]);
-            }
-        }
+        }}
 
         else /* Gives the chosen pseudo otherwise */
         {
@@ -592,11 +591,7 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN])
             for (int gridRow = 0; gridRow < ROW; gridRow++) {
                 for (int gridCol = 0; gridCol < COLUMN; gridCol++) {
                     superGrid[row][col].grid[gridRow][gridCol] = '.';
-                }
-            }
-        }
-    }
-}
+    }}}}}
 
 /**
  * @brief Checks if the given grid inside 'super grid' is complete.
@@ -703,11 +698,7 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
                         {
                             return P2;
                         }
-                    }
-                }
-            }
-        }
-    }
+    }}}}}
     return DEFAULT;
 }
 
@@ -804,8 +795,7 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
             {
                 return P2;
             }
-        }
-    }
+    }}
     return DEFAULT;
 }
 
@@ -902,12 +892,9 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
                             break;
                         }
                         break;
-                }
-
-            }
+            }}
             printf( YELLOW "|\n" RESET);
-        }
-    }
+    }}
     printf(YELLOW "+-------------------+-------------------+-------------------+\n\n" RESET);
 }
 
@@ -950,9 +937,8 @@ void inputWhichGrid(char *ptrLetter)
                 {
                     *ptrLetter = upperInput;
                     condition = true;
-                }
-            }
-        }
+        }}}
+        
         if (!condition) { errors(CHAR_INPUT_UNRECONIZED); } /* prints an error otherwise, asking the user to try again */
 
         /* Clears the buffer before looping */
