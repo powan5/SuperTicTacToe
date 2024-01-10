@@ -15,11 +15,15 @@
 
 #define CLEAR_TERMINAL "\033[2J\033[1;1H"
 
-#define ROW 3
-#define COLUMN 3
+enum dimensions {
+    ROW = 3,
+    COLUMN = 3
+};
 
-#define P1 1
-#define P2 2
+enum player {
+    P1 = 1,
+    P2 = 2
+};
 
 typedef struct Grid
 { 
@@ -118,6 +122,7 @@ const char* Flairs[][2] = {{"xX", "Xx"},{"<<", ">>"},{"-=", "=-"},{"-~", "~-"},{
 /* Miscellaneous */
 
 void errors(int);
+void clearTerminal();
 void loading();
 void welcome();
 void rules();
@@ -136,7 +141,11 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN]);
 
 void inputWhichGrid(char *);
 void inputWhichCell(int *);
-char play(struct Grid superGrid[ROW][COLUMN], int, char, int *, int *);
+char takeTurn(struct Grid superGrid[ROW][COLUMN], int, char, int *, int *);
+
+/* Main Game Funcitons */
+
+void match2P();
 
 
 
@@ -184,154 +193,28 @@ int main()
             /****************************************************/
 
             case MATCH_1P:
-                welcome();
-                printf("This option is yet to be available. 2 players matches is the only option for now.\n");
+                printf("Initialising");
+                loading();
+
+                match1P();
+
                 choice = DEFAULT;
-                break; /* From the switch */
+                break;
 
             /****************************************************/
             /**************|    2 Players match    |*************/
             /****************************************************/
 
             case MATCH_2P:
-                char rematch = 'N';
-                printf("%s", CLEAR_TERMINAL);
+                clearTerminal();
                 printf("Initialising");
                 loading();
 
-                do
-                {
-                    struct Grid superGrid[ROW][COLUMN]; 
-                    initSuperGrid(superGrid);
+                match2P(); /* Calls the 2P match function that does it all */
 
-                    printf("%s", CLEAR_TERMINAL);
-
-                    /* Get the pseudo for both players */
-                    gamertag nameP1;
-                    gamertag nameP2;
-
-                    while (getchar() != '\n'); /* Clears entry buffer */
-                    printf("Player 1 please choose you pseudo ('*' for a random one): \n");
-                    namePlayer(nameP1);
-                    sleep(1);
-                    printf("Player 2 please choose you pseudo ('*' for a random one): \n");
-                    namePlayer(nameP2);
-
-                    int player = 1, playerRow = 0, playerCol = 0;
-                    int turns = 0;
-                    char letter = 'Z';
-                    int winCondition = DEFAULT;
-
-                    printf("%s will play 'X' & ", nameP1);
-                    printf("%s will play 'O'\n", nameP2);
-
-                    fflush(stdout);
-                    sleep(5);
-
-                    do
-                    {
-                        turns++;
-
-                        fflush(stdout);
-                        PrintGrid(superGrid);
-
-                        /* Checks which player's turn it is */
-                        if (player == P1) { printf(RED "%s" RESET "(X) to play, ", nameP1); }
-                        else if (player == P2) { printf(RED "%s" RESET "(O) to play, ", nameP2); }                    
-
-                        /* If the game has just started */
-                        if (letter == 'Z')
-                        {
-                            inputWhichGrid(&letter);
-                        } else
-                        
-                        /* If the supposed grid to play in is completed */
-                        if (gridComplete(superGrid, letter) != DEFAULT) 
-                        {
-                            printf("The supposed grid already full, so ");
-                            inputWhichGrid(&letter);
-                            
-                            while (gridComplete(superGrid, letter) != DEFAULT)
-                            {
-                                errors(GRID_TAKEN);
-                                inputWhichGrid(&letter);
-                        }}
-
-                        /* Reminds which grid the player is in */
-                        else
-                        {
-                            printf("\nYou are playing in the '%c' grid.\n\n", letter);
-                        }
-
-                        /* Finds the letter indexs */
-                        bool foundLetter = false;
-                        int superGridRow, superGridColumn;
-
-                        for (int letterRow = 0; letterRow < ROW && !foundLetter; letterRow++)
-                        {
-                            for (int letterColumn = 0; letterColumn < COLUMN && !foundLetter; letterColumn++)
-                            {
-                                if (letter == LETTERS[letterRow][letterColumn])
-                                {
-                                    foundLetter = true;
-                                    superGridRow = letterRow;
-                                    superGridColumn = letterColumn;
-                                }
-                            }
-                        }
-                        
-
-                        letter = play(superGrid, player, letter, &playerRow, &playerCol);
-
-                        /* If the grid got full but not won by any, resets it after the next player's turn */
-                        if(isGridDraw(superGrid, letter))
-                        {
-                            for (int row = 0; row < ROW; row++)
-                            {
-                                for (int col = 0; col < COLUMN; col++)
-                                {
-                                    superGrid[superGridRow][superGridColumn].grid[row][col] = '.';
-                                }
-                            }
-                        }
-
-                        switch (player)
-                        {
-                            case P1:
-                                superGrid[superGridRow][superGridColumn].grid[playerRow][playerCol] = 'X';
-                                player = P2;
-                                break;
-                        
-                            case P2:
-                                superGrid[superGridRow][superGridColumn].grid[playerRow][playerCol] = 'O';
-                                player = P1;
-                                break;
-
-                            default:
-                                errors(PLAYER_ID);
-                                break;
-                        }
-
-                        winCondition = superGridComplete(superGrid);
-                    } while (winCondition == DEFAULT);
-
-                    PrintGrid(superGrid);
-                    printf("You played for %d turns.\n", turns);
-                    
-                    printf("Do you want to play again ? [Y]/[N] ");
-                    scanf("%c", &rematch);
-                    rematch = toupper(rematch);
-                    if (rematch == 'Y')
-                    {
-                        printf("%s", CLEAR_TERMINAL);
-                        printf("Reinitialising");
-                        loading();
-                    }
-
-                } while (rematch == 'Y');
                 choice = DEFAULT;
                 welcome();
-                break; /* From the switch */
+                break;
             
             default:
                 choice = DEFAULT;
@@ -412,6 +295,14 @@ void errors(int code)
 }
 
 /**
+ * @brief clears the terminal screen.
+*/
+void clearTerminal()
+{
+    printf(CLEAR_TERMINAL);
+}
+
+/**
  * @brief Prints a little loading animation.
 */
 void loading()
@@ -433,7 +324,7 @@ void loading()
 */
 void welcome()
 {
-    printf("%s", CLEAR_TERMINAL);
+    clearTerminal();
     printf(" ____  _  _  ____  ____  ____    ____  __  ___     ____  __    ___     ____  __  ____ \n");
     printf("/ ___)/ )( \\(  _ \\(  __)(  _ \\  (_  _)(  )/ __)___(_  _)/  \\  / __)___(_  _)/  \\(  __)\n");
     printf("\\___ \\) \\/ ( ) __/ ) _)  )   /    )(   )(( (__(___) )( /    \\( (__(___) )( (    )) _) \n");
@@ -454,7 +345,7 @@ void welcome()
 */
 void rules()
 {
-    printf("%s", CLEAR_TERMINAL);
+    clearTerminal();
     printf(" ____  _  _  ____  ____  ____    ____  __  ___     ____  __    ___     ____  __  ____ \n");
     printf("/ ___)/ )( \\(  _ \\(  __)(  _ \\  (_  _)(  )/ __)___(_  _)/  \\  / __)___(_  _)/  \\(  __)\n");
     printf("\\___ \\) \\/ ( ) __/ ) _)  )   /    )(   )(( (__(___) )( /    \\( (__(___) )( (    )) _) \n");
@@ -878,7 +769,7 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 */
 void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 {
-    printf("%s", CLEAR_TERMINAL);
+    clearTerminal();
 
     /*-- Output template --*/
 
@@ -1083,7 +974,7 @@ void inputWhichCell(int *ptrInput)
  * 
  * @returns CHAR, letter for the next player to play in.
 */
-char play(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *ptrPlayerRow, int *ptrPlayerCol)
+char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *ptrPlayerRow, int *ptrPlayerCol)
 {
     /*-- Finds the indexs of the letter --*/
     int superGridRow, superGridColumn;
@@ -1155,4 +1046,152 @@ char play(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *ptrP
         }
     } while (!turnCompleted);
     return LETTERS[row][column];
+}
+
+
+/****************************************************/
+/******|         Main Game Functions          |******/
+/****************************************************/
+
+void match1P()
+{
+    clearTerminal();
+    printf("Failed to initialize...\n");
+    printf("This gamemode is in working progress! Come check an other day, meanwile play against a friend in the 2 player matches!\n");
+}
+
+/**
+ * @brief Runs a 2 player match with alternating turns.
+*/
+void match2P()
+{
+    char rematch = 'N';
+
+    struct Grid superGrid[ROW][COLUMN]; 
+    initSuperGrid(superGrid);
+
+    clearTerminal();
+
+    /* Get the pseudo for both players */
+    gamertag nameP1;
+    gamertag nameP2;
+
+    while (getchar() != '\n'); /* Clears entry buffer */
+    printf("Player 1 please choose you pseudo ('*' for a random one): \n");
+    namePlayer(nameP1);
+    sleep(1);
+    printf("Player 2 please choose you pseudo ('*' for a random one): \n");
+    namePlayer(nameP2);
+
+    int player = 1, playerRow = 0, playerCol = 0;
+    int turns = 0;
+    char letter = 'Z';
+    int winCondition = DEFAULT;
+
+    printf("%s will play 'X' & ", nameP1);
+    printf("%s will play 'O'\n", nameP2);
+
+    fflush(stdout);
+    sleep(5);
+
+    do
+    {
+        turns++;
+
+        fflush(stdout);
+        PrintGrid(superGrid);
+
+        /* Checks which player's turn it is */
+        if (player == P1) { printf(RED "%s" RESET "(X) to play, ", nameP1); }
+        else if (player == P2) { printf(RED "%s" RESET "(O) to play, ", nameP2); }                    
+
+        /* If the game has just started */
+        if (letter == 'Z')
+        {
+            inputWhichGrid(&letter);
+        } else
+        
+        /* If the supposed grid to play in is completed */
+        if (gridComplete(superGrid, letter) != DEFAULT) 
+        {
+            printf("The supposed grid already full, so ");
+            inputWhichGrid(&letter);
+            
+            while (gridComplete(superGrid, letter) != DEFAULT)
+            {
+                errors(GRID_TAKEN);
+                inputWhichGrid(&letter);
+        }}
+
+        /* Reminds which grid the player is in */
+        else
+        {
+            printf("\nYou are playing in the '%c' grid.\n\n", letter);
+        }
+
+        /* Finds the letter indexs */
+        bool foundLetter = false;
+        int superGridRow, superGridColumn;
+
+        for (int letterRow = 0; letterRow < ROW && !foundLetter; letterRow++)
+        {
+            for (int letterColumn = 0; letterColumn < COLUMN && !foundLetter; letterColumn++)
+            {
+                if (letter == LETTERS[letterRow][letterColumn])
+                {
+                    foundLetter = true;
+                    superGridRow = letterRow;
+                    superGridColumn = letterColumn;
+                }
+            }
+        }
+        
+
+        letter = takeTurn(superGrid, player, letter, &playerRow, &playerCol);
+
+        /* If the grid got full but not won by any, resets it after the next player's turn */
+        if(isGridDraw(superGrid, letter))
+        {
+            for (int row = 0; row < ROW; row++)
+            {
+                for (int col = 0; col < COLUMN; col++)
+                {
+                    superGrid[superGridRow][superGridColumn].grid[row][col] = '.';
+                }
+            }
+        }
+
+        switch (player)
+        {
+            case P1:
+                superGrid[superGridRow][superGridColumn].grid[playerRow][playerCol] = 'X';
+                player = P2;
+                break;
+        
+            case P2:
+                superGrid[superGridRow][superGridColumn].grid[playerRow][playerCol] = 'O';
+                player = P1;
+                break;
+
+            default:
+                errors(PLAYER_ID);
+                break;
+        }
+
+        winCondition = superGridComplete(superGrid);
+    } while (winCondition == DEFAULT);
+
+    PrintGrid(superGrid);
+    printf("You played for %d turns.\n", turns);
+    
+    printf("Do you want to play again ? [Y]/[N] ");
+    scanf("%c", &rematch);
+    rematch = toupper(rematch);
+    if (rematch == 'Y')
+    {
+        clearTerminal();
+        printf("Reinitialising");
+        loading();
+        match2P();
+    }
 }
