@@ -2,7 +2,7 @@
  * @brief Program to play Super Tic-Tac-Toe, a variation of tic-tac-toe where players need to complete a grid in order to claim a square of the main grid ('super grid')
  * 
  * @author Powan
- * @version 1.0.2
+ * @version 1.1.1
 */
 
 #include "./includes.h"
@@ -94,6 +94,12 @@ const char* memeNames[23] = {
     "UsernameWasTaken"
 };
 const int nbOfMemeNames = 23;
+const int nbPrefixes = 159;
+const char* Prefixes[] = {"1337","Aggro","Alpha","Altered","Ancient","Angel","Anonymous","Aqua","Arcane","Ashen","Assault","Atomic","Awakened","Bad","Baneful","Bio","Bionic","Black","Blade","Blessed","Blood","Bloody","Boosted","Brutal","Buffed","Carnage","Catastrophic","Chaos","Charged","Chrome","Chrono","Combo","Concealed","Consumptive","Corrupted","Creeping","Crimson","Cryptic","Cunning","Cyber","Dark","Darth","Dead","Decimate","Deep","Destructive","Devil","Diamond","Divine","Doom","Dormant","Draconic","Dynamic","Elder","Electro","Elite","Emerald","Enemy","Eon","Epic","Eradicate","Evanescent","Exiled","Fallen","Fatal","Fire","First","Frost","Frozen","Gold","Gosu","Grim","Guerilla","Hardcore","Hate","Hazardous","Hidden","Holy","Icy","Imba","Incendiary","Incognito","Infinite","Invisible","Iron","Killer","Last","Leeroy","Lone","Mad","Majestic","Malefic","Malevolent","Malignant","Master","Menacing","Metal","Mind","Mirror","Mist","Mono","Moon","Murderous","Mystic","Nameless","Necro","Negative","Neo","Nightmare","Nocturnal","Occult","Omnipotent","Panic","Pernicious","Platinum","Prime","Psychic","Quantum","Radical","Radient","Rage","Random","Savage","Secret","Shadow","Silver","Sinister","Sky","Solar","Solid","Solitary","Somber","Soul","Stealth","Steel","Storm","Supernatural","Swift","Terror","Toxic","Tranquil","Transcendent","Treacherous","True","Twisted","Uber","Ultimate","Undercover","Unknowable","Unpredictable","Urban","Veiled","Venom","Vindictive","Virulent","Warp","Wicked","Xeno","Zero"};
+const int nbMainName = 232;
+const char* MainName[] = {"Aegis","Aether","Agent","Agitator","Alias","Archetype","Archon","Armor","Arrow","Arsenal","Arsonist","Assassin","Assault","Asylum","Atonement","Augur","Aura","Avenger","Axiom","Axon","Battle","Beast","Beastmode","Being","Betrayal","Blade","Blaster","Blaze","Blood","Boss","Burn","Cabal","Cannon","Captain","Carnage","Caster","Cataclysm","Catalyst","Chaos","Chief","Child","Chimera","Clairvoyant","Cloud","Combat","Commander","Crypt","Cut","Cyborg","Damage","Death","Deathmatch","Decay","Decay","Demon","Destruction","Devil","Divinity","Doom","Doppleganger","Dragon","Dragoon","Dream","Dynasty","Edge","Effect","Elder","Elixir","Elysium","Emperor","Empire","Enemy","Enigma","Entity","Epidemic","Equilibrium","Equinox","Eve","Executioner","Exekutioner","Exodus","Explosive","Fatality","Fate","Fire","Firebreath","Flame","Flux","Focus","Force","Freak","Frenzy","Frost","Fury","Fusion","Galaxy","Genesis","Ghost","Glitch","God","Godmode","Grenade","Grimoire","Guard","Guardian","Gun","Hacker","Haxxor","Headshot","Hell","Hellion","Hivemind","Hunter","Hysteria","Impunity","Inferno","Intellect","Juggernaut","Kaos","Killer","Killswitch","Legend","Limit","Lucifer","Machete","Machine","Maelstrom","Master","Mercenary","Mercy","Mind","Mine","Monarch","Monolith","Mood","Moon","Nexus","Night","Nightmare","Ninja","Nuke","Oath","Obelisk","Obliteration","Oblivion","Odyssey","Omen","Omnichrom","Oracle","Outlaw","Overmind","Pain","Panic","Panzer","Paradox","Paragon","Partisan","Planet","Plasma","Priest","Prison","Propaganda","Prophet","Psychosis","Punishment","Pwner","Pyromaniac","Quake","Rachet","Radical","Raid","Raider","Rat","Ray","Razor","Reaper","Rebel","Redshift","Reflux","Requiem","Rhapsody","Ringleader","Rival","Rogue","Root","Rush","Sabotage","Scream","Seeker","Seer","Seizure","Shade","Shooter","Sin","Slash","Slayer","Sniper","Snow","Soul","Space","Spark","Star","Storm","Strategy","Stroke","Tank","Tempest","Terror","Thunder","Titan","Tornado","Trigger","Trinity","Universe","Vehicle","Vengeance","Venom","Venus","Visionary","Void","Voltage","Voodoo","Vortex","Warlock","Warrior","Whisper","Wing","Wizard","Wolf","Zealot","Zephyr","Zone"};
+const int nbFlaires = 7;
+const char* Flairs[][2] = {{"xX", "Xx"},{"<<", ">>"},{"-=", "=-"},{"-~", "~-"},{"~*", "*~"},{".:", ":."},{"#*", "*#"}};
 
 /* COLORS YAY */
 #define RED "\x1B[31m"
@@ -206,9 +212,10 @@ int main()
                     while (getchar() != '\n'); /* Clears entry buffer */
                     printf("Player 1 please choose you pseudo ('*' for a random one): \n");
                     namePlayer(nameP1);
+                    sleep(1);
                     printf("Player 2 please choose you pseudo ('*' for a random one): \n");
                     namePlayer(nameP2);
-                    
+
                     int player = 1, playerRow = 0, playerCol = 0;
                     int turns = 0;
                     char letter = 'Z';
@@ -292,6 +299,7 @@ int main()
                         winCondition = superGridComplete(superGrid);
                     } while (winCondition == DEFAULT);
 
+                    PrintGrid(superGrid);
                     printf("You played for %d turns.\n", turns);
                     
                     printf("Do you want to play again ? [Y]/[N] ");
@@ -306,6 +314,7 @@ int main()
 
                 } while (rematch == 'Y');
                 choice = DEFAULT;
+                welcome();
                 break; /* From the switch */
             
             default:
@@ -551,7 +560,6 @@ void namePlayer(char* ptrInput)
     } while (!condition);
 }
 
-
 /**
  * @brief Generate an Xbox-like gamertag.
  * 
@@ -579,6 +587,7 @@ void generateXboxName(char *ptrGamertag)
 
     strcpy(ptrGamertag, gamertag);
 }
+
 
 /* Super Grid & Grids related stuff */
 
