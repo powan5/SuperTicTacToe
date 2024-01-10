@@ -184,6 +184,7 @@ int main()
                 match1P();
 
                 choice = DEFAULT;
+                welcome();
                 break;
 
             /****************************************************/
