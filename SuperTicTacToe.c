@@ -2,7 +2,7 @@
  * @brief Program to play Super Tic-Tac-Toe, a variation of tic-tac-toe where players need to complete a grid in order to claim a square of the main grid ('super grid')
  * 
  * @author Powan
- * @version 1.1.1
+ * @version 1.1.0
 */
 
 #include "./includes.h"
@@ -51,12 +51,12 @@ enum error_codes /* There is a logic to it, try to fint it I'll give you a cooki
     CELL_TAKEN             = 678475,
     GRID_TAKEN             = 718475,
     PLAYER_ID              = 807368,
-    
+
     DEBUG                  = 686671,
     UNEXPECTED             = 856984
 };
 
-enum choices /* Same logic here :) */
+enum choices /* Same logic here for DEFAULT :) */
 {
     RULES    = 1,
     MATCH_1P = 2,
@@ -128,6 +128,7 @@ void generateXboxName(char *ptrGamertag);
 
 void initSuperGrid(struct Grid superGrid[ROW][COLUMN]);
 int gridComplete(struct Grid superGrid[ROW][COLUMN], char);
+bool isGridDraw(struct Grid superGrid[ROW][COLUMN], char letter);
 int superGridComplete(struct Grid superGrid[ROW][COLUMN]);
 void PrintGrid(struct Grid superGrid[ROW][COLUMN]);
 
@@ -275,9 +276,24 @@ int main()
                                     foundLetter = true;
                                     superGridRow = letterRow;
                                     superGridColumn = letterColumn;
-                        }}}
+                                }
+                            }
+                        }
                         
+
                         letter = play(superGrid, player, letter, &playerRow, &playerCol);
+
+                        /* If the grid got full but not won by any, resets it after the next player's turn */
+                        if(isGridDraw(superGrid, letter))
+                        {
+                            for (int row = 0; row < ROW; row++)
+                            {
+                                for (int col = 0; col < COLUMN; col++)
+                                {
+                                    superGrid[superGridRow][superGridColumn].grid[row][col] = '.';
+                                }
+                            }
+                        }
 
                         switch (player)
                         {
@@ -347,49 +363,49 @@ void errors(int code)
     switch (code)
     {
         case DEBUG: /* Prints a message to know if a set checkpoint has been reached or if the code is broken there */
-            perror(RED "Successfully reached checkpoint.\n" RESET );
+            printf(RED "Successfully reached checkpoint.\n" RESET );
             break;
 
         case INPUT_TOO_LONG:
-            perror(RED "Error! " RESET "The " MAGENTA "input" RESET " is " MAGENTA "too long" RESET ".\nTry again: ");
+            printf(RED "Error! " RESET "The " MAGENTA "input" RESET " is " MAGENTA "too long" RESET ".\nTry again: \n");
             break;
 
         case NON_INT_INPUT:
-            perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " an " MAGENTA "integer" RESET ".\nTry again: ");
+            printf(RED "Error! " RESET "Please " MAGENTA "input" RESET " an " MAGENTA "integer" RESET ".\nTry again: \n");
             break;
 
         case INT_OUT_OF_RANGE:
-            perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " an integer " MAGENTA "between 1 & 3" RESET ".\nTry again: ");
+            printf(RED "Error! " RESET "Please " MAGENTA "input" RESET " an integer " MAGENTA "between 1 & 3" RESET ".\nTry again: \n");
             break;
 
         case NON_CHAR_INPUT:
-            perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " a " MAGENTA "character" RESET ".\nTry again: ");
+            printf(RED "Error! " RESET "Please " MAGENTA "input" RESET " a " MAGENTA "character" RESET ".\nTry again: \n");
             break;
             
         case CHAR_INPUT_UNRECONIZED:
-            perror(RED "Error! " RESET "Please " MAGENTA "input" RESET " a character included " MAGENTA "between A & I" RESET ".\nTry again: ");
+            printf(RED "Error! " RESET "Please " MAGENTA "input" RESET " a character included " MAGENTA "between A & I" RESET ".\nTry again: \n");
             break;
 
         case CELL_TAKEN:
-            perror(RED "Error! " RESET "That " MAGENTA "cell" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: ");
+            printf(RED "Error! " RESET "That " MAGENTA "cell" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: \n");
             break;
 
         case GRID_TAKEN:
-            perror(RED "Error! " RESET "That " MAGENTA "grid" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: ");
+            printf(RED "Error! " RESET "That " MAGENTA "grid" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: \n");
             break;
 
         case PLAYER_ID: /* If this error is reached, the program can't continue without errors, so exits it before crashing. */
-            perror(RED "There was an error with the players' IDs... Exiting"); loading();
+            printf(RED "There was an error with the players' IDs... Exiting"); loading();
             exit(EXIT_FAILURE);
             break;
         
         case UNEXPECTED: /* If this error is reached, a part of the code didn't run properly and a condition wasn't completed even though it should have been (Ex in giveMemeName(){}). */
-            perror(RED "Unexpected error... Exiting"); loading();
+            printf(RED "Unexpected error... Exiting"); loading();
             exit(EXIT_FAILURE);
             break;
 
         default: /* This error is not supposed to happen, so exits the program. */
-            perror(RED "Error within the errors() function... Exiting"); loading();
+            printf(RED "Error within the errors() function... Exiting"); loading();
             exit(EXIT_FAILURE);
             break;
     }
@@ -457,13 +473,15 @@ void rules()
     printf("\n");
     printf("To win the game, you have to win three small grids in a row horizontally, vertically, or diagonally.\n");
     printf("\n");
-    printf("If a player is meant to play in an already won small grid, they can choose any open cell.\n");
+    printf("If a player is meant to play in an already won smaller grid,\n");
+    printf("they can choose any open cell from any of the available grids.\n");
     printf("\n");
     printf("The game continues until a player wins the larger grid.\n");
     printf("\n");
-    printf("If one of the small grid is full (a draw), said grid will be reseted for players to continue playing.\n");
+    printf("If one of the small grid is full but is a draw,\n");
+    printf("said grid will be reseted after a turn for players to continue playing.\n");
     printf("\n");
-    printf("[Press ENTER to continue]\n");
+    printf("[Press ENTER to continue] ");
     while (getchar() != '\n');
 }
 
@@ -603,7 +621,7 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN])
             for (int gridRow = 0; gridRow < ROW; gridRow++) {
                 for (int gridCol = 0; gridCol < COLUMN; gridCol++) {
                     superGrid[row][col].grid[gridRow][gridCol] = '.';
-    }}}}}
+}}}}}
 
 /**
  * @brief Checks if the given grid inside 'super grid' is complete.
@@ -712,6 +730,48 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
                         }
     }}}}}
     return DEFAULT;
+}
+
+/**
+ * @brief Checks if the given grid inside 'super grid' is full but is a draw.
+ * 
+ * @param superGrid Game's grid.
+ * @param letter Letter of the grid to check, gives the index of said grid.
+ * @returns bool, true if the grid is a draw, false otherwise.
+*/
+bool isGridDraw(struct Grid superGrid[ROW][COLUMN], char letter)
+{
+    for (int row = 0; row < ROW; row++)
+    {
+        for (int col = 0; col < COLUMN; col++)
+        {
+            /* Finds the index of the current working grid inside of 'super grid' */
+            if (letter == LETTERS[row][col]) 
+            {
+                int nbOfFullCells = 0;
+
+                for (int gridRow = 0; gridRow < ROW; gridRow++)
+                {                    
+                    for (int gridCol = 0; gridCol < COLUMN; gridCol++)
+                    {
+                        if (superGrid[row][col].grid[gridRow][gridCol] != '.')
+                        {
+                            nbOfFullCells++;
+                        }
+                    }
+                }
+
+                if (nbOfFullCells == 9)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+    }
 }
 
 /**

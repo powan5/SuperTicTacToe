@@ -396,10 +396,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-Main
-Main.exe
-Main
-Main.exe
-SuperTicTacToe
+
 temp.c
 temp
+SuperTicTacToe
+SuperTicTacToe.exe
