@@ -2,7 +2,7 @@
  * @brief Program to play Super Tic-Tac-Toe, a variation of tic-tac-toe where players need to complete a grid in order to claim a square of the main grid ('super grid')
  * 
  * @author Powan
- * @version 1.0.1
+ * @version 1.0.2
 */
 
 #include "./includes.h"
@@ -37,7 +37,7 @@ typedef bool ListBool[ROW][COLUMN];
 
 typedef char * gridBlocks[3][9];
 
-typedef char* gamertag;
+typedef char gamertag[46];
 
 const int DIAG = 3;
 
@@ -56,7 +56,7 @@ enum error_codes /* There is a logic to it, try to fint it I'll give you a cooki
     UNEXPECTED             = 856984
 };
 
-enum choices /* Same logic here */
+enum choices /* Same logic here :) */
 {
     RULES    = 1,
     MATCH_1P = 2,
@@ -93,7 +93,7 @@ const char* memeNames[23] = {
     "LampLover",
     "UsernameWasTaken"
 };
-const int nbOfNames = 23;
+const int nbOfMemeNames = 23;
 
 /* COLORS YAY */
 #define RED "\x1B[31m"
@@ -116,7 +116,7 @@ void loading();
 void welcome();
 void rules();
 void namePlayer(char *);
-gamertag generateXboxName();
+void generateXboxName(char *ptrGamertag);
 
 /* Super Grid & Grids related stuff */
 
@@ -200,8 +200,8 @@ int main()
                     printf("%s", CLEAR_TERMINAL);
 
                     /* Get the pseudo for both players */
-                    char* nameP1 = "";
-                    char* nameP2 = "";
+                    gamertag nameP1;
+                    gamertag nameP2;
 
                     while (getchar() != '\n'); /* Clears entry buffer */
                     printf("Player 1 please choose you pseudo ('*' for a random one): \n");
@@ -218,7 +218,7 @@ int main()
                     printf("%s will play 'O'\n", nameP2);
 
                     fflush(stdout);
-                    sleep(2);
+                    sleep(5);
 
                     do
                     {
@@ -228,8 +228,8 @@ int main()
                         PrintGrid(superGrid);
 
                         /* Checks which player's turn it is */
-                        if (player == P1) { printf(RED "%s " RESET "to play, ", nameP1); }
-                        else if (player == P2) { printf(RED "%s " RESET "to play, ", nameP2); }                    
+                        if (player == P1) { printf(RED "%s" RESET "(X) to play, ", nameP1); }
+                        else if (player == P2) { printf(RED "%s" RESET "(O) to play, ", nameP2); }                    
 
                         /* If the game has just started */
                         if (letter == 'Z')
@@ -418,7 +418,7 @@ void welcome()
     printf("\t\tWELCOME!\n");
     printf("\n");
     printf("\t[1]  Rules\n");
-    printf("\t[2]  Start a game (1P (Coming at some point))\n");
+    printf("\t[2]  Start a game (1P [WIP])\n");
     printf("\t[3]  Start a match (2P)\n");
     printf("\t[0]  Exit\n");
     printf("\n");
@@ -463,7 +463,7 @@ void rules()
  * 
  * @param ptrInput Pointer of the input variable.
 */
-void namePlayer(char *ptrInput)
+void namePlayer(char* ptrInput)
 {
     bool condition = false;
 
@@ -486,11 +486,11 @@ void namePlayer(char *ptrInput)
             continue;
         }
 
-        /*-- Gives the input as pseudo for the player --*/
+        /*-- Gives the pseudo for the player --*/
 
         if (input[0] == '*') /* Gets a random pseudo to the player if he so desires */
         {
-            char name[5] = "";
+            gamertag name;
             srand(time(NULL));
             
             int method = rand() % 3;
@@ -498,12 +498,12 @@ void namePlayer(char *ptrInput)
             switch (method)
             {
                 case 0:
+                    strcpy(name, consonant[(rand()%19)]);
                     for (int nb = 0; nb < 2; nb++)
                     {
-                        strcat(name, consonant[(rand()%19)]);
                         strcat(name, vowels[(rand()%5)]);
+                        strcat(name, consonant[(rand()%19)]);
                     }
-                    strcat(name, consonant[(rand()%19)]);
 
                     name[0] = toupper(name[0]);
 
@@ -512,12 +512,12 @@ void namePlayer(char *ptrInput)
                     break;
             
                 case 1:
+                    strcpy(name, vowels[(rand()%5)]);
                     for (int nb = 0; nb < 2; nb++)
                     {
-                        strcat(name, vowels[(rand()%5)]);
                         strcat(name, consonant[(rand()%19)]);
+                        strcat(name, vowels[(rand()%5)]);
                     }
-                    strcat(name, vowels[(rand()%5)]);
 
                     name[0] = toupper(name[0]);
 
@@ -526,7 +526,8 @@ void namePlayer(char *ptrInput)
                     break;
 
                 case 2:
-                    gamertag xboxGamertag = generateXboxName();
+                    gamertag xboxGamertag;
+                    generateXboxName(xboxGamertag);
                     strcpy(ptrInput, xboxGamertag);
                     condition = true;
                     break;
@@ -538,7 +539,8 @@ void namePlayer(char *ptrInput)
 
             if ((rand()%100) == 69) /* 1/100 chance of giving a meme name cuz ahah funni :) */
             {
-                strcpy(ptrInput, memeNames[(rand()%nbOfNames)]);
+                srand(time(NULL));
+                strcpy(ptrInput, memeNames[(rand()%nbOfMemeNames)]);
         }}
 
         else /* Gives the chosen pseudo otherwise */
@@ -555,26 +557,27 @@ void namePlayer(char *ptrInput)
  * 
  * @returns CHAR*, the generated gamertag.
 */
-gamertag generateXboxName()
+void generateXboxName(char *ptrGamertag)
 {
-    char* gamertag = "";
+    gamertag gamertag;
     srand(time(NULL));
+    int randomFlair = (rand()%nbFlaires);
 
-    char* flair1;
-    char* prefix;
-    char* mainName;
-    char* flair2;
-    strcat(flair1, Flairs[(rand()%nbFlaires)][0]);
-    strcat(prefix, Prefixes[(rand()%nbPrefixes)]);
-    strcat(mainName, MainName[(rand()%nbMainName)]);
-    strcat(flair2, Flairs[(rand()%nbFlaires)][1]);
+    char flair1[3];
+    char prefix[20];
+    char mainName[20];
+    char flair2[3];
+    strcpy(flair1, Flairs[randomFlair][0]);
+    strcpy(prefix, Prefixes[(rand()%nbPrefixes)]);
+    strcpy(mainName, MainName[(rand()%nbMainName)]);
+    strcpy(flair2, Flairs[randomFlair][1]);
 
     strcat(gamertag, flair1);
     strcat(gamertag, prefix);
     strcat(gamertag, mainName);
     strcat(gamertag, flair2);
 
-    return gamertag;
+    strcpy(ptrGamertag, gamertag);
 }
 
 /* Super Grid & Grids related stuff */
@@ -718,9 +721,9 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
         p1_superRow = 0, p2_superRow = 0;
         p1_superCol = 0, p2_superCol = 0;
 
-            p1_superDiagL2R = 0, p1_superDiagR2L = 0, p2_superDiagL2R = 0, p2_superDiagR2L = 0;
         for (int col = 0; col < COLUMN; col++)
         {
+            p1_superDiagL2R = 0, p1_superDiagR2L = 0, p2_superDiagL2R = 0, p2_superDiagR2L = 0;
             
             /*-- Checks the diagonals --*/
             for (int diag = 0, invDiag = 2; diag < DIAG; diag++, invDiag--)
