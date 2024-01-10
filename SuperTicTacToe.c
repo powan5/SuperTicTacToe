@@ -107,7 +107,7 @@ const char* Flairs[][2] = {{"xX", "Xx"},{"<<", ">>"},{"-=", "=-"},{"-~", "~-"},{
 
 void errors(int);
 void clearTerminal();
-void loading();
+void loading_animation();
 void welcome();
 void rules();
 void namePlayer(char *);
@@ -156,7 +156,7 @@ int main()
             /*-- Exit --*/
             case EXIT:
                 printf("Exiting");
-                loading();
+                loading_animation();
                 return EXIT_SUCCESS;
                 break;
 
@@ -179,7 +179,7 @@ int main()
             case MATCH_1P:
                 clearTerminal();
                 printf("Initialising");
-                loading();
+                loading_animation();
 
                 match1P();
 
@@ -194,7 +194,7 @@ int main()
             case MATCH_2P:
                 clearTerminal();
                 printf("Initialising");
-                loading();
+                loading_animation();
 
                 match2P(); /* Calls the 2P match function that does it all */
 
@@ -264,17 +264,17 @@ void errors(int code)
             break;
 
         case PLAYER_ID: /* If this error is reached, the program can't continue without errors, so exits it before crashing. */
-            printf(RED "There was an error with the players' IDs... Exiting"); loading();
+            printf(RED "There was an error with the players' IDs... Exiting"); loading_animation();
             exit(EXIT_FAILURE);
             break;
         
         case UNEXPECTED: /* If this error is reached, a part of the code didn't run properly and a condition wasn't completed even though it should have been (Ex in giveMemeName(){}). */
-            printf(RED "Unexpected error... Exiting"); loading();
+            printf(RED "Unexpected error... Exiting"); loading_animation();
             exit(EXIT_FAILURE);
             break;
 
         default: /* This error is not supposed to happen, so exits the program. */
-            printf(RED "Error within the errors() function... Exiting"); loading();
+            printf(RED "Error within the errors() function... Exiting"); loading_animation();
             exit(EXIT_FAILURE);
             break;
     }
@@ -291,7 +291,7 @@ void clearTerminal()
 /**
  * @brief Prints a little loading animation.
 */
-void loading()
+void loading_animation()
 {
     /* Cuz it looks cool 😎 */
     for (int _ = 0; _ < 3; _++)
@@ -445,7 +445,8 @@ void namePlayer(char* ptrInput)
             {
                 srand(time(NULL));
                 strcpy(ptrInput, memeNames[(rand()%nbOfMemeNames)]);
-        }}
+            }
+        }
 
         else /* Gives the chosen pseudo otherwise */
         {
@@ -493,12 +494,20 @@ void generateXboxName(char *ptrGamertag)
 */
 void initSuperGrid(struct Grid superGrid[ROW][COLUMN])
 {
-    for (int row = 0; row < ROW; row++) {
-        for (int col = 0; col < COLUMN; col++) {
-            for (int gridRow = 0; gridRow < ROW; gridRow++) {
-                for (int gridCol = 0; gridCol < COLUMN; gridCol++) {
+    for (int row = 0; row < ROW; row++)
+    {
+        for (int col = 0; col < COLUMN; col++)
+        {
+            for (int gridRow = 0; gridRow < ROW; gridRow++)
+            {
+                for (int gridCol = 0; gridCol < COLUMN; gridCol++)
+                {
                     superGrid[row][col].grid[gridRow][gridCol] = '.';
-}}}}}
+                }
+            }
+        }
+    }
+}
 
 /**
  * @brief Checks if the given grid inside 'super grid' is complete.
@@ -517,7 +526,7 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
         for (int col = 0; col < COLUMN; col++)
         {
 
-            /* Finds the index of the current working grid inside of 'super grid' */
+            /* Finds the index of the current playing grid inside of 'super grid' */
             
             if (letter == LETTERS[row][col]) 
             {
@@ -596,16 +605,26 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
 
                         /*-- Checks if a player won --*/
 
-                        if (p1_diagR2L == 3 || p1_diagL2R == 3 || p1_row == 3 || p1_col == 3)
+                        if (p1_diagR2L == 3 
+                        || p1_diagL2R == 3 
+                        || p1_row == 3 
+                        || p1_col == 3)
                         {
                             return P1;
                         } else
 
-                        if (p2_diagR2L == 3 || p2_diagL2R == 3 || p2_row == 3 || p2_col == 3)
+                        if (p2_diagR2L == 3 
+                        || p2_diagL2R == 3 
+                        || p2_row == 3 
+                        || p2_col == 3)
                         {
                             return P2;
                         }
-    }}}}}
+                    }
+                }
+            }
+        }
+    }
     return DEFAULT;
 }
 
@@ -622,7 +641,7 @@ bool isGridDraw(struct Grid superGrid[ROW][COLUMN], char letter)
     {
         for (int col = 0; col < COLUMN; col++)
         {
-            /* Finds the index of the current working grid inside of 'super grid' */
+            /* Finds the index of the current playing grid inside of 'super grid' */
             if (letter == LETTERS[row][col]) 
             {
                 int nbOfFullCells = 0;
@@ -744,7 +763,8 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
             {
                 return P2;
             }
-    }}
+        }
+    }
     return DEFAULT;
 }
 
@@ -841,9 +861,11 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
                             break;
                         }
                         break;
-            }}
+                }
+            }
             printf( YELLOW "|\n" RESET);
-    }}
+        }
+    }
     printf(YELLOW "+-------------------+-------------------+-------------------+\n\n" RESET);
 }
 
@@ -886,7 +908,9 @@ void inputWhichGrid(char *ptrLetter)
                 {
                     *ptrLetter = upperInput;
                     condition = true;
-        }}}
+                }
+            }
+        }
         
         if (!condition) { errors(CHAR_INPUT_UNRECONIZED); } /* prints an error otherwise, asking the user to try again */
 
@@ -1035,15 +1059,78 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
 }
 
 
+/* Bot Functions */
+
+/**
+ * @brief Have the bot take its turn and play RANDOMLY.
+ * 
+ * @param superGrid Game's grid.
+ * @param letter Letter used to know the grid in where the bot plays.
+ * @param ptrPlayerRow Pointer to store the row index of the bot's move.
+ * @param ptrPlayerCol Pointer to store the column index of the bot's move.
+*/
+void easyBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrPlayerRow, int *ptrPlayerCol)
+{
+    clearTerminal();
+    printf("Thinking");
+    loading_animation();
+
+    /* Get available cells */
+    int availableCells[9];
+    int count = 0;
+
+    /* Finds the current playing grid */ 
+    bool foundLetter = false;
+    int superGridRow, superGridColumn;
+
+    for (int letterRow = 0; letterRow < ROW && !foundLetter; letterRow++)
+    {
+        for (int letterColumn = 0; letterColumn < COLUMN && !foundLetter; letterColumn++)
+        {
+            if (letter == LETTERS[letterRow][letterColumn])
+            {
+                foundLetter = true;
+                superGridRow = letterRow;
+                superGridColumn = letterColumn;
+            }
+        }
+    }
+
+    /* Finds available cells */
+    for(int gridRow = 0; gridRow < ROW; gridRow++)
+    {
+        for(int gridCol = 0; gridCol < COLUMN; gridCol++)
+        {
+            if(superGrid[superGridRow][superGridColumn].grid[gridRow][gridCol] == '.')
+            {
+                availableCells[count] = gridRow*COLUMN + gridCol;
+                count++;
+            }
+        }
+    }
+
+    /* Choose random available cell */
+    srand(time(NULL));
+    int randIndex = rand() % count;
+    int chosenRow = availableCells[randIndex] / COLUMN;
+    int chosenCol = availableCells[randIndex] % COLUMN;
+
+    /* Plays the turn */
+    *ptrPlayerRow = chosenRow;
+    *ptrPlayerCol = chosenCol;
+}
+
 /****************************************************/
 /******|         Main Game Functions          |******/
 /****************************************************/
-
+/**
+ * @brief Runs a single player match against an AI opponent.
+*/
 void match1P()
 {
     clearTerminal();
     printf("Failed to initialize...\n");
-    printf("This gamemode is in working progress! Come check an other day, meanwile play against a friend in the 2 player matches!\n");
+    printf("This gamemode is in working progress! \nCome check an other day, in the mean time why not play against a friend in the 2 player matches!\n");
 }
 
 /**
@@ -1107,7 +1194,8 @@ void match2P()
             {
                 errors(GRID_TAKEN);
                 inputWhichGrid(&letter);
-        }}
+            }
+        }
 
         /* Reminds which grid the player is in */
         else
@@ -1147,6 +1235,7 @@ void match2P()
             }
         }
 
+        /* Takes care of asigning the correct player's symbol and switching players */
         switch (player)
         {
             case P1:
@@ -1177,7 +1266,7 @@ void match2P()
     {
         clearTerminal();
         printf("Reinitialising");
-        loading();
+        loading_animation();
         match2P();
     }
 }
