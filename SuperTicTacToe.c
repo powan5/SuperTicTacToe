@@ -177,6 +177,7 @@ int main()
             /****************************************************/
 
             case MATCH_1P:
+                clearTerminal();
                 printf("Initialising");
                 loading();
 
