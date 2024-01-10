@@ -2,10 +2,16 @@
  * @brief Program to play Super Tic-Tac-Toe, a variation of tic-tac-toe where players need to complete a grid in order to claim a square of the main grid ('super grid')
  * 
  * @author Powan
- * @version 1.1.0
+ * @version 1.2.0
 */
 
-#include "./includes.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <unistd.h>
+#include <string.h>
+#include <ctype.h>
+#include <time.h>
 
 /* printf("\033[2J\033[1;1H"); // Clears output terminal */
 
@@ -14,16 +20,6 @@
 /****************************************************/
 
 #define CLEAR_TERMINAL "\033[2J\033[1;1H"
-
-enum dimensions {
-    ROW = 3,
-    COLUMN = 3
-};
-
-enum player {
-    P1 = 1,
-    P2 = 2
-};
 
 typedef struct Grid
 { 
@@ -43,7 +39,16 @@ typedef char * gridBlocks[3][9];
 
 typedef char gamertag[46];
 
-const int DIAG = 3;
+enum dimensions {
+    ROW = 3,
+    COLUMN = 3,
+    DIAG = 3
+};
+
+enum player {
+    P1 = 1,
+    P2 = 2
+};
 
 enum error_codes /* There is a logic to it, try to fint it I'll give you a cookie :D */
 {
