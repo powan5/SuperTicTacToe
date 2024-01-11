@@ -2,7 +2,7 @@
  * @brief Program to play Super Tic-Tac-Toe, a variation of tic-tac-toe where players need to complete a grid in order to claim a square of the main grid ('super grid')
  * 
  * @author Powan
- * @version 1.3.0
+ * @version 2.0.1
 */
 
 #include <stdlib.h>
@@ -270,7 +270,7 @@ void welcome()
     printf("\t\tWELCOME!\n");
     printf("\n");
     printf("\t[1]  Rules\n");
-    printf("\t[2]  Start a game (1P [WIP])\n");
+    printf("\t[2]  Start a game (1P)\n");
     printf("\t[3]  Start a match (2P)\n");
     printf("\t[0]  Exit\n");
     printf("\n");
@@ -291,7 +291,7 @@ void rules()
     printf("                                                                                      \n");
     printf("                                        RULES                                        \n");
     printf("\n");
-    printf("The game starts with a move in any of the nine 3x3 grids, choosen by Player 1. (From A to I)\n");
+    printf("The game starts with a move in any of the nine 3x3 grids, chosen by Player 1. (From A to I)\n");
     printf("\n");
     printf("The opponent must play in the corresponding cell of the larger grid, \n");
     printf("based off of in which cell of the small grid the previous player played in.\n");
@@ -970,7 +970,7 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
         printf("Please give the column index ");
         inputWhichCell(&column);
 
-        /*-- Checks if the choosen cell is available --*/
+        /*-- Checks if the chosen cell is available --*/
 
         if (superGrid[superGridRow][superGridColumn].grid[row][column] == '.') /* If it is, changes it to the player's letter */
         {
@@ -1454,6 +1454,33 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
     return LETTERS[choosenRow][choosenCol];
 }
 
+/**
+ * @brief Have the bot choose a letter.
+ * 
+ * @param superGrid The grid to check for taken cells.
+ * @param ptrLetter The letter to be chosen.
+*/
+void botChooseLetter(struct Grid superGrid[ROW][COLUMN] , char *ptrLetter)
+{
+    do
+    {
+        srand(time(NULL));
+        int randRow = rand() % ROW;
+
+        fflush(stdout);
+        sleep(1);
+
+        srand(time(NULL));
+        int randCol = rand() % COLUMN;
+
+        ptrLetter = LETTERS[randRow][randCol];
+
+        fflush(stdout);
+        sleep(1);
+        printf(".");
+    } while (!gridComplete(superGrid, ptrLetter));
+
+}
 
 /****************************************************/
 /******|         Main Game Functions          |******/
@@ -1472,7 +1499,7 @@ void match1P()
     {
         mainScreen();
     }
-    
+
     char rematch = 'N';
     int player = 1, playedRow = 0, playedCol = 0;
     int turns = 0;
@@ -1539,8 +1566,14 @@ void match1P()
         if (gridComplete(superGrid, letter) != DEFAULT) 
         {
             printf("The supposed grid already full, so ");
-            inputWhichGrid(&letter);
-            
+            if (player == P1) { inputWhichGrid(&letter); }
+            else if (player == P2)
+            {
+                printf("I'm going to play in ");
+                botChooseLetter(superGrid, &letter);
+                printf(" the '%c' grid.\n", letter);
+            }
+
             while (gridComplete(superGrid, letter) != DEFAULT)
             {
                 errors(GRID_TAKEN);
@@ -1575,7 +1608,7 @@ void match1P()
         {
             letter = takeTurn(superGrid, player, letter, &playedRow, &playedCol);
         } else
-        
+
         if (player == P2)
         {
             switch (difficulty)
@@ -1634,7 +1667,7 @@ void match1P()
 
     PrintGrid(superGrid);
     printf("You played for %d turns.\n", turns);
-    
+
     printf("Do you want to play again ? [Y]/[N] ");
     scanf("%c", &rematch);
     rematch = toupper(rematch);
