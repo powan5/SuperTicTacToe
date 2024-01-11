@@ -265,7 +265,7 @@ void welcome()
     printf("/ ___)/ )( \\(  _ \\(  __)(  _ \\  (_  _)(  )/ __)___(_  _)/  \\  / __)___(_  _)/  \\(  __)\n");
     printf("\\___ \\) \\/ ( ) __/ ) _)  )   /    )(   )(( (__(___) )( /    \\( (__(___) )( (    )) _) \n");
     printf("(____/\\____/(__)  (____)(__\\_)   (__) (__)\\___)    (__)\\_/\\_/ \\___)    (__) \\__/(____)\n");
-    printf("                                                                        By @powan5(dc)\n");
+    printf("                                                                   By @powan5(Discord)\n");
     printf("\n");
     printf("\t\tWELCOME!\n");
     printf("\n");
@@ -286,7 +286,7 @@ void rules()
     printf("/ ___)/ )( \\(  _ \\(  __)(  _ \\  (_  _)(  )/ __)___(_  _)/  \\  / __)___(_  _)/  \\(  __)\n");
     printf("\\___ \\) \\/ ( ) __/ ) _)  )   /    )(   )(( (__(___) )( /    \\( (__(___) )( (    )) _) \n");
     printf("(____/\\____/(__)  (____)(__\\_)   (__) (__)\\___)    (__)\\_/\\_/ \\___)    (__) \\__/(____)\n");
-    printf("                                                                        By @powan5(dc)\n");
+    printf("                                                                   By @powan5(Discord)\n");
     printf("\n");
     printf("                                                                                      \n");
     printf("                                        RULES                                        \n");
@@ -723,6 +723,12 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 {
     clearTerminal();
+        printf(" ____  _  _  ____  ____  ____    ____  __  ___     ____  __    ___     ____  __  ____ \n");
+    printf("/ ___)/ )( \\(  _ \\(  __)(  _ \\  (_  _)(  )/ __)___(_  _)/  \\  / __)___(_  _)/  \\(  __)\n");
+    printf("\\___ \\) \\/ ( ) __/ ) _)  )   /    )(   )(( (__(___) )( /    \\( (__(___) )( (    )) _) \n");
+    printf("(____/\\____/(__)  (____)(__\\_)   (__) (__)\\___)    (__)\\_/\\_/ \\___)    (__) \\__/(____)\n");
+    printf("                                                                   By @powan5(Discord)\n");
+    printf("\n\n\n");
 
     /*-- Output template --*/
 
@@ -826,7 +832,7 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 */
 void inputWhichGrid(char *ptrLetter)
 {
-    printf("In which grid do you wish to play (From 'A' to 'I'): \n");
+    printf("in which grid do you wish to play (From 'A' to 'I'): \n");
     
     bool condition = false;
 
@@ -1025,7 +1031,7 @@ int setDifficulty()
     printf("/ ___)/ )( \\(  _ \\(  __)(  _ \\  (_  _)(  )/ __)___(_  _)/  \\  / __)___(_  _)/  \\(  __)\n");
     printf("\\___ \\) \\/ ( ) __/ ) _)  )   /    )(   )(( (__(___) )( /    \\( (__(___) )( (    )) _) \n");
     printf("(____/\\____/(__)  (____)(__\\_)   (__) (__)\\___)    (__)\\_/\\_/ \\___)    (__) \\__/(____)\n");
-    printf("                                                                        By @powan5(dc)\n");
+    printf("                                                                   By @powan5(Discord)\n");
     printf("\n");
     printf("                                                                                      \n");
     printf("                      Weclome to a 1 Player match against a bot                      \n");
@@ -1037,6 +1043,7 @@ int setDifficulty()
     printf("\t[3]  Hard (Makes only the most advantageous mouves)\n");
     printf("\t[0]  Main menu\n");
     printf("\n");
+    printf("Please enter your choice: ");
 
     do
     {
@@ -1104,6 +1111,8 @@ char easyBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
     *ptrBotRow = chosenRow;
     *ptrBotCol = chosenCol;
 
+    printf("I'm going to make a move at (%d, %d)!\n", chosenRow+1, chosenCol+1);
+
     return LETTERS[chosenRow][chosenCol];
 }
 
@@ -1119,12 +1128,10 @@ char easyBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
 char mediumBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow, int *ptrBotCol)
 {
     clearTerminal();
-    printf("Thinking");
-    loading_animation();
 
     srand(time(NULL));
 
-    int choice = rand() % 3;
+    int choice = rand() % 2;
 
     switch (choice)
     {
@@ -1153,7 +1160,7 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
     printf("Thinking");
     loading_animation();
 
-    int choosenRow = 0, choosenCol = 0;
+    int chosenRow = 0, chosenCol = 0;
 
     /* Finds the current playing grid */
     bool foundLetter = false;
@@ -1198,8 +1205,8 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
                             {
                                 if (superGrid[superGridRow][superGridColumn].grid[rowCheck][col] == '.')
                                 {
-                                    choosenRow = rowCheck;
-                                    choosenCol = col;
+                                    chosenRow = rowCheck;
+                                    chosenCol = col;
                                     foundCell = true;
                                 }
                             }
@@ -1223,8 +1230,8 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
                             {
                                 if (superGrid[superGridRow][superGridColumn].grid[row][colCheck] == '.')
                                 {
-                                    choosenRow = row;
-                                    choosenCol = colCheck;
+                                    chosenRow = row;
+                                    chosenCol = colCheck;
                                     foundCell = true;
                                 }
                             }
@@ -1248,8 +1255,8 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
                             {
                                 if (superGrid[superGridRow][superGridColumn].grid[rowCheck][col] == '.')
                                 {
-                                    choosenRow = rowCheck;
-                                    choosenCol = col;
+                                    chosenRow = rowCheck;
+                                    chosenCol = col;
                                     foundCell = true;
                                 }
                             }
@@ -1273,8 +1280,8 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
                             {
                                 if (superGrid[superGridRow][superGridColumn].grid[row][colCheck] == '.')
                                 {
-                                    choosenRow = row;
-                                    choosenCol = colCheck;
+                                    chosenRow = row;
+                                    chosenCol = colCheck;
                                     foundCell = true;
                                 }
                             }
@@ -1303,8 +1310,8 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
                         {
                             if (superGrid[superGridRow][superGridColumn].grid[diagCheck][diagCheck] == '.')
                             {
-                                choosenRow = diagCheck;
-                                choosenCol = diagCheck;
+                                chosenRow = diagCheck;
+                                chosenCol = diagCheck;
                                 foundCell = true;
                             }
                         }
@@ -1328,8 +1335,8 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
                         {
                             if (superGrid[superGridRow][superGridColumn].grid[diagCheck][invDiag] == '.')
                             {
-                                choosenRow = diagCheck;
-                                choosenCol = invDiag;
+                                chosenRow = diagCheck;
+                                chosenCol = invDiag;
                                 foundCell = true;
                             }
                         }
@@ -1353,8 +1360,8 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
                         {
                             if (superGrid[superGridRow][superGridColumn].grid[diagCheck][diagCheck] == '.')
                             {
-                                choosenRow = diagCheck;
-                                choosenCol = diagCheck;
+                                chosenRow = diagCheck;
+                                chosenCol = diagCheck;
                                 foundCell = true;
                             }
                         }
@@ -1378,8 +1385,8 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
                         {
                             if (superGrid[superGridRow][superGridColumn].grid[diagCheck][invDiag] == '.')
                             {
-                                choosenRow = diagCheck;
-                                choosenCol = invDiag;
+                                chosenRow = diagCheck;
+                                chosenCol = invDiag;
                                 foundCell = true;
                             }
                         }
@@ -1396,62 +1403,62 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
                 {
                     if (superGrid[superGridRow][superGridColumn].grid[1][1] == '.')
                     {
-                        choosenRow = 1;
-                        choosenCol = 1;
+                        chosenRow = 1;
+                        chosenCol = 1;
                         foundCell = true;
                     } else
 
                     if (superGrid[superGridRow][superGridColumn].grid[0][0] == '.')
                     {
-                        choosenRow = 0;
-                        choosenCol = 0;
+                        chosenRow = 0;
+                        chosenCol = 0;
                         foundCell = true;
                     } else
 
                     if (superGrid[superGridRow][superGridColumn].grid[0][2] == '.')
                     {
-                        choosenRow = 0;
-                        choosenCol = 2;
+                        chosenRow = 0;
+                        chosenCol = 2;
                         foundCell = true;
                     } else
                     
                     if (superGrid[superGridRow][superGridColumn].grid[2][0] == '.')
                     {
-                        choosenRow = 2;
-                        choosenCol = 0;
+                        chosenRow = 2;
+                        chosenCol = 0;
                         foundCell = true;
                     } else
 
                     if (superGrid[superGridRow][superGridColumn].grid[2][2] == '.')
                     {
-                        choosenRow = 2;
-                        choosenCol = 2;
+                        chosenRow = 2;
+                        chosenCol = 2;
                         foundCell = true;
                     }
 
-                    if (foundCell)
-                    {
-                        printf("AHAH! I've found a tactical move!\n");
-                        printf("I'm going to make a move at (%d, %d)!\n", choosenRow, choosenCol);
-                    }
-                    
-                    
-                    else
-                    {
-                        /* If no tactical moves were found, Makes a random move */
-                        easyBotTurn(superGrid, letter, ptrBotRow, ptrBotCol);
-                        foundCell = true;
-                    }
                 }
             }
+        }
+        if (foundCell)
+        {
+            printf("AHAH! I've found a tactical move!\n");
+            printf("I'm going to make a move at (%d, %d)!\n", chosenRow+1, chosenCol+1);
+        }
+        
+        
+        else
+        {
+            /* If no tactical moves were found, Makes a random move */
+            easyBotTurn(superGrid, letter, ptrBotRow, ptrBotCol);
+            foundCell = true;
         }
     }
 
     /* Playes the turn */
-    *ptrBotRow = choosenRow;
-    *ptrBotCol = choosenCol;
+    *ptrBotRow = chosenRow;
+    *ptrBotCol = chosenCol;
 
-    return LETTERS[choosenRow][choosenCol];
+    return LETTERS[chosenRow][chosenCol];
 }
 
 /**
@@ -1473,12 +1480,12 @@ void botChooseLetter(struct Grid superGrid[ROW][COLUMN] , char *ptrLetter)
         srand(time(NULL));
         int randCol = rand() % COLUMN;
 
-        ptrLetter = LETTERS[randRow][randCol];
+        *ptrLetter = LETTERS[randRow][randCol];
 
         fflush(stdout);
         sleep(1);
         printf(".");
-    } while (!gridComplete(superGrid, ptrLetter));
+    } while (!gridComplete(superGrid, *ptrLetter));
 
 }
 
@@ -1514,6 +1521,7 @@ void match1P()
     gamertag botName;
 
     while (getchar() != '\n'); /* Clears entry buffer */
+    clearTerminal();
     printf("Player, please choose you pseudo ('*' for a random one): \n");
     namePlayer(playerName);
 
@@ -1569,9 +1577,10 @@ void match1P()
             if (player == P1) { inputWhichGrid(&letter); }
             else if (player == P2)
             {
-                printf("I'm going to play in ");
+                printf("i'm going to play in the");
                 botChooseLetter(superGrid, &letter);
-                printf(" the '%c' grid.\n", letter);
+                printf(" '%c' grid.\n", letter);
+                sleep(5);
             }
 
             while (gridComplete(superGrid, letter) != DEFAULT)
@@ -1629,6 +1638,7 @@ void match1P()
                     errors(UNEXPECTED);
                     break;
             }
+            sleep(3);
         }
 
         /* If the grid got full but not won by any, resets it after the next player's turn */
