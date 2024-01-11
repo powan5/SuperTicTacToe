@@ -129,6 +129,7 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int, char, int *, int *);
 
 /* Main Game Funcitons */
 
+void match1P();
 void match2P();
 
 
@@ -182,6 +183,9 @@ int main()
                 loading_animation();
 
                 match1P();
+
+                fflush(stdout);
+                sleep(10);
 
                 choice = DEFAULT;
                 welcome();
