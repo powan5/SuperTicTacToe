@@ -2075,6 +2075,7 @@ void botVsBotMatch()
     printf("The bots played for %d turns.\n", turns);
 
     printf("Do you want to play again ? [Y]/[N] ");
+    while(getchar()!= '\n');
     scanf("%c", &playAgain);
     playAgain = toupper(playAgain);
     if (playAgain == 'Y')
