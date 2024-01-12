@@ -2071,6 +2071,9 @@ void botVsBotMatch()
 
         /* Checks if the game has been won */
         winCondition = superGridComplete(superGrid);
+
+        fflush(stdout);
+        sleep(1);
     } while (winCondition == DEFAULT);
 
     PrintGrid(superGrid);
