@@ -2,7 +2,7 @@
  * @brief Program to play Super Tic-Tac-Toe, a variation of tic-tac-toe where players need to complete a grid in order to claim a square of the main grid ('super grid')
  * 
  * @author Powan
- * @version 2.1.1
+ * @version 2.1.2
 */
 
 #include <stdlib.h>
@@ -58,10 +58,12 @@ const List LETTERS = {
     {'Z', 'Z', 'Z', 'Z'}
 };
 
-enum Players {
+enum Players
+{
     P1 = 1,
     P2 = 2,
-    BOT = 2
+    BOT = 2,
+    DRAW = 0
 };
 
 enum error_codes /* There is a logic to it, try to fint it I'll give you a cookie :D */
@@ -747,6 +749,17 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
             if (p2_superDiagL2R == 3 || p2_superDiagR2L == 3 || p2_superRow == 3 || p2_superCol == 3)
             {
                 return P2;
+            }
+            
+            /* If the game is a draw */
+            int completedCells = 0;
+            if (isGridDraw(superGrid, LETTERS[row][col]))
+            {
+                completedCells++;
+            }
+            if (completedCells == 9)
+            {
+                return DRAW;
             }
         }
     }
