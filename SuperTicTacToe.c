@@ -1914,7 +1914,9 @@ void match2P()
 /**
  * @brief Runs a match with only bots.
  * 
- * @details This function is not implemented yet.
+ * @details The function is the main function of the bot match. It takes care of the game's flow and the bots' turns.
+ * 
+ * @see setDifficulty(), [difficulty]BotTurn(), botChooseLetter()
 */
 void botVsBotMatch()
 {
