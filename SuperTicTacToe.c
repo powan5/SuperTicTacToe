@@ -85,6 +85,7 @@ enum choices /* Same logic here for DEFAULT :) */
     MATCH_1P = 2,
     MATCH_2P = 3,
     EXIT     = 0,
+    SECRET   = 836784,
     DEFAULT  = 687084
 };
 
@@ -127,7 +128,7 @@ const char* BotNames[nbBotNames] = {"NoviceBot","SimpleAI","BeginnerMind","SoftS
 void errors(int);
 void clearTerminal();
 void loading_animation();
-void welcome();
+void mainMenu();
 void rules();
 void namePlayer(char *);
 void generateXboxName(char *ptrGamertag);
@@ -186,6 +187,8 @@ int main()
 /**
  * @brief Prints the error messages.
  * 
+ * @details Prints the error messages depending on the error code.
+ * 
  * @param code Error code, int.
 */
 void errors(int code)
@@ -242,7 +245,9 @@ void errors(int code)
 }
 
 /**
- * @brief clears the terminal screen.
+ * @brief Clears the terminal screen.
+ * 
+ * @details Clears the terminal screen using "\033[2J\033[1;1H".
 */
 void clearTerminal()
 {
@@ -251,6 +256,8 @@ void clearTerminal()
 
 /**
  * @brief Prints a little loading animation.
+ * 
+ * @details Prints a "." every second, 3 times.
 */
 void loading_animation()
 {
@@ -267,9 +274,11 @@ void loading_animation()
 }
 
 /**
- * @brief Prints the initial welcome message.
+ * @brief Prints the initial mainMenu message.
+ * 
+ * @details Prints the main menu message and asks the user to choose one of the options.
 */
-void welcome()
+void mainMenu()
 {
     clearTerminal();
     printf(BLUE " ____  _  _  ____  ____  ____    ____  __  ___     ____  __    ___     ____  __  ____ \n");
@@ -289,6 +298,8 @@ void welcome()
 
 /**
  * @brief Prints the rules of the Super Tic-Tac-Toe.
+ * 
+ * @details The rules are the same as the original Tic-Tac-Toe, but with a new grid size comming with some new rules.
 */
 void rules()
 {
@@ -326,7 +337,11 @@ void rules()
 /**
  * @brief Asks the User for a CHAR input, for his pseudo.
  * 
+ * @details The pseudo can't be longer than 20 characters, if the intput is '*', a random pseudo will be given to the player.
+ * 
  * @param ptrInput Pointer of the input variable.
+ * 
+ * @see generateXBoxName()
 */
 void namePlayer(char* ptrInput)
 {
@@ -420,6 +435,8 @@ void namePlayer(char* ptrInput)
 /**
  * @brief Generate an Xbox-like gamertag.
  * 
+ * @details Generate an Xbox-like gamertag with a random flair, prefix, main name and flair again.
+ * 
  * @returns CHAR*, the generated gamertag.
 */
 void generateXboxName(char *ptrGamertag)
@@ -449,7 +466,9 @@ void generateXboxName(char *ptrGamertag)
 /* Super Grid & Grids related stuff */
 
 /**
- * @brief Initialise 'the super grid's grids values with 'Z'.
+ * @brief Initialise 'the super grid's grids values with '.'.
+ * 
+ * @details Initialise 'the super grid's grids values with '.'.
  * 
  * @param superGrid Game's grid.
 */
@@ -472,6 +491,8 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN])
 
 /**
  * @brief Checks if the given grid inside 'super grid' is complete.
+ * 
+ * @details Checks if the given grid inside'super grid' is complete. If so, it returns the player/bot who won the grid.
  * 
  * @param superGrid Game's grid.
  * @param letter Letter of the grid to check, gives the index of said grid.
@@ -592,6 +613,8 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
 /**
  * @brief Checks if the given grid inside 'super grid' is full but is a draw.
  * 
+ * @details If a grid is full but is a draw, resets the grid so the game is forced to be won by someone.
+ * 
  * @param superGrid Game's grid.
  * @param letter Letter of the grid to check, gives the index of said grid.
  * @returns bool, true if the grid is a draw, false otherwise.
@@ -631,8 +654,12 @@ bool isGridDraw(struct Grid superGrid[ROW][COLUMN], char letter)
 /**
  * @brief Checks if the 'super grid' is completed, so if the game finished.
  * 
+ * @details Checks if the 'super grid' is completed, so if the game finished, and returns the winner. Based on the gridComplete() function.
+ * 
  * @param superGrid Game's grid.
  * @returns 1 if Player1 has won, 2 if Player2 did, 0 otherwise.
+ * 
+ * @see gridComplete()
 */
 int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 {
@@ -728,6 +755,8 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 
 /**
  * @brief Prints the game's grid in the terminal.
+ * 
+ * @details Prints the game's grid in the terminal, nothing too fancy here.
  * 
  * @param superGrid Game's grid.
 */
@@ -839,6 +868,8 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 /**
  * @brief Asks the User for a CHAR input in order to choose where to play in the 'super grid'.
  * 
+ * @details The function will ask the user for a CHAR input in order to choose where to play in the 'super grid'.
+ * 
  * @param ptrInput Pointer of the input variable.
 */
 void inputWhichGrid(char *ptrLetter)
@@ -885,6 +916,8 @@ void inputWhichGrid(char *ptrLetter)
 
 /**
  * @brief Asks the User for an INT input in order to choose where to play in the grid inside the 'super grid'.
+ * 
+ * @details The user can only input a number between 1 and 3 to choose a cell inside the grid.
  * 
  * @param ptrInput Pointer of the input variable.
 */
@@ -942,6 +975,8 @@ void inputWhichCell(int *ptrInput)
 /**
  * @brief Have a player take his turn and play.
  * 
+ * @details The player takes his turn and play in the grid inside the 'Super Grid'. Returns the letter of the next player/bot to play in.
+ * 
  * @param superGrid Game's grid.
  * @param player The players id, to know if it's 'X'or'O's turn.
  * @param letter Letter used to know the grifd in where the player plays.
@@ -949,6 +984,8 @@ void inputWhichCell(int *ptrInput)
  * @param ptrPlayerCol Pointer of the column where the player plays.
  * 
  * @returns CHAR, letter for the next player to play in.
+ * 
+ * @see inputWhichCell(), inputWhichGrid()
 */
 char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *ptrPlayerRow, int *ptrPlayerCol)
 {
@@ -1031,6 +1068,8 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
 /**
  * @brief Sets the difficulty of the bot via a menu.
  * 
+ * @details Prints the menu and asks the user for an input to choose the bot's difficulty.
+ * 
  * @returns INT, the difficulty of the bot.
 */
 int setDifficulty()
@@ -1067,6 +1106,8 @@ int setDifficulty()
 /**
  * @brief Have the bot take its turn and play RANDOMLY.
  * 
+ * @details The bot plays randomly.
+ * 
  * @param superGrid Game's grid.
  * @param letter Letter used to know the grid in which the bot plays.
  * @param ptrBotRow Pointer to store the row index of the bot's move.
@@ -1074,10 +1115,6 @@ int setDifficulty()
 */
 char easyBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow, int *ptrBotCol)
 {
-    clearTerminal();
-    printf("Thinking");
-    loading_animation();
-
     /* Get available cells */
     int availableCells[9];
     int count = 0;
@@ -1129,6 +1166,8 @@ char easyBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
 /**
  * @brief Have the bot take its turn and play a move, either easy or hard.
  * 
+ * @details The bot will play a move based on a random choice between easy and hard.
+ * 
  * @param superGrid Game's grid.
  * @param letter Letter used to know the grid in which the bot plays.
  * @param ptrBotRow Pointer to store the row index of the bot's move.
@@ -1137,8 +1176,6 @@ char easyBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
 */
 char mediumBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow, int *ptrBotCol)
 {
-    clearTerminal();
-
     /* As the bot is based on a random choice between easy and hard, it will play randomly one of the 2 */
     srand(time(NULL));
     int choice = rand() % 2;
@@ -1159,6 +1196,8 @@ char mediumBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotR
 /**
  * @brief Have the bot take its turn and play the best move.
  * 
+ * @details This function is based on the minimax algorithm. It is a recursive function that will find the best move and have the bot play it.
+ * 
  * @param superGrid Game's grid.
  * @param letter Letter used to know the grid in which the bot plays.
  * @param ptrBotRow Pointer to store the row index of the bot's move.
@@ -1167,10 +1206,6 @@ char mediumBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotR
 */
 char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow, int *ptrBotCol)
 {
-    clearTerminal();
-    printf("Thinking");
-    loading_animation();
-
     int chosenRow = 4, chosenCol = 4;
 
     /* Finds the current playing grid */
@@ -1478,6 +1513,8 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
 /**
  * @brief Have the bot choose a letter.
  * 
+ * @details Have the bot "choose" a random letter.
+ * 
  * @param superGrid The grid to check for taken cells.
  * @param ptrLetter The letter to be chosen.
 */
@@ -1511,84 +1548,11 @@ void botChooseLetter(struct Grid superGrid[ROW][COLUMN] , char *ptrLetter)
 /****************************************************/
 
 /**
- * @brief Main function, runs the game.
-*/
-void mainScreen()
-{
-    /*-- Variables --*/
-    int choice = DEFAULT;
-
-    welcome();
-
-
-    /*-- Main loop --*/
-
-    do
-    {
-        printf("Please input your choice: ");
-        scanf("%d", &choice);
-        switch (choice)
-        {
-            /*-- Exit --*/
-            case EXIT:
-                printf("Exiting");
-                loading_animation();
-                exit(EXIT_SUCCESS);
-                break;
-
-            /****************************************************/
-            /**************|         Rules        |**************/
-            /****************************************************/    
-
-            case RULES:
-                char PressEnterToContinue = 0;
-                rules();
-                while (PressEnterToContinue != '\r' && PressEnterToContinue != '\n') { PressEnterToContinue = getchar(); }
-                choice = DEFAULT;
-                welcome();
-                break;
-
-            /****************************************************/
-            /*************|     1 Player match     |*************/
-            /****************************************************/
-
-            case MATCH_1P:
-                clearTerminal();
-                printf("Initialising");
-                loading_animation();
-
-                match1P();
-
-                choice = DEFAULT;
-                welcome();
-                break;
-
-            /****************************************************/
-            /**************|    2 Players match    |*************/
-            /****************************************************/
-
-            case MATCH_2P:
-                clearTerminal();
-                printf("Initialising");
-                loading_animation();
-
-                match2P(); /* Calls the 2P match function that does it all */
-
-                choice = DEFAULT;
-                welcome();
-                break;
-            
-            default:
-                choice = DEFAULT;
-                welcome();
-                break;
-        }
-
-    } while (choice == DEFAULT);
-}
-
-/**
  * @brief Runs a single player match against a BOT opponent.
+ * 
+ * @details The function is the main function of the 1 player match with a bot. It takes care of the game's flow and the player/bot's turns.
+ * 
+ * @see takeTurn(), setDifficulty(), [difficulty]BotTurn(), botChooseLetter()
 */
 void match1P()
 {
@@ -1718,6 +1682,10 @@ void match1P()
 
         if (player == P2)
         {
+            clearTerminal();
+            printf("Thinking");
+            loading_animation();
+
             switch (difficulty)
             {
                 case EASY:
@@ -1790,6 +1758,10 @@ void match1P()
 
 /**
  * @brief Runs a 2 player match with alternating turns.
+ * 
+ * @details The function is the main function of the 2 player match. It takes care of the game's flow and the player's turns.
+ * 
+ * @see takeTurn()
 */
 void match2P()
 {
@@ -1874,7 +1846,6 @@ void match2P()
                 }
             }
         }
-        
 
         letter = takeTurn(superGrid, player, letter, &playedRow, &playedCol);
 
@@ -1925,4 +1896,269 @@ void match2P()
         loading_animation();
         match2P();
     }
+}
+
+/**
+ * @brief Runs a match with only bots.
+ * 
+ * @details This function is not implemented yet.
+*/
+void botVsBotMatch()
+{
+    clearTerminal();
+    printf("You will shortly be prompted to choose the difficulty for both bots, hence why the \"choose difficulty screen\" showing up twice.\n");
+    fflush(stdout);
+    sleep(10);
+
+    /*-- Variables --*/
+    int difficultyBot_1 = setDifficulty();
+    int difficultyBot_2 = setDifficulty();
+
+    char* botName_1 = "Bot_1";
+    char* botName_2 = "Bot_2";
+
+    char playAgain = 'N';
+    int player = 1, playedRow = 0, playedCol = 0;
+    int turns = 0;
+    char letter = 'Z';
+    int winCondition = DEFAULT;
+
+    struct Grid superGrid[ROW][COLUMN]; 
+    initSuperGrid(superGrid);
+
+    /*-- Clears the terminal --*/
+    clearTerminal();
+
+    /*-- Prints the bots' difficulty --*/
+    printf("Bot 1 difficulty: %d\n", difficultyBot_1);
+    printf("Bot 2 difficulty: %d\n", difficultyBot_2);
+
+    /*-- Prints the bots' names --*/
+    printf("%s will play 'X' & ", botName_1);
+    printf("%s will play 'O'\n", botName_2);
+
+    fflush(stdout);
+    sleep(5);
+
+    /*-- Main loop --*/
+    do
+    {
+        turns++;
+
+        fflush(stdout);
+        PrintGrid(superGrid);
+
+        if (letter == 'Z')
+        {
+            botChooseLetter(superGrid, &letter);
+        } else
+
+        if (gridComplete(superGrid, letter) != DEFAULT)
+        {
+            botChooseLetter(superGrid, &letter);
+        }
+
+        /* Finds the letter indexs */
+        bool foundLetter = false;
+        int superGridRow, superGridColumn;
+
+        for (int letterRow = 0; letterRow < ROW && !foundLetter; letterRow++)
+        {
+            for (int letterColumn = 0; letterColumn < COLUMN && !foundLetter; letterColumn++)
+            {
+                if (letter == LETTERS[letterRow][letterColumn])
+                {
+                    foundLetter = true;
+                    superGridRow = letterRow;
+                    superGridColumn = letterColumn;
+                }
+            }
+        }
+
+        switch (player)
+        {
+            case P1:
+                switch (difficultyBot_1)
+                {
+                    case EASY:
+                        letter = easyBotTurn(superGrid, letter, &playedRow, &playedCol);
+                        break;
+
+                    case MEDIUM:
+                        letter = mediumBotTurn(superGrid, letter, &playedRow, &playedCol);
+                        break;
+
+                    case HARD:
+                        letter = hardBotTurn(superGrid, letter, &playedRow, &playedCol);
+                        break;
+                    
+                    default:
+                        errors(UNEXPECTED);
+                        break;
+                }
+                break;
+
+            case P2:
+                switch (difficultyBot_2)
+                {
+                    case EASY:
+                        letter = easyBotTurn(superGrid, letter, &playedRow, &playedCol);
+                        break;
+
+                    case MEDIUM:
+                        letter = mediumBotTurn(superGrid, letter, &playedRow, &playedCol);
+                        break;
+
+                    case HARD:
+                        letter = hardBotTurn(superGrid, letter, &playedRow, &playedCol);
+                        break;
+
+                    default:
+                        errors(UNEXPECTED);
+                        break;
+                }
+                break;
+            
+            default:
+                errors(PLAYER_ID);
+                break;
+        }
+
+        /* If the grid got full but not won by any, resets it after the next player's turn */
+        if(isGridDraw(superGrid, letter))
+        {
+            for (int row = 0; row < ROW; row++)
+            {
+                for (int col = 0; col < COLUMN; col++)
+                {
+                    superGrid[superGridRow][superGridColumn].grid[row][col] = '.';
+                }
+            }
+        }
+
+        /* Takes care of asigning the correct player's symbol and switching players */
+        switch (player)
+        {
+            case P1:
+                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'X';
+                player = P2;
+                break;
+
+            case P2:
+                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'O';
+                player = P1;
+                break;
+
+            default:
+                errors(PLAYER_ID);
+                break;
+        }
+
+        /* Checks if the game has been won */
+        winCondition = superGridComplete(superGrid);
+    } while (winCondition == DEFAULT);
+
+    PrintGrid(superGrid);
+    printf("The bots played for %d turns.\n", turns);
+
+    printf("Do you want to play again ? [Y]/[N] ");
+    scanf("%c", &playAgain);
+    playAgain = toupper(playAgain);
+    if (playAgain == 'Y')
+    {
+        clearTerminal();
+        printf("Reinitialising");
+        loading_animation();
+        botVsBotMatch();
+    }
+}
+
+/**
+ * @brief Main function, runs the game.
+ * 
+ * @details This function is the main function of the game. Calls the main menu and the match functions.
+ * 
+ * @see mainMenu(), match1P(), match2P(), botVsBotMatch()
+*/
+void mainScreen()
+{
+    /*-- Variables --*/
+    int choice = DEFAULT;
+
+    mainMenu();
+
+    /*-- Main loop --*/
+    do
+    {
+        printf("Please input your choice: ");
+        scanf("%d", &choice);
+        switch (choice)
+        {
+            /*-- Exit --*/
+            case EXIT:
+                printf("Exiting");
+                loading_animation();
+                exit(EXIT_SUCCESS);
+                break;
+
+            /****************************************************/
+            /**************|         Rules        |**************/
+            /****************************************************/    
+
+            case RULES:
+                char PressEnterToContinue = 0;
+                rules();
+                while (PressEnterToContinue != '\r' && PressEnterToContinue != '\n') { PressEnterToContinue = getchar(); }
+                choice = DEFAULT;
+                mainMenu();
+                break;
+
+            /****************************************************/
+            /*************|     1 Player match     |*************/
+            /****************************************************/
+
+            case MATCH_1P:
+                clearTerminal();
+                printf("Initialising");
+                loading_animation();
+
+                match1P(); /* Calls the 1P match function that does it all */
+
+                choice = DEFAULT;
+                mainMenu();
+                break;
+
+            /****************************************************/
+            /**************|    2 Players match    |*************/
+            /****************************************************/
+
+            case MATCH_2P:
+                clearTerminal();
+                printf("Initialising");
+                loading_animation();
+
+                match2P(); /* Calls the 2P match function that does it all */
+
+                choice = DEFAULT;
+                mainMenu();
+                break;
+
+            case SECRET:
+                clearTerminal();
+                printf("Initialising");
+                loading_animation();
+
+                botVsBotMatch(); /* Calls the bot vs bot match function that does it all */
+
+                choice = DEFAULT;
+                mainMenu();
+                break;
+            
+            default:
+                choice = DEFAULT;
+                mainMenu();
+                break;
+        }
+
+    } while (choice == DEFAULT);
 }
