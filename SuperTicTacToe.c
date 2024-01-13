@@ -25,6 +25,8 @@
 #define DIAG 3
 
 
+#define DEFAULT 687084
+
 /* Terminal stuff (UI) */
 #define CLEAR_TERMINAL "\033[2J\033[1;1H"
 
@@ -87,8 +89,7 @@ enum choices /* Same logic here for DEFAULT :) */
     MATCH_1P = 2,
     MATCH_2P = 3,
     EXIT     = 0,
-    SECRET   = 836784,
-    DEFAULT  = 687084
+    SECRET   = 836784
 };
 
 enum difficulties
@@ -630,27 +631,20 @@ bool isGridDraw(struct Grid superGrid[ROW][COLUMN], char letter)
             /* Finds the index of the current playing grid inside of 'super grid' */
             if (letter == LETTERS[row][col]) 
             {
-                int nbOfFullCells = 0;
-
                 for (int gridRow = 0; gridRow < ROW; gridRow++)
                 {                    
                     for (int gridCol = 0; gridCol < COLUMN; gridCol++)
                     {
-                        if (superGrid[row][col].grid[gridRow][gridCol] != '.')
+                        if (superGrid[row][col].grid[gridRow][gridCol] == '.')
                         {
-                            nbOfFullCells++;
+                            return false;
                         }
                     }
-                }
-
-                if (nbOfFullCells == 9)
-                {
-                    return true;
                 }
             }
         }
     }
-    return false;
+    return true;
 }
 
 /**
@@ -1191,7 +1185,7 @@ char mediumBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotR
 {
     /* As the bot is based on a random choice between easy and hard, it will play randomly one of the 2 */
     srand(time(NULL));
-    int choice = rand() % 2;
+    int choice = rand() % 3;
     switch (choice)
     {
         case 1:
@@ -1457,45 +1451,72 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
         }
 
         /* If no winning/counter cells were found, checks for tactical moves */
-        if (!foundCell)
+        while (!foundCell)
         {
+            bool checked00 = false, checked11 = false, checked02 = false, checked20 = false, checked22 = false;
+
             srand(time(NULL));
             int randChoice = rand() % 5;
+            switch (randChoice)
+            {
+                case 0:
+                    if (superGrid[superGridRow][superGridColumn].grid[1][1] == '.' && !checked11)
+                    {
+                        chosenRow = 1;
+                        chosenCol = 1;
+                        foundCell = true;
+                        checked11 = true;
+                    }
+                    break;
 
-            /* If no winning/counter cells were found, checks for tactical moves */
-            if (superGrid[superGridRow][superGridColumn].grid[1][1] == '.' && randChoice == 0)
+                case 1:
+                    if (superGrid[superGridRow][superGridColumn].grid[0][0] == '.' && !checked00)
+                    {
+                        chosenRow = 0;
+                        chosenCol = 0;
+                        foundCell = true;
+                        checked00 = true;
+                    }
+                    break;
+                
+                case 2:
+                    if (superGrid[superGridRow][superGridColumn].grid[0][2] == '.' && !checked02)
+                    {
+                        chosenRow = 0;
+                        chosenCol = 2;
+                        foundCell = true;
+                        checked02 = true;
+                    }
+                    break;
+                
+                case 3:
+                    if (superGrid[superGridRow][superGridColumn].grid[2][0] == '.' && !checked20)
+                    {
+                        chosenRow = 2;
+                        chosenCol = 0;
+                        foundCell = true;
+                        checked20 = true;
+                    }
+                    break;
+                
+                case 4:
+                    if (superGrid[superGridRow][superGridColumn].grid[2][2] == '.' && !checked22)
+                    {
+                        chosenRow = 2;
+                        chosenCol = 2;
+                        foundCell = true;
+                        checked22 = true;
+                    }
+                    break;
+                
+                default:
+                    fflush(stdout);
+                    sleep(1);
+                    break;
+            }
+            if (checked00 && checked11 && checked02 && checked20 && checked22)
             {
-                chosenRow = 1;
-                chosenCol = 1;
-                foundCell = true;
-            } else
-
-            if (superGrid[superGridRow][superGridColumn].grid[0][0] == '.' && randChoice == 1)
-            {
-                chosenRow = 0;
-                chosenCol = 0;
-                foundCell = true;
-            } else
-
-            if (superGrid[superGridRow][superGridColumn].grid[0][2] == '.' && randChoice == 2)
-            {
-                chosenRow = 0;
-                chosenCol = 2;
-                foundCell = true;
-            } else
-            
-            if (superGrid[superGridRow][superGridColumn].grid[2][0] == '.' && randChoice == 3)
-            {
-                chosenRow = 2;
-                chosenCol = 0;
-                foundCell = true;
-            } else
-
-            if (superGrid[superGridRow][superGridColumn].grid[2][2] == '.' && randChoice == 4)
-            {
-                chosenRow = 2;
-                chosenCol = 2;
-                foundCell = true;
+                break;
             }
         }
 
@@ -1506,7 +1527,7 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
         {
             printf("AHAH! I've found a tactical move!\n");
             printf("I'm going to make a move at" RED " (%d, %d)" RESET "!\n", chosenRow+1, chosenCol+1);
-            
+
             /* Playes the turn */
             *ptrBotRow = chosenRow;
             *ptrBotCol = chosenCol;
@@ -1533,24 +1554,27 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
 */
 void botChooseLetter(struct Grid superGrid[ROW][COLUMN] , char *ptrLetter)
 {
-    do
+    int availableCells[9];
+    int count = 0;
+
+    /* Finds available cells */
+    for(int gridRow = 0; gridRow < ROW; gridRow++)
     {
-        srand(time(NULL));
-        int randRow = rand() % ROW;
+        for(int gridCol = 0; gridCol < COLUMN; gridCol++)
+        {
+            if(gridComplete(superGrid, LETTERS[gridRow][gridCol]) == DEFAULT)
+            {
+                availableCells[count] = gridRow*COLUMN + gridCol;
+                count++;
+            }
+        }
+    }
 
-        fflush(stdout);
-        sleep(1);
-
-        srand(time(NULL));
-        int randCol = rand() % COLUMN;
-
-        *ptrLetter = LETTERS[randRow][randCol];
-
-        fflush(stdout);
-        sleep(1);
-        printf(".");
-    } while (!gridComplete(superGrid, *ptrLetter));
-
+    srand(time(NULL));
+    int randIndex = rand() % count;
+    int randRow = availableCells[randIndex] / COLUMN;
+    int randCol = availableCells[randIndex] % COLUMN;
+    *ptrLetter = LETTERS[randRow][randCol];
 }
 
 
@@ -1688,6 +1712,19 @@ void match1P()
             }
         }
 
+        /* If the grid got full but not won by any, resets it after the next player's turn */
+        if(isGridDraw(superGrid, letter) && gridComplete(superGrid, letter) != DEFAULT)
+        {
+            for (int row = 0; row < ROW; row++)
+            {
+                for (int col = 0; col < COLUMN; col++)
+                {
+                    superGrid[superGridRow][superGridColumn].grid[row][col] = '.';
+                }
+            }
+            PrintGrid(superGrid);
+        }
+
         if (player == P1)
         {
             letter = takeTurn(superGrid, player, letter, &playedRow, &playedCol);
@@ -1718,18 +1755,6 @@ void match1P()
                     break;
             }
             sleep(3);
-        }
-
-        /* If the grid got full but not won by any, resets it after the next player's turn */
-        if(isGridDraw(superGrid, letter))
-        {
-            for (int row = 0; row < ROW; row++)
-            {
-                for (int col = 0; col < COLUMN; col++)
-                {
-                    superGrid[superGridRow][superGridColumn].grid[row][col] = '.';
-                }
-            }
         }
 
         /* Takes care of asigning the correct player's symbol and switching players */
@@ -1860,10 +1885,8 @@ void match2P()
             }
         }
 
-        letter = takeTurn(superGrid, player, letter, &playedRow, &playedCol);
-
         /* If the grid got full but not won by any, resets it after the next player's turn */
-        if(isGridDraw(superGrid, letter))
+        if(isGridDraw(superGrid, letter) && gridComplete(superGrid, letter)  != DEFAULT)
         {
             for (int row = 0; row < ROW; row++)
             {
@@ -1872,7 +1895,11 @@ void match2P()
                     superGrid[superGridRow][superGridColumn].grid[row][col] = '.';
                 }
             }
+            PrintGrid(superGrid);
         }
+
+        letter = takeTurn(superGrid, player, letter, &playedRow, &playedCol);
+
 
         /* Takes care of asigning the correct player's symbol and switching players */
         switch (player)
@@ -1929,8 +1956,8 @@ void botVsBotMatch()
     int difficultyBot_1 = setDifficulty();
     int difficultyBot_2 = setDifficulty();
 
-    char* botName_1 = "Bot_1";
-    char* botName_2 = "Bot_2";
+    char* botName_1 = "Fred";
+    char* botName_2 = "Jeremy";
 
     char playAgain = 'N';
     int player = 1, playedRow = 0, playedCol = 0;
@@ -1963,6 +1990,11 @@ void botVsBotMatch()
         fflush(stdout);
         PrintGrid(superGrid);
 
+        /* Checks if the game has been won */
+        winCondition = superGridComplete(superGrid);
+        if (winCondition != DEFAULT) { break; }
+        
+
         if (letter == 'Z')
         {
             botChooseLetter(superGrid, &letter);
@@ -1988,6 +2020,19 @@ void botVsBotMatch()
                     superGridColumn = letterColumn;
                 }
             }
+        }
+
+        /* If the grid got full but not won by any, resets it after the next player's turn */
+        if(isGridDraw(superGrid, letter) && gridComplete(superGrid, letter) == DEFAULT)
+        {
+            for (int row = 0; row < ROW; row++)
+            {
+                for (int col = 0; col < COLUMN; col++)
+                {
+                    superGrid[superGridRow][superGridColumn].grid[row][col] = '.';
+                }
+            }
+            PrintGrid(superGrid);
         }
 
         switch (player)
@@ -2037,18 +2082,6 @@ void botVsBotMatch()
             default:
                 errors(PLAYER_ID);
                 break;
-        }
-
-        /* If the grid got full but not won by any, resets it after the next player's turn */
-        if(isGridDraw(superGrid, letter))
-        {
-            for (int row = 0; row < ROW; row++)
-            {
-                for (int col = 0; col < COLUMN; col++)
-                {
-                    superGrid[superGridRow][superGridColumn].grid[row][col] = '.';
-                }
-            }
         }
 
         /* Takes care of asigning the correct player's symbol and switching players */
