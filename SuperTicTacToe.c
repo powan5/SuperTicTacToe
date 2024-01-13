@@ -409,7 +409,7 @@ void namePlayer(char* ptrInput)
                     break;
 
                 case 2:
-                    gamertag xboxGamertag;
+                    ;gamertag xboxGamertag;
                     generateXboxName(xboxGamertag);
                     strcpy(ptrInput, xboxGamertag);
                     condition = true;
@@ -2158,8 +2158,8 @@ void mainScreen()
             /****************************************************/    
 
             case RULES:
-                char PressEnterToContinue = 0;
                 rules();
+                char PressEnterToContinue = 0;
                 while (PressEnterToContinue != '\r' && PressEnterToContinue != '\n') { PressEnterToContinue = getchar(); }
                 choice = DEFAULT;
                 mainMenu();
