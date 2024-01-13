@@ -1023,6 +1023,7 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
 
     bool turnCompleted = false;
     int row = -1, column = -1;
+    int preventFails = 0;
 
     do
     {
@@ -1064,6 +1065,13 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
         else /* Prints an error otherwise */
         {
             errors(CELL_TAKEN);
+            preventFails++;
+        }
+
+        if (preventFails == 10) /* If it fails 10 times, it gives up and makes a random move */
+        {
+            letter = easyBotTurn(superGrid, letter, ptrPlayerRow, ptrPlayerCol);
+            turnCompleted = true;
         }
     } while (!turnCompleted);
 
@@ -1733,7 +1741,6 @@ void match1P()
 
         if (player == P2)
         {
-            clearTerminal();
             printf("Thinking");
             loading_animation();
 
