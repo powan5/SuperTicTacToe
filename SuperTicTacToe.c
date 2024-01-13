@@ -914,10 +914,12 @@ void inputWhichGrid(char *ptrLetter)
             }
         }
         
-        if (!condition) { errors(CHAR_INPUT_UNRECONIZED); } /* prints an error otherwise, asking the user to try again */
+        /* prints an error otherwise, asking the user to try again */
+        if (!condition)
+        {
+            errors(CHAR_INPUT_UNRECONIZED);
+        }
 
-        /* Clears the buffer before looping */
-        while (getchar() != '\n');
     } while (!condition);
 }
 
@@ -1035,13 +1037,13 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
 
         if (superGrid[superGridRow][superGridColumn].grid[row][column] == '.') /* If it is, changes it to the player's letter */
         {
-            
 
             if (player == P1)
             {
                 /* X */
                 *ptrPlayerRow = row;
                 *ptrPlayerCol = column;
+                superGrid[superGridRow][superGridColumn].grid[row][column] == 'X';
                 turnCompleted = true;
 
             } else
@@ -1051,6 +1053,7 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
                 /* O */
                 *ptrPlayerRow = row;
                 *ptrPlayerCol = column;
+                superGrid[superGridRow][superGridColumn].grid[row][column] == 'O';
                 turnCompleted = true;
             }
             
@@ -1713,7 +1716,7 @@ void match1P()
         }
 
         /* If the grid got full but not won by any, resets it after the next player's turn */
-        if(isGridDraw(superGrid, letter) && gridComplete(superGrid, letter) != DEFAULT)
+        if(isGridDraw(superGrid, letter) && gridComplete(superGrid, letter) == DEFAULT)
         {
             for (int row = 0; row < ROW; row++)
             {
@@ -1761,7 +1764,6 @@ void match1P()
         switch (player)
         {
             case P1:
-                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'X';
                 player = P2;
                 break;
         
@@ -1886,7 +1888,7 @@ void match2P()
         }
 
         /* If the grid got full but not won by any, resets it after the next player's turn */
-        if(isGridDraw(superGrid, letter) && gridComplete(superGrid, letter)  != DEFAULT)
+        if(isGridDraw(superGrid, letter) && gridComplete(superGrid, letter) == DEFAULT)
         {
             for (int row = 0; row < ROW; row++)
             {
@@ -1905,12 +1907,10 @@ void match2P()
         switch (player)
         {
             case P1:
-                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'X';
                 player = P2;
                 break;
         
             case P2:
-                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'O';
                 player = P1;
                 break;
 
