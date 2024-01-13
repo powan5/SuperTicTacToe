@@ -1043,7 +1043,6 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
                 /* X */
                 *ptrPlayerRow = row;
                 *ptrPlayerCol = column;
-                superGrid[superGridRow][superGridColumn].grid[row][column] == 'X';
                 turnCompleted = true;
 
             } else
@@ -1053,7 +1052,6 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
                 /* O */
                 *ptrPlayerRow = row;
                 *ptrPlayerCol = column;
-                superGrid[superGridRow][superGridColumn].grid[row][column] == 'O';
                 turnCompleted = true;
             }
             
@@ -1764,6 +1762,7 @@ void match1P()
         switch (player)
         {
             case P1:
+                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'X';
                 player = P2;
                 break;
         
@@ -1907,10 +1906,12 @@ void match2P()
         switch (player)
         {
             case P1:
+                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'X';
                 player = P2;
                 break;
         
             case P2:
+                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'O';
                 player = P1;
                 break;
 
