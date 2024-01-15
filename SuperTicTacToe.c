@@ -1,17 +1,11 @@
 /**
  * @brief Program to play Super Tic-Tac-Toe, a variation of tic-tac-toe where players need to complete a grid in order to claim a square of the main grid ('super grid')
- * 
+ *
  * @author Powan
  * @version 2.1.2
-*/
+ */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <unistd.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
+#include "./includes.h"
 
 /****************************************************/
 /****************************************************/
@@ -20,45 +14,28 @@
 /****************************************************/
 
 /* Grid sizes */
-#define ROW 3
-#define COLUMN 3
 #define DIAG 3
-
 
 #define DEFAULT 687084
 
-/* Terminal stuff (UI) */
-#define CLEAR_TERMINAL "\033[2J\033[1;1H"
-
-#define RESET "\x1B[0m"
-#define RED "\x1B[31m"
-#define GREEN "\x1B[32m"
-#define YELLOW "\x1B[33m"
-#define BLUE "\x1B[34m"
-#define MAGENTA "\x1B[35m"
-#define CYAN "\x1B[36m"
-
-
 /* Types */
 typedef struct Grid
-{ 
-    char grid[ROW][COLUMN]; 
+{
+    char grid[ROW][COLUMN];
 } Grid;
 
-typedef char List[ROW+1][COLUMN+1];
+typedef char List[ROW + 1][COLUMN + 1];
 
-typedef char * gridBlocks[3][9];
+typedef char *gridBlocks[3][9];
 
 typedef char gamertag[46];
 
-
 /* Constants */
 const List LETTERS = {
-    {'A','B','C','Z'}, 
-    {'D','E','F','Z'}, 
-    {'G','H','I','Z'},
-    {'Z', 'Z', 'Z', 'Z'}
-};
+    {'A', 'B', 'C', 'Z'},
+    {'D', 'E', 'F', 'Z'},
+    {'G', 'H', 'I', 'Z'},
+    {'Z', 'Z', 'Z', 'Z'}};
 
 enum Players
 {
@@ -70,55 +47,54 @@ enum Players
 
 enum error_codes /* There is a logic to it, try to fint it I'll give you a cookie :D */
 {
-    INPUT_TOO_LONG         = 738476,
-    NON_INT_INPUT          = 787373,
-    INT_OUT_OF_RANGE       = 737982,
-    NON_CHAR_INPUT         = 786773,
+    INPUT_TOO_LONG = 738476,
+    NON_INT_INPUT = 787373,
+    INT_OUT_OF_RANGE = 737982,
+    NON_CHAR_INPUT = 786773,
     CHAR_INPUT_UNRECONIZED = 677385,
-    CELL_TAKEN             = 678475,
-    GRID_TAKEN             = 718475,
-    PLAYER_ID              = 807368,
+    CELL_TAKEN = 678475,
+    GRID_TAKEN = 718475,
+    PLAYER_ID = 807368,
 
-    DEBUG                  = 686671,
-    UNEXPECTED             = 856984
+    DEBUG = 686671,
+    UNEXPECTED = 856984
 };
 
 enum choices /* Same logic here for DEFAULT :) */
 {
-    RULES    = 1,
+    RULES = 1,
     MATCH_1P = 2,
     MATCH_2P = 3,
-    EXIT     = 0,
-    SECRET   = 836784
+    EXIT = 0,
+    SECRET = 836784
 };
 
 enum difficulties
 {
-    EASY     = 1,
-    MEDIUM   = 2,
-    HARD     = 3,
-    MENU     = 0
+    EASY = 1,
+    MEDIUM = 2,
+    HARD = 3,
+    MENU = 0
 };
 
 /*-- For the random names --*/
-const char* vowels[6] = {"a","e","i","o","u","y"};
-const char* consonant[20] = {"b","c","d","f","g","h","j","k","l","m","n","p","q","r","s","t","v","w","x","z"};
+const char *vowels[6] = {"a", "e", "i", "o", "u", "y"};
+const char *consonant[20] = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "z"};
 
 #define nbOfMemeNames 23
-const char* memeNames[23] = {"Pomni", "Xddcc", "PvZGamer", "ElGato", "RickAstley", "BadLuckBrian", "GoodGuyGreg", "Fred", "ForeverAlone", "Pepega", "Area51Raider", "BitcoinMiner", "TheCakeIsALie", "JohnCena", "E", "Shrek", "StonksMan", "Karen","Shaggy","CrazyFrog","LittleRedShit","LampLover","UsernameWasTaken"};
+const char *memeNames[23] = {"Pomni", "Xddcc", "PvZGamer", "ElGato", "RickAstley", "BadLuckBrian", "GoodGuyGreg", "Fred", "ForeverAlone", "Pepega", "Area51Raider", "BitcoinMiner", "TheCakeIsALie", "JohnCena", "E", "Shrek", "StonksMan", "Karen", "Shaggy", "CrazyFrog", "LittleRedShit", "LampLover", "UsernameWasTaken"};
 
 #define nbPrefixes 159
-const char* Prefixes[nbPrefixes] = {"1337","Aggro","Alpha","Altered","Ancient","Angel","Anonymous","Aqua","Arcane","Ashen","Assault","Atomic","Awakened","Bad","Baneful","Bio","Bionic","Black","Blade","Blessed","Blood","Bloody","Boosted","Brutal","Buffed","Carnage","Catastrophic","Chaos","Charged","Chrome","Chrono","Combo","Concealed","Consumptive","Corrupted","Creeping","Crimson","Cryptic","Cunning","Cyber","Dark","Darth","Dead","Decimate","Deep","Destructive","Devil","Diamond","Divine","Doom","Dormant","Draconic","Dynamic","Elder","Electro","Elite","Emerald","Enemy","Eon","Epic","Eradicate","Evanescent","Exiled","Fallen","Fatal","Fire","First","Frost","Frozen","Gold","Gosu","Grim","Guerilla","Hardcore","Hate","Hazardous","Hidden","Holy","Icy","Imba","Incendiary","Incognito","Infinite","Invisible","Iron","Killer","Last","Leeroy","Lone","Mad","Majestic","Malefic","Malevolent","Malignant","Master","Menacing","Metal","Mind","Mirror","Mist","Mono","Moon","Murderous","Mystic","Nameless","Necro","Negative","Neo","Nightmare","Nocturnal","Occult","Omnipotent","Panic","Pernicious","Platinum","Prime","Psychic","Quantum","Radical","Radient","Rage","Random","Savage","Secret","Shadow","Silver","Sinister","Sky","Solar","Solid","Solitary","Somber","Soul","Stealth","Steel","Storm","Supernatural","Swift","Terror","Toxic","Tranquil","Transcendent","Treacherous","True","Twisted","Uber","Ultimate","Undercover","Unknowable","Unpredictable","Urban","Veiled","Venom","Vindictive","Virulent","Warp","Wicked","Xeno","Zero"};
+const char *Prefixes[nbPrefixes] = {"1337", "Aggro", "Alpha", "Altered", "Ancient", "Angel", "Anonymous", "Aqua", "Arcane", "Ashen", "Assault", "Atomic", "Awakened", "Bad", "Baneful", "Bio", "Bionic", "Black", "Blade", "Blessed", "Blood", "Bloody", "Boosted", "Brutal", "Buffed", "Carnage", "Catastrophic", "Chaos", "Charged", "Chrome", "Chrono", "Combo", "Concealed", "Consumptive", "Corrupted", "Creeping", "Crimson", "Cryptic", "Cunning", "Cyber", "Dark", "Darth", "Dead", "Decimate", "Deep", "Destructive", "Devil", "Diamond", "Divine", "Doom", "Dormant", "Draconic", "Dynamic", "Elder", "Electro", "Elite", "Emerald", "Enemy", "Eon", "Epic", "Eradicate", "Evanescent", "Exiled", "Fallen", "Fatal", "Fire", "First", "Frost", "Frozen", "Gold", "Gosu", "Grim", "Guerilla", "Hardcore", "Hate", "Hazardous", "Hidden", "Holy", "Icy", "Imba", "Incendiary", "Incognito", "Infinite", "Invisible", "Iron", "Killer", "Last", "Leeroy", "Lone", "Mad", "Majestic", "Malefic", "Malevolent", "Malignant", "Master", "Menacing", "Metal", "Mind", "Mirror", "Mist", "Mono", "Moon", "Murderous", "Mystic", "Nameless", "Necro", "Negative", "Neo", "Nightmare", "Nocturnal", "Occult", "Omnipotent", "Panic", "Pernicious", "Platinum", "Prime", "Psychic", "Quantum", "Radical", "Radient", "Rage", "Random", "Savage", "Secret", "Shadow", "Silver", "Sinister", "Sky", "Solar", "Solid", "Solitary", "Somber", "Soul", "Stealth", "Steel", "Storm", "Supernatural", "Swift", "Terror", "Toxic", "Tranquil", "Transcendent", "Treacherous", "True", "Twisted", "Uber", "Ultimate", "Undercover", "Unknowable", "Unpredictable", "Urban", "Veiled", "Venom", "Vindictive", "Virulent", "Warp", "Wicked", "Xeno", "Zero"};
 
 #define nbMainName 232
-const char* MainName[nbMainName] = {"Aegis","Aether","Agent","Agitator","Alias","Archetype","Archon","Armor","Arrow","Arsenal","Arsonist","Assassin","Assault","Asylum","Atonement","Augur","Aura","Avenger","Axiom","Axon","Battle","Beast","Beastmode","Being","Betrayal","Blade","Blaster","Blaze","Blood","Boss","Burn","Cabal","Cannon","Captain","Carnage","Caster","Cataclysm","Catalyst","Chaos","Chief","Child","Chimera","Clairvoyant","Cloud","Combat","Commander","Crypt","Cut","Cyborg","Damage","Death","Deathmatch","Decay","Decay","Demon","Destruction","Devil","Divinity","Doom","Doppleganger","Dragon","Dragoon","Dream","Dynasty","Edge","Effect","Elder","Elixir","Elysium","Emperor","Empire","Enemy","Enigma","Entity","Epidemic","Equilibrium","Equinox","Eve","Executioner","Exekutioner","Exodus","Explosive","Fatality","Fate","Fire","Firebreath","Flame","Flux","Focus","Force","Freak","Frenzy","Frost","Fury","Fusion","Galaxy","Genesis","Ghost","Glitch","God","Godmode","Grenade","Grimoire","Guard","Guardian","Gun","Hacker","Haxxor","Headshot","Hell","Hellion","Hivemind","Hunter","Hysteria","Impunity","Inferno","Intellect","Juggernaut","Kaos","Killer","Killswitch","Legend","Limit","Lucifer","Machete","Machine","Maelstrom","Master","Mercenary","Mercy","Mind","Mine","Monarch","Monolith","Mood","Moon","Nexus","Night","Nightmare","Ninja","Nuke","Oath","Obelisk","Obliteration","Oblivion","Odyssey","Omen","Omnichrom","Oracle","Outlaw","Overmind","Pain","Panic","Panzer","Paradox","Paragon","Partisan","Planet","Plasma","Priest","Prison","Propaganda","Prophet","Psychosis","Punishment","Pwner","Pyromaniac","Quake","Rachet","Radical","Raid","Raider","Rat","Ray","Razor","Reaper","Rebel","Redshift","Reflux","Requiem","Rhapsody","Ringleader","Rival","Rogue","Root","Rush","Sabotage","Scream","Seeker","Seer","Seizure","Shade","Shooter","Sin","Slash","Slayer","Sniper","Snow","Soul","Space","Spark","Star","Storm","Strategy","Stroke","Tank","Tempest","Terror","Thunder","Titan","Tornado","Trigger","Trinity","Universe","Vehicle","Vengeance","Venom","Venus","Visionary","Void","Voltage","Voodoo","Vortex","Warlock","Warrior","Whisper","Wing","Wizard","Wolf","Zealot","Zephyr","Zone"};
+const char *MainName[nbMainName] = {"Aegis", "Aether", "Agent", "Agitator", "Alias", "Archetype", "Archon", "Armor", "Arrow", "Arsenal", "Arsonist", "Assassin", "Assault", "Asylum", "Atonement", "Augur", "Aura", "Avenger", "Axiom", "Axon", "Battle", "Beast", "Beastmode", "Being", "Betrayal", "Blade", "Blaster", "Blaze", "Blood", "Boss", "Burn", "Cabal", "Cannon", "Captain", "Carnage", "Caster", "Cataclysm", "Catalyst", "Chaos", "Chief", "Child", "Chimera", "Clairvoyant", "Cloud", "Combat", "Commander", "Crypt", "Cut", "Cyborg", "Damage", "Death", "Deathmatch", "Decay", "Decay", "Demon", "Destruction", "Devil", "Divinity", "Doom", "Doppleganger", "Dragon", "Dragoon", "Dream", "Dynasty", "Edge", "Effect", "Elder", "Elixir", "Elysium", "Emperor", "Empire", "Enemy", "Enigma", "Entity", "Epidemic", "Equilibrium", "Equinox", "Eve", "Executioner", "Exekutioner", "Exodus", "Explosive", "Fatality", "Fate", "Fire", "Firebreath", "Flame", "Flux", "Focus", "Force", "Freak", "Frenzy", "Frost", "Fury", "Fusion", "Galaxy", "Genesis", "Ghost", "Glitch", "God", "Godmode", "Grenade", "Grimoire", "Guard", "Guardian", "Gun", "Hacker", "Haxxor", "Headshot", "Hell", "Hellion", "Hivemind", "Hunter", "Hysteria", "Impunity", "Inferno", "Intellect", "Juggernaut", "Kaos", "Killer", "Killswitch", "Legend", "Limit", "Lucifer", "Machete", "Machine", "Maelstrom", "Master", "Mercenary", "Mercy", "Mind", "Mine", "Monarch", "Monolith", "Mood", "Moon", "Nexus", "Night", "Nightmare", "Ninja", "Nuke", "Oath", "Obelisk", "Obliteration", "Oblivion", "Odyssey", "Omen", "Omnichrom", "Oracle", "Outlaw", "Overmind", "Pain", "Panic", "Panzer", "Paradox", "Paragon", "Partisan", "Planet", "Plasma", "Priest", "Prison", "Propaganda", "Prophet", "Psychosis", "Punishment", "Pwner", "Pyromaniac", "Quake", "Rachet", "Radical", "Raid", "Raider", "Rat", "Ray", "Razor", "Reaper", "Rebel", "Redshift", "Reflux", "Requiem", "Rhapsody", "Ringleader", "Rival", "Rogue", "Root", "Rush", "Sabotage", "Scream", "Seeker", "Seer", "Seizure", "Shade", "Shooter", "Sin", "Slash", "Slayer", "Sniper", "Snow", "Soul", "Space", "Spark", "Star", "Storm", "Strategy", "Stroke", "Tank", "Tempest", "Terror", "Thunder", "Titan", "Tornado", "Trigger", "Trinity", "Universe", "Vehicle", "Vengeance", "Venom", "Venus", "Visionary", "Void", "Voltage", "Voodoo", "Vortex", "Warlock", "Warrior", "Whisper", "Wing", "Wizard", "Wolf", "Zealot", "Zephyr", "Zone"};
 
 #define nbFlaires 7
-const char* Flairs[nbFlaires][2] = {{"xX", "Xx"},{"<<", ">>"},{"-=", "=-"},{"-~", "~-"},{"~*", "*~"},{".:", ":."},{"#*", "*#"}};
+const char *Flairs[nbFlaires][2] = {{"xX", "Xx"}, {"<<", ">>"}, {"-=", "=-"}, {"-~", "~-"}, {"~*", "*~"}, {".:", ":."}, {"#*", "*#"}};
 
 #define nbBotNames 15
-const char* BotNames[nbBotNames] = {"NoviceBot","SimpleAI","BeginnerMind","SoftSkillBot","EasyGoAI","AdaptiveLogic","BalancedBrain","IntermediateMind","ModestMinds","MiddleGroundAI","ProdigyProcessor","AdvancedAlgorithm","ExpertMind","HardcoreHeuristics","EliteEngineAI"};
-
+const char *BotNames[nbBotNames] = {"NoviceBot", "SimpleAI", "BeginnerMind", "SoftSkillBot", "EasyGoAI", "AdaptiveLogic", "BalancedBrain", "IntermediateMind", "ModestMinds", "MiddleGroundAI", "ProdigyProcessor", "AdvancedAlgorithm", "ExpertMind", "HardcoreHeuristics", "EliteEngineAI"};
 
 /****************************************************/
 /****************************************************/
@@ -163,7 +139,6 @@ void match1P();
 void match2P();
 void mainScreen();
 
-
 /****************************************************/
 /****************************************************/
 /**************|         MAIN         |**************/
@@ -177,81 +152,82 @@ int main()
     return EXIT_SUCCESS;
 }
 
-
 /****************************************************/
 /****************************************************/
 /*****|         Prototypes definitions         |*****/
 /****************************************************/
 /****************************************************/
 
-
 /* Miscellaneous */
 
 /**
  * @brief Prints the error messages.
- * 
+ *
  * @details Prints the error messages depending on the error code.
- * 
+ *
  * @param code Error code, int.
-*/
+ */
 void errors(int code)
 {
     switch (code)
     {
-        case DEBUG: /* Prints a message to know if a set checkpoint has been reached or if the code is broken there */
-            printf(RED "Successfully reached checkpoint.\n" RESET );
-            break;
+    case DEBUG: /* Prints a message to know if a set checkpoint has been reached or if the code is broken there */
+        printf(RED "Successfully reached checkpoint.\n" RESET);
+        break;
 
-        case INPUT_TOO_LONG:
-            printf(RED "Error! " RESET "The " MAGENTA "input" RESET " is " MAGENTA "too long" RESET ".\nTry again: \n");
-            break;
+    case INPUT_TOO_LONG:
+        printf(RED "Error! " RESET "The " MAGENTA "input" RESET " is " MAGENTA "too long" RESET ".\nTry again: \n");
+        break;
 
-        case NON_INT_INPUT:
-            printf(RED "Error! " RESET "Please " MAGENTA "input" RESET " an " MAGENTA "integer" RESET ".\nTry again: \n");
-            break;
+    case NON_INT_INPUT:
+        printf(RED "Error! " RESET "Please " MAGENTA "input" RESET " an " MAGENTA "integer" RESET ".\nTry again: \n");
+        break;
 
-        case INT_OUT_OF_RANGE:
-            printf(RED "Error! " RESET "Please " MAGENTA "input" RESET " an integer " MAGENTA "between 1 & 3" RESET ".\nTry again: \n");
-            break;
+    case INT_OUT_OF_RANGE:
+        printf(RED "Error! " RESET "Please " MAGENTA "input" RESET " an integer " MAGENTA "between 1 & 3" RESET ".\nTry again: \n");
+        break;
 
-        case NON_CHAR_INPUT:
-            printf(RED "Error! " RESET "Please " MAGENTA "input" RESET " a " MAGENTA "character" RESET ".\nTry again: \n");
-            break;
-            
-        case CHAR_INPUT_UNRECONIZED:
-            printf(RED "Error! " RESET "Please " MAGENTA "input" RESET " a character included " MAGENTA "between A & I" RESET ".\nTry again: \n");
-            break;
+    case NON_CHAR_INPUT:
+        printf(RED "Error! " RESET "Please " MAGENTA "input" RESET " a " MAGENTA "character" RESET ".\nTry again: \n");
+        break;
 
-        case CELL_TAKEN:
-            printf(RED "Error! " RESET "That " MAGENTA "cell" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: \n");
-            break;
+    case CHAR_INPUT_UNRECONIZED:
+        printf(RED "Error! " RESET "Please " MAGENTA "input" RESET " a character included " MAGENTA "between A & I" RESET ".\nTry again: \n");
+        break;
 
-        case GRID_TAKEN:
-            printf(RED "Error! " RESET "That " MAGENTA "grid" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: \n");
-            break;
+    case CELL_TAKEN:
+        printf(RED "Error! " RESET "That " MAGENTA "cell" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: \n");
+        break;
 
-        case PLAYER_ID: /* If this error is reached, the program can't continue without errors, so exits it before crashing. */
-            printf(RED "There was an error with the players' IDs... Exiting"); loading_animation();
-            exit(EXIT_FAILURE);
-            break;
-        
-        case UNEXPECTED: /* If this error is reached, a part of the code didn't run properly and a condition wasn't completed even though it should have been (Ex in giveMemeName(){}). */
-            printf(RED "Unexpected error... Exiting"); loading_animation();
-            exit(EXIT_FAILURE);
-            break;
+    case GRID_TAKEN:
+        printf(RED "Error! " RESET "That " MAGENTA "grid" RESET " has already been " MAGENTA "claimed" RESET ".\nTry again: \n");
+        break;
 
-        default: /* This error is not supposed to happen, so exits the program. */
-            printf(RED "Error within the errors() function... Exiting"); loading_animation();
-            exit(EXIT_FAILURE);
-            break;
+    case PLAYER_ID: /* If this error is reached, the program can't continue without errors, so exits it before crashing. */
+        printf(RED "There was an error with the players' IDs... Exiting");
+        loading_animation();
+        exit(EXIT_FAILURE);
+        break;
+
+    case UNEXPECTED: /* If this error is reached, a part of the code didn't run properly and a condition wasn't completed even though it should have been (Ex in giveMemeName(){}). */
+        printf(RED "Unexpected error... Exiting");
+        loading_animation();
+        exit(EXIT_FAILURE);
+        break;
+
+    default: /* This error is not supposed to happen, so exits the program. */
+        printf(RED "Error within the errors() function... Exiting");
+        loading_animation();
+        exit(EXIT_FAILURE);
+        break;
     }
 }
 
 /**
  * @brief Clears the terminal screen.
- * 
+ *
  * @details Clears the terminal screen using "\033[2J\033[1;1H".
-*/
+ */
 void clearTerminal()
 {
     printf(CLEAR_TERMINAL);
@@ -259,9 +235,9 @@ void clearTerminal()
 
 /**
  * @brief Prints a little loading animation.
- * 
+ *
  * @details Prints a "." every second, 3 times.
-*/
+ */
 void loading_animation()
 {
     /* Cuz it looks cool 😎 */
@@ -278,9 +254,9 @@ void loading_animation()
 
 /**
  * @brief Prints the initial mainMenu message.
- * 
+ *
  * @details Prints the main menu message and asks the user to choose one of the options.
-*/
+ */
 void mainMenu()
 {
     clearTerminal();
@@ -292,18 +268,18 @@ void mainMenu()
     printf("\n");
     printf("\t\tWELCOME!\n");
     printf("\n");
-    printf(RED"\t[1]  Rules\n"RESET);
-    printf(RED"\t[2]  Start a game (1P)\n"RESET);
-    printf(RED"\t[3]  Start a match (2P)\n"RESET);
-    printf(RED"\t[0]  Exit\n"RESET);
+    printf(RED "\t[1]  Rules\n" RESET);
+    printf(RED "\t[2]  Start a game (1P)\n" RESET);
+    printf(RED "\t[3]  Start a match (2P)\n" RESET);
+    printf(RED "\t[0]  Exit\n" RESET);
     printf("\n");
 }
 
 /**
  * @brief Prints the rules of the Super Tic-Tac-Toe.
- * 
+ *
  * @details The rules are the same as the original Tic-Tac-Toe, but with a new grid size comming with some new rules.
-*/
+ */
 void rules()
 {
     clearTerminal();
@@ -334,19 +310,20 @@ void rules()
     printf("said grid will be reseted after a turn for players to continue playing.\n");
     printf("\n");
     printf(GREEN "[Press ENTER to continue] ");
-    while (getchar() != '\n');
+    while (getchar() != '\n')
+        ;
 }
 
 /**
  * @brief Asks the User for a CHAR input, for his pseudo.
- * 
+ *
  * @details The pseudo can't be longer than 20 characters, if the intput is '*', a random pseudo will be given to the player.
- * 
+ *
  * @param ptrInput Pointer of the input variable.
- * 
+ *
  * @see generateXBoxName()
-*/
-void namePlayer(char* ptrInput)
+ */
+void namePlayer(char *ptrInput)
 {
     bool condition = false;
 
@@ -365,7 +342,8 @@ void namePlayer(char* ptrInput)
         else
         {
             errors(INPUT_TOO_LONG);
-            while (getchar() != '\n');
+            while (getchar() != '\n')
+                ;
             continue;
         }
 
@@ -375,55 +353,55 @@ void namePlayer(char* ptrInput)
         {
             gamertag name;
             srand(time(NULL));
-            
+
             int method = rand() % 3;
 
             switch (method)
             {
-                case 0:
-                    strcpy(name, consonant[(rand()%19)]);
-                    for (int nb = 0; nb < 2; nb++)
-                    {
-                        strcat(name, vowels[(rand()%5)]);
-                        strcat(name, consonant[(rand()%19)]);
-                    }
+            case 0:
+                strcpy(name, consonant[(rand() % 19)]);
+                for (int nb = 0; nb < 2; nb++)
+                {
+                    strcat(name, vowels[(rand() % 5)]);
+                    strcat(name, consonant[(rand() % 19)]);
+                }
 
-                    name[0] = toupper(name[0]);
+                name[0] = toupper(name[0]);
 
-                    strcpy(ptrInput, name);
-                    condition = true;
-                    break;
-            
-                case 1:
-                    strcpy(name, vowels[(rand()%5)]);
-                    for (int nb = 0; nb < 2; nb++)
-                    {
-                        strcat(name, consonant[(rand()%19)]);
-                        strcat(name, vowels[(rand()%5)]);
-                    }
+                strcpy(ptrInput, name);
+                condition = true;
+                break;
 
-                    name[0] = toupper(name[0]);
+            case 1:
+                strcpy(name, vowels[(rand() % 5)]);
+                for (int nb = 0; nb < 2; nb++)
+                {
+                    strcat(name, consonant[(rand() % 19)]);
+                    strcat(name, vowels[(rand() % 5)]);
+                }
 
-                    strcpy(ptrInput, name);
-                    condition = true;
-                    break;
+                name[0] = toupper(name[0]);
 
-                case 2:
-                    ;gamertag xboxGamertag;
-                    generateXboxName(xboxGamertag);
-                    strcpy(ptrInput, xboxGamertag);
-                    condition = true;
-                    break;
-            
-                default:
-                    errors(UNEXPECTED);
-                    break;
+                strcpy(ptrInput, name);
+                condition = true;
+                break;
+
+            case 2:;
+                gamertag xboxGamertag;
+                generateXboxName(xboxGamertag);
+                strcpy(ptrInput, xboxGamertag);
+                condition = true;
+                break;
+
+            default:
+                errors(UNEXPECTED);
+                break;
             }
 
-            if ((rand()%100) == 69) /* 1/100 chance of giving a meme name cuz ahah funni :) */
+            if ((rand() % 100) == 69) /* 1/100 chance of giving a meme name cuz ahah funni :) */
             {
                 srand(time(NULL));
-                strcpy(ptrInput, memeNames[(rand()%nbOfMemeNames)]);
+                strcpy(ptrInput, memeNames[(rand() % nbOfMemeNames)]);
             }
         }
 
@@ -437,24 +415,24 @@ void namePlayer(char* ptrInput)
 
 /**
  * @brief Generate an Xbox-like gamertag.
- * 
+ *
  * @details Generate an Xbox-like gamertag with a random flair, prefix, main name and flair again.
- * 
+ *
  * @returns CHAR*, the generated gamertag.
-*/
+ */
 void generateXboxName(char *ptrGamertag)
 {
     gamertag gamertag;
     srand(time(NULL));
-    int randomFlair = (rand()%nbFlaires);
+    int randomFlair = (rand() % nbFlaires);
 
     char flair1[3];
     char prefix[20];
     char mainName[20];
     char flair2[3];
     strcpy(flair1, Flairs[randomFlair][0]);
-    strcpy(prefix, Prefixes[(rand()%nbPrefixes)]);
-    strcpy(mainName, MainName[(rand()%nbMainName)]);
+    strcpy(prefix, Prefixes[(rand() % nbPrefixes)]);
+    strcpy(mainName, MainName[(rand() % nbMainName)]);
     strcpy(flair2, Flairs[randomFlair][1]);
 
     strcat(gamertag, flair1);
@@ -465,16 +443,15 @@ void generateXboxName(char *ptrGamertag)
     strcpy(ptrGamertag, gamertag);
 }
 
-
 /* Super Grid & Grids related stuff */
 
 /**
  * @brief Initialise 'the super grid's grids values with '.'.
- * 
+ *
  * @details Initialise 'the super grid's grids values with '.'.
- * 
+ *
  * @param superGrid Game's grid.
-*/
+ */
 void initSuperGrid(struct Grid superGrid[ROW][COLUMN])
 {
     for (int row = 0; row < ROW; row++)
@@ -494,13 +471,13 @@ void initSuperGrid(struct Grid superGrid[ROW][COLUMN])
 
 /**
  * @brief Checks if the given grid inside 'super grid' is complete.
- * 
+ *
  * @details Checks if the given grid inside'super grid' is complete. If so, it returns the player/bot who won the grid.
- * 
+ *
  * @param superGrid Game's grid.
  * @param letter Letter of the grid to check, gives the index of said grid.
  * @returns 1 if Player1 has finished it, 2 if Player2 did, DEFAULT otherwise.
-*/
+ */
 int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
 {
     int p1_diagL2R, p1_diagR2L, p1_row, p1_col;
@@ -512,51 +489,53 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
         {
 
             /* Finds the index of the current playing grid inside of 'super grid' */
-            
-            if (letter == LETTERS[row][col]) 
+
+            if (letter == LETTERS[row][col])
             {
                 /*-- Checks the diagonals --*/
 
                 p1_diagL2R = 0, p1_diagR2L = 0, p2_diagL2R = 0, p2_diagR2L = 0;
 
                 for (int diag = 0, invDiag = 2; diag < DIAG; diag++, invDiag--)
-                {   
+                {
                     /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
 
-                    if (superGrid[row][col].grid[diag][diag] == 'X') 
-                    { 
+                    if (superGrid[row][col].grid[diag][diag] == 'X')
+                    {
                         p1_diagL2R++;
-                    } else
-
-                    /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
-
-                    if (superGrid[row][col].grid[diag][diag] == 'O') 
-                    { 
-                        p2_diagL2R++; 
                     }
+                    else
+
+                        /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
+
+                        if (superGrid[row][col].grid[diag][diag] == 'O')
+                        {
+                            p2_diagL2R++;
+                        }
 
                     /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
 
-                    if (superGrid[row][col].grid[diag][invDiag] == 'X') 
-                    { 
-                        p1_diagR2L++; 
-                    } else
-
-                    /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
-
-                    if (superGrid[row][col].grid[diag][invDiag] == 'O')
+                    if (superGrid[row][col].grid[diag][invDiag] == 'X')
                     {
-                        p2_diagR2L++;
-                    } 
+                        p1_diagR2L++;
+                    }
+                    else
+
+                        /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
+
+                        if (superGrid[row][col].grid[diag][invDiag] == 'O')
+                        {
+                            p2_diagR2L++;
+                        }
                 }
 
                 /*-- Checks the lines (Rows and Columns) --*/
 
                 for (int gridRow = 0; gridRow < ROW; gridRow++)
                 {
-                    p1_row = 0, p2_row = 0; 
+                    p1_row = 0, p2_row = 0;
                     p1_col = 0, p2_col = 0;
-                    
+
                     for (int gridCol = 0; gridCol < COLUMN; gridCol++)
                     {
 
@@ -565,43 +544,40 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
                         if (superGrid[row][col].grid[gridRow][gridCol] == 'X')
                         {
                             p1_row++;
-                        } else
-
-                        /* Checks each rows for if P2 won */
-
-                        if (superGrid[row][col].grid[gridRow][gridCol] == 'O')
-                        {
-                            p2_row++;
                         }
+                        else
+
+                            /* Checks each rows for if P2 won */
+
+                            if (superGrid[row][col].grid[gridRow][gridCol] == 'O')
+                            {
+                                p2_row++;
+                            }
 
                         /* Checks each columns for if P1 won */
 
                         if (superGrid[row][col].grid[gridCol][gridRow] == 'X')
                         {
                             p1_col++;
-                        } else
-
-                        /* Checks each columns for if P2 won */
-
-                        if (superGrid[row][col].grid[gridCol][gridRow] == 'O')
-                        {
-                            p2_col++;
                         }
+                        else
+
+                            /* Checks each columns for if P2 won */
+
+                            if (superGrid[row][col].grid[gridCol][gridRow] == 'O')
+                            {
+                                p2_col++;
+                            }
 
                         /*-- Checks if a player won --*/
 
-                        if (p1_diagR2L == 3 
-                        || p1_diagL2R == 3 
-                        || p1_row == 3 
-                        || p1_col == 3)
+                        if (p1_diagR2L == 3 || p1_diagL2R == 3 || p1_row == 3 || p1_col == 3)
                         {
                             return P1;
-                        } else
+                        }
+                        else
 
-                        if (p2_diagR2L == 3 
-                        || p2_diagL2R == 3 
-                        || p2_row == 3 
-                        || p2_col == 3)
+                            if (p2_diagR2L == 3 || p2_diagL2R == 3 || p2_row == 3 || p2_col == 3)
                         {
                             return P2;
                         }
@@ -615,13 +591,13 @@ int gridComplete(struct Grid superGrid[ROW][COLUMN], char letter)
 
 /**
  * @brief Checks if the given grid inside 'super grid' is full but is a draw.
- * 
+ *
  * @details If a grid is full but is a draw, resets the grid so the game is forced to be won by someone.
- * 
+ *
  * @param superGrid Game's grid.
  * @param letter Letter of the grid to check, gives the index of said grid.
  * @returns bool, true if the grid is a draw, false otherwise.
-*/
+ */
 bool isGridDraw(struct Grid superGrid[ROW][COLUMN], char letter)
 {
     for (int row = 0; row < ROW; row++)
@@ -629,10 +605,10 @@ bool isGridDraw(struct Grid superGrid[ROW][COLUMN], char letter)
         for (int col = 0; col < COLUMN; col++)
         {
             /* Finds the index of the current playing grid inside of 'super grid' */
-            if (letter == LETTERS[row][col]) 
+            if (letter == LETTERS[row][col])
             {
                 for (int gridRow = 0; gridRow < ROW; gridRow++)
-                {                    
+                {
                     for (int gridCol = 0; gridCol < COLUMN; gridCol++)
                     {
                         if (superGrid[row][col].grid[gridRow][gridCol] == '.')
@@ -649,14 +625,14 @@ bool isGridDraw(struct Grid superGrid[ROW][COLUMN], char letter)
 
 /**
  * @brief Checks if the 'super grid' is completed, so if the game finished.
- * 
+ *
  * @details Checks if the 'super grid' is completed, so if the game finished, and returns the winner. Based on the gridComplete() function.
- * 
+ *
  * @param superGrid Game's grid.
  * @returns 1 if Player1 has won, 2 if Player2 did, 0 otherwise.
- * 
+ *
  * @see gridComplete()
-*/
+ */
 int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 {
     int p1_superDiagL2R, p1_superDiagR2L, p1_superRow, p1_superCol;
@@ -670,81 +646,86 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
         for (int col = 0; col < COLUMN; col++)
         {
             p1_superDiagL2R = 0, p1_superDiagR2L = 0, p2_superDiagL2R = 0, p2_superDiagR2L = 0;
-            
+
             /*-- Checks the diagonals --*/
             for (int diag = 0, invDiag = 2; diag < DIAG; diag++, invDiag--)
             {
                 /* Checks the diagonal from (0,0) to (2,2) for if P1 won */
 
-                if (gridComplete(superGrid, LETTERS[diag][diag]) == P1) 
-                { 
+                if (gridComplete(superGrid, LETTERS[diag][diag]) == P1)
+                {
                     p1_superDiagL2R++;
-                } else
-                
-                /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
-                
-                if (gridComplete(superGrid, LETTERS[diag][diag]) == P2) 
-                { 
-                    p2_superDiagL2R++;
-                } 
-                
+                }
+                else
+
+                    /* Checks the diagonal from (0,0) to (2,2) for if P2 won */
+
+                    if (gridComplete(superGrid, LETTERS[diag][diag]) == P2)
+                    {
+                        p2_superDiagL2R++;
+                    }
+
                 /* Checks the diagonal from (0,2) to (2,0) for if P1 won */
 
-                if (gridComplete(superGrid, LETTERS[diag][invDiag]) == P1) 
-                { 
-                    p1_superDiagR2L++; 
-                } else
-                
-                /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
-                
-                if (gridComplete(superGrid, LETTERS[diag][invDiag]) == P2) 
+                if (gridComplete(superGrid, LETTERS[diag][invDiag]) == P1)
                 {
-                    p2_superDiagR2L++;
+                    p1_superDiagR2L++;
                 }
+                else
+
+                    /* Checks the diagonal from (0,2) to (2,0) for if P2 won */
+
+                    if (gridComplete(superGrid, LETTERS[diag][invDiag]) == P2)
+                    {
+                        p2_superDiagR2L++;
+                    }
             }
 
             /*-- Checks the lines (Rows and Columns) --*/
-            
+
             /* Checks each rows for if P1 won */
 
-            if (gridComplete(superGrid, LETTERS[row][col]) == P1) 
+            if (gridComplete(superGrid, LETTERS[row][col]) == P1)
             {
                 p1_superRow++;
-            } else
-            
-            /* Checks each rows for if P2 won */
-
-            if (gridComplete(superGrid, LETTERS[row][col]) == P2) 
-            {
-                p2_superRow++;
             }
-            
+            else
+
+                /* Checks each rows for if P2 won */
+
+                if (gridComplete(superGrid, LETTERS[row][col]) == P2)
+                {
+                    p2_superRow++;
+                }
+
             /* Checks each columns for if P1 won */
-            
-            if (gridComplete(superGrid, LETTERS[col][row]) == P1) 
+
+            if (gridComplete(superGrid, LETTERS[col][row]) == P1)
             {
                 p1_superCol++;
-            } else
-            
-            /* Checks each columns for if P2 won */
-
-            if (gridComplete(superGrid, LETTERS[col][row]) == P2) 
-            { 
-                p2_superCol++;
             }
+            else
+
+                /* Checks each columns for if P2 won */
+
+                if (gridComplete(superGrid, LETTERS[col][row]) == P2)
+                {
+                    p2_superCol++;
+                }
 
             /*-- Checks if a player won --*/
 
             if (p1_superDiagL2R == 3 || p1_superDiagR2L == 3 || p1_superRow == 3 || p1_superCol == 3)
             {
                 return P1;
-            } else
+            }
+            else
 
-            if (p2_superDiagL2R == 3 || p2_superDiagR2L == 3 || p2_superRow == 3 || p2_superCol == 3)
+                if (p2_superDiagL2R == 3 || p2_superDiagR2L == 3 || p2_superRow == 3 || p2_superCol == 3)
             {
                 return P2;
             }
-            
+
             /* If the game is a draw */
             int completedCells = 0;
             if (isGridDraw(superGrid, LETTERS[row][col]))
@@ -762,11 +743,11 @@ int superGridComplete(struct Grid superGrid[ROW][COLUMN])
 
 /**
  * @brief Prints the game's grid in the terminal.
- * 
+ *
  * @details Prints the game's grid in the terminal, nothing too fancy here.
- * 
+ *
  * @param superGrid Game's grid.
-*/
+ */
 void PrintGrid(struct Grid superGrid[ROW][COLUMN])
 {
     clearTerminal();
@@ -780,38 +761,36 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
     /*-- Output template --*/
 
     gridBlocks BLOCS = {
-        { /* Main grid */
-        YELLOW "|" GREEN " %c  " CYAN " 1   2   3 " GREEN "  %c " RESET,
-        YELLOW "|" BLUE  "   +---+---+---+   " RESET,
-        YELLOW "| 1 | %c | %c | %c | 1 ",
-        YELLOW "|" BLUE  "   +---+---+---+   " RESET,
-        YELLOW "| 2 | %c | %c | %c | 2 ",
-        YELLOW "|" BLUE  "   +---+---+---+   " RESET,
-        YELLOW "| 3 | %c | %c | %c | 3 ",
-        YELLOW "|" BLUE  "   +---+---+---+   " RESET,
-        YELLOW "|" GREEN " %c  " CYAN  " 1   2   3 " GREEN "  %c "},
-        { /* Grid completed by P1 */
-        YELLOW "| " RED "                  " RESET,
-        YELLOW "| " RED "                  " RESET,
-        YELLOW "| " RED "      \\   /       " RESET,
-        YELLOW "| " RED "       \\ /        " RESET,
-        YELLOW "| " RED "        X         " RESET,
-        YELLOW "| " RED "       / \\        " RESET,
-        YELLOW "| " RED "      /   \\       " RESET,
-        YELLOW "| " RED "                  " RESET,
-        YELLOW "| " RED "                  " RESET},
-        { /* Grid completed by P2 */
-        YELLOW "| " BLUE "                  " RESET,
-        YELLOW "| " BLUE "                  " RESET,
-        YELLOW "| " BLUE "    /-------\\     " RESET,
-        YELLOW "| " BLUE "    |       |     " RESET,
-        YELLOW "| " BLUE "    |       |     " RESET,
-        YELLOW "| " BLUE "    |       |     " RESET,
-        YELLOW "| " BLUE "    \\-------/     " RESET,
-        YELLOW "| " BLUE "                  " RESET,
-        YELLOW "| " BLUE "                  " RESET}
-        };
-
+        {/* Main grid */
+         YELLOW "|" GREEN " %c  " CYAN " 1   2   3 " GREEN "  %c " RESET,
+         YELLOW "|" BLUE "   +---+---+---+   " RESET,
+         YELLOW "| 1 | %c | %c | %c | 1 ",
+         YELLOW "|" BLUE "   +---+---+---+   " RESET,
+         YELLOW "| 2 | %c | %c | %c | 2 ",
+         YELLOW "|" BLUE "   +---+---+---+   " RESET,
+         YELLOW "| 3 | %c | %c | %c | 3 ",
+         YELLOW "|" BLUE "   +---+---+---+   " RESET,
+         YELLOW "|" GREEN " %c  " CYAN " 1   2   3 " GREEN "  %c "},
+        {/* Grid completed by P1 */
+         YELLOW "| " RED "                  " RESET,
+         YELLOW "| " RED "                  " RESET,
+         YELLOW "| " RED "      \\   /       " RESET,
+         YELLOW "| " RED "       \\ /        " RESET,
+         YELLOW "| " RED "        X         " RESET,
+         YELLOW "| " RED "       / \\        " RESET,
+         YELLOW "| " RED "      /   \\       " RESET,
+         YELLOW "| " RED "                  " RESET,
+         YELLOW "| " RED "                  " RESET},
+        {/* Grid completed by P2 */
+         YELLOW "| " BLUE "                  " RESET,
+         YELLOW "| " BLUE "                  " RESET,
+         YELLOW "| " BLUE "    /-------\\     " RESET,
+         YELLOW "| " BLUE "    |       |     " RESET,
+         YELLOW "| " BLUE "    |       |     " RESET,
+         YELLOW "| " BLUE "    |       |     " RESET,
+         YELLOW "| " BLUE "    \\-------/     " RESET,
+         YELLOW "| " BLUE "                  " RESET,
+         YELLOW "| " BLUE "                  " RESET}};
 
     /**-- Main loop --*/
     for (int superRow = 0; superRow < ROW; superRow++)
@@ -823,66 +802,66 @@ void PrintGrid(struct Grid superGrid[ROW][COLUMN])
             {
                 switch (gridComplete(superGrid, LETTERS[superRow][superCol])) /* Checks if a player has won a square of the 'super grid' or not */
                 {
-                    /* Prints the square if a player has won it */
-                    case P1:
-                        printf("%s", BLOCS[P1][blocRowIndex]);
-                        break;
-                    
-                    case P2:
-                        printf("%s", BLOCS[P2][blocRowIndex]);
-                        break;
+                /* Prints the square if a player has won it */
+                case P1:
+                    printf("%s", BLOCS[P1][blocRowIndex]);
+                    break;
 
-                    /* Prints the square if neither of the players has won it */
-                    default:
-                        if (blocRowIndex == 0 || blocRowIndex == 8) /* "| %c   1   2   3   %c |" */
-                        {
-                            char printableLine[70] = "";
-                            sprintf(printableLine, BLOCS[0][blocRowIndex], LETTERS[superRow][superCol], LETTERS[superRow][superCol]);
-                            printf("%s", printableLine);
-                            break; 
-                        } else
-                        
+                case P2:
+                    printf("%s", BLOCS[P2][blocRowIndex]);
+                    break;
+
+                /* Prints the square if neither of the players has won it */
+                default:
+                    if (blocRowIndex == 0 || blocRowIndex == 8) /* "| %c   1   2   3   %c |" */
+                    {
+                        char printableLine[70] = "";
+                        sprintf(printableLine, BLOCS[0][blocRowIndex], LETTERS[superRow][superCol], LETTERS[superRow][superCol]);
+                        printf("%s", printableLine);
+                        break;
+                    }
+                    else
+
                         if (blocRowIndex == 1 || blocRowIndex == 3 || blocRowIndex == 5 || blocRowIndex == 7) /* "|   +---+---+---+   |" */
-                        {
-                            printf("%s", BLOCS[0][blocRowIndex]); 
-                            break; 
-                        }
-
-                        else /* "| [nb] | %c | %c | %c | [nb] |" */
-                        {
-                            printf(YELLOW "| " CYAN "%d " RESET, (blocRowIndex/2));
-
-                            for (int tinyCol = 0; tinyCol < COLUMN; tinyCol++)
-                            {
-                                printf(BLUE "| " RESET "%c ", superGrid[superRow][superCol].grid[(blocRowIndex/2)-1][tinyCol]);
-                            }
-
-                            printf(BLUE "| " CYAN "%d ", blocRowIndex/2);
-                            break;
-                        }
+                    {
+                        printf("%s", BLOCS[0][blocRowIndex]);
                         break;
+                    }
+
+                    else /* "| [nb] | %c | %c | %c | [nb] |" */
+                    {
+                        printf(YELLOW "| " CYAN "%d " RESET, (blocRowIndex / 2));
+
+                        for (int tinyCol = 0; tinyCol < COLUMN; tinyCol++)
+                        {
+                            printf(BLUE "| " RESET "%c ", superGrid[superRow][superCol].grid[(blocRowIndex / 2) - 1][tinyCol]);
+                        }
+
+                        printf(BLUE "| " CYAN "%d ", blocRowIndex / 2);
+                        break;
+                    }
+                    break;
                 }
             }
-            printf( YELLOW "|\n" RESET);
+            printf(YELLOW "|\n" RESET);
         }
     }
     printf(YELLOW "+-------------------+-------------------+-------------------+\n\n" RESET);
 }
 
-
 /* Inputs */
 
 /**
  * @brief Asks the User for a CHAR input in order to choose where to play in the 'super grid'.
- * 
+ *
  * @details The function will ask the user for a CHAR input in order to choose where to play in the 'super grid'.
- * 
+ *
  * @param ptrInput Pointer of the input variable.
-*/
+ */
 void inputWhichGrid(char *ptrLetter)
 {
     printf("in which grid do you wish to play (From 'A' to 'I'): \n");
-    
+
     bool condition = false;
 
     do
@@ -891,12 +870,12 @@ void inputWhichGrid(char *ptrLetter)
 
         fgets(input, sizeof(input), stdin);
         fflush(stdin);
-        
+
         /*-- Main loop, checks if the user's input is correct --*/
-        
+
         int temp;
         if (sscanf(input, "%d", &temp) != false) /* Checks if the user inputed an int */
-        { 
+        {
             errors(NON_CHAR_INPUT);
         }
 
@@ -913,7 +892,7 @@ void inputWhichGrid(char *ptrLetter)
                 }
             }
         }
-        
+
         /* prints an error otherwise, asking the user to try again */
         if (!condition)
         {
@@ -925,15 +904,15 @@ void inputWhichGrid(char *ptrLetter)
 
 /**
  * @brief Asks the User for an INT input in order to choose where to play in the grid inside the 'super grid'.
- * 
+ *
  * @details The user can only input a number between 1 and 3 to choose a cell inside the grid.
- * 
+ *
  * @param ptrInput Pointer of the input variable.
-*/
+ */
 void inputWhichCell(int *ptrInput)
 {
     printf("(From 1 to 3): \n");
-    
+
     bool condition = false;
 
     do
@@ -953,10 +932,11 @@ void inputWhichCell(int *ptrInput)
         else
         {
             errors(INPUT_TOO_LONG);
-            while (getchar() != '\n');
+            while (getchar() != '\n')
+                ;
             continue;
         }
-        
+
         /*-- Main loop, checks if the user's input is correct --*/
 
         if (sscanf(input, "%d", &value) != false) /* Convert the STR to INT, prints error if it doesn't work */
@@ -983,19 +963,19 @@ void inputWhichCell(int *ptrInput)
 
 /**
  * @brief Have a player take his turn and play.
- * 
+ *
  * @details The player takes his turn and play in the grid inside the 'Super Grid'. Returns the letter of the next player/bot to play in.
- * 
+ *
  * @param superGrid Game's grid.
  * @param player The players id, to know if it's 'X'or'O's turn.
  * @param letter Letter used to know the grifd in where the player plays.
  * @param ptrPlayerRow Pointer of the row where the player plays.
  * @param ptrPlayerCol Pointer of the column where the player plays.
- * 
+ *
  * @returns CHAR, letter for the next player to play in.
- * 
+ *
  * @see inputWhichCell(), inputWhichGrid()
-*/
+ */
 char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *ptrPlayerRow, int *ptrPlayerCol)
 {
     /*-- Finds the indexs of the letter --*/
@@ -1017,8 +997,7 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
         }
         letterRow++;
     }
-    
-    
+
     /*-- Asks row & column, and checks if it's a correct cell to play in --*/
 
     bool turnCompleted = false;
@@ -1045,20 +1024,20 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
                 *ptrPlayerRow = row;
                 *ptrPlayerCol = column;
                 turnCompleted = true;
+            }
+            else
 
-            } else
-
-            if (player == P2)
+                if (player == P2)
             {
                 /* O */
                 *ptrPlayerRow = row;
                 *ptrPlayerCol = column;
                 turnCompleted = true;
             }
-            
+
             else /* In case there somehow is an error with the players' IDs */
-            { 
-                errors(PLAYER_ID); 
+            {
+                errors(PLAYER_ID);
             }
         }
 
@@ -1078,16 +1057,15 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
     return LETTERS[row][column];
 }
 
-
 /* Bot Functions */
 
 /**
  * @brief Sets the difficulty of the bot via a menu.
- * 
+ *
  * @details Prints the menu and asks the user for an input to choose the bot's difficulty.
- * 
+ *
  * @returns INT, the difficulty of the bot.
-*/
+ */
 int setDifficulty()
 {
     int choice = DEFAULT;
@@ -1113,29 +1091,29 @@ int setDifficulty()
 
     do
     {
-        scanf("%d", &choice);        
-    } while (choice != EASY && choice!= MEDIUM && choice!= HARD && choice!= MENU);
+        scanf("%d", &choice);
+    } while (choice != EASY && choice != MEDIUM && choice != HARD && choice != MENU);
 
     return choice;
 }
 
 /**
  * @brief Have the bot take its turn and play RANDOMLY.
- * 
+ *
  * @details The bot plays randomly.
- * 
+ *
  * @param superGrid Game's grid.
  * @param letter Letter used to know the grid in which the bot plays.
  * @param ptrBotRow Pointer to store the row index of the bot's move.
  * @param ptrBotCol Pointer to store the column index of the bot's move.
-*/
+ */
 char easyBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow, int *ptrBotCol)
 {
     /* Get available cells */
     int availableCells[9];
     int count = 0;
 
-    /* Finds the current playing grid */ 
+    /* Finds the current playing grid */
     bool foundLetter = false;
     int superGridRow, superGridColumn;
     for (int letterRow = 0; letterRow < ROW && !foundLetter; letterRow++)
@@ -1152,13 +1130,13 @@ char easyBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
     }
 
     /* Finds available cells */
-    for(int gridRow = 0; gridRow < ROW; gridRow++)
+    for (int gridRow = 0; gridRow < ROW; gridRow++)
     {
-        for(int gridCol = 0; gridCol < COLUMN; gridCol++)
+        for (int gridCol = 0; gridCol < COLUMN; gridCol++)
         {
-            if(superGrid[superGridRow][superGridColumn].grid[gridRow][gridCol] == '.')
+            if (superGrid[superGridRow][superGridColumn].grid[gridRow][gridCol] == '.')
             {
-                availableCells[count] = gridRow*COLUMN + gridCol;
+                availableCells[count] = gridRow * COLUMN + gridCol;
                 count++;
             }
         }
@@ -1174,22 +1152,22 @@ char easyBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
     *ptrBotRow = chosenRow;
     *ptrBotCol = chosenCol;
 
-    printf("I'm going to make a move at" RED " (%d, %d)" RESET "!\n", chosenRow+1, chosenCol+1);
+    printf("I'm going to make a move at" RED " (%d, %d)" RESET "!\n", chosenRow + 1, chosenCol + 1);
 
     return LETTERS[chosenRow][chosenCol];
 }
 
 /**
  * @brief Have the bot take its turn and play a move, either easy or hard.
- * 
+ *
  * @details The bot will play a move based on a random choice between easy and hard.
- * 
+ *
  * @param superGrid Game's grid.
  * @param letter Letter used to know the grid in which the bot plays.
  * @param ptrBotRow Pointer to store the row index of the bot's move.
  * @param ptrBotCol Pointer to store the column index of the bot's move.
- * 
-*/
+ *
+ */
 char mediumBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow, int *ptrBotCol)
 {
     /* As the bot is based on a random choice between easy and hard, it will play randomly one of the 2 */
@@ -1197,29 +1175,29 @@ char mediumBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotR
     int choice = rand() % 3;
     switch (choice)
     {
-        case 1:
-            /* Hard Bot move */
-            return hardBotTurn(superGrid, letter, ptrBotRow, ptrBotCol);
-            break;
-        
-        default:
-            /* Easy Bot move */
-            return easyBotTurn(superGrid, letter, ptrBotRow, ptrBotCol);
-            break;
+    case 1:
+        /* Hard Bot move */
+        return hardBotTurn(superGrid, letter, ptrBotRow, ptrBotCol);
+        break;
+
+    default:
+        /* Easy Bot move */
+        return easyBotTurn(superGrid, letter, ptrBotRow, ptrBotCol);
+        break;
     }
 }
 
 /**
  * @brief Have the bot take its turn and play the best move.
- * 
+ *
  * @details This function is based on the minimax algorithm. It is a recursive function that will find the best move and have the bot play it.
- * 
+ *
  * @param superGrid Game's grid.
  * @param letter Letter used to know the grid in which the bot plays.
  * @param ptrBotRow Pointer to store the row index of the bot's move.
  * @param ptrBotCol Pointer to store the column index of the bot's move.
- * 
-*/
+ *
+ */
 char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow, int *ptrBotCol)
 {
     int chosenRow = 4, chosenCol = 4;
@@ -1242,7 +1220,7 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
 
     /* Choose a tactical available cell */
     bool foundCell = false;
-    
+
     /* While the bot doesn't find a cell to play */
     while (!foundCell)
     {
@@ -1468,60 +1446,60 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
             int randChoice = rand() % 5;
             switch (randChoice)
             {
-                case 0:
-                    if (superGrid[superGridRow][superGridColumn].grid[1][1] == '.' && !checked11)
-                    {
-                        chosenRow = 1;
-                        chosenCol = 1;
-                        foundCell = true;
-                        checked11 = true;
-                    }
-                    break;
+            case 0:
+                if (superGrid[superGridRow][superGridColumn].grid[1][1] == '.' && !checked11)
+                {
+                    chosenRow = 1;
+                    chosenCol = 1;
+                    foundCell = true;
+                    checked11 = true;
+                }
+                break;
 
-                case 1:
-                    if (superGrid[superGridRow][superGridColumn].grid[0][0] == '.' && !checked00)
-                    {
-                        chosenRow = 0;
-                        chosenCol = 0;
-                        foundCell = true;
-                        checked00 = true;
-                    }
-                    break;
-                
-                case 2:
-                    if (superGrid[superGridRow][superGridColumn].grid[0][2] == '.' && !checked02)
-                    {
-                        chosenRow = 0;
-                        chosenCol = 2;
-                        foundCell = true;
-                        checked02 = true;
-                    }
-                    break;
-                
-                case 3:
-                    if (superGrid[superGridRow][superGridColumn].grid[2][0] == '.' && !checked20)
-                    {
-                        chosenRow = 2;
-                        chosenCol = 0;
-                        foundCell = true;
-                        checked20 = true;
-                    }
-                    break;
-                
-                case 4:
-                    if (superGrid[superGridRow][superGridColumn].grid[2][2] == '.' && !checked22)
-                    {
-                        chosenRow = 2;
-                        chosenCol = 2;
-                        foundCell = true;
-                        checked22 = true;
-                    }
-                    break;
-                
-                default:
-                    fflush(stdout);
-                    sleep(1);
-                    break;
+            case 1:
+                if (superGrid[superGridRow][superGridColumn].grid[0][0] == '.' && !checked00)
+                {
+                    chosenRow = 0;
+                    chosenCol = 0;
+                    foundCell = true;
+                    checked00 = true;
+                }
+                break;
+
+            case 2:
+                if (superGrid[superGridRow][superGridColumn].grid[0][2] == '.' && !checked02)
+                {
+                    chosenRow = 0;
+                    chosenCol = 2;
+                    foundCell = true;
+                    checked02 = true;
+                }
+                break;
+
+            case 3:
+                if (superGrid[superGridRow][superGridColumn].grid[2][0] == '.' && !checked20)
+                {
+                    chosenRow = 2;
+                    chosenCol = 0;
+                    foundCell = true;
+                    checked20 = true;
+                }
+                break;
+
+            case 4:
+                if (superGrid[superGridRow][superGridColumn].grid[2][2] == '.' && !checked22)
+                {
+                    chosenRow = 2;
+                    chosenCol = 2;
+                    foundCell = true;
+                    checked22 = true;
+                }
+                break;
+
+            default:
+                fflush(stdout);
+                sleep(1);
+                break;
             }
             if (checked00 && checked11 && checked02 && checked20 && checked22)
             {
@@ -1535,7 +1513,7 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
         if (foundCell)
         {
             printf("AHAH! I've found a tactical move!\n");
-            printf("I'm going to make a move at" RED " (%d, %d)" RESET "!\n", chosenRow+1, chosenCol+1);
+            printf("I'm going to make a move at" RED " (%d, %d)" RESET "!\n", chosenRow + 1, chosenCol + 1);
 
             /* Playes the turn */
             *ptrBotRow = chosenRow;
@@ -1555,25 +1533,25 @@ char hardBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
 
 /**
  * @brief Have the bot choose a letter.
- * 
+ *
  * @details Have the bot "choose" a random letter.
- * 
+ *
  * @param superGrid The grid to check for taken cells.
  * @param ptrLetter The letter to be chosen.
-*/
-void botChooseLetter(struct Grid superGrid[ROW][COLUMN] , char *ptrLetter)
+ */
+void botChooseLetter(struct Grid superGrid[ROW][COLUMN], char *ptrLetter)
 {
     int availableCells[9];
     int count = 0;
 
     /* Finds available cells */
-    for(int gridRow = 0; gridRow < ROW; gridRow++)
+    for (int gridRow = 0; gridRow < ROW; gridRow++)
     {
-        for(int gridCol = 0; gridCol < COLUMN; gridCol++)
+        for (int gridCol = 0; gridCol < COLUMN; gridCol++)
         {
-            if(gridComplete(superGrid, LETTERS[gridRow][gridCol]) == DEFAULT)
+            if (gridComplete(superGrid, LETTERS[gridRow][gridCol]) == DEFAULT)
             {
-                availableCells[count] = gridRow*COLUMN + gridCol;
+                availableCells[count] = gridRow * COLUMN + gridCol;
                 count++;
             }
         }
@@ -1586,7 +1564,6 @@ void botChooseLetter(struct Grid superGrid[ROW][COLUMN] , char *ptrLetter)
     *ptrLetter = LETTERS[randRow][randCol];
 }
 
-
 /****************************************************/
 /****************************************************/
 /******|         Main Game Functions          |******/
@@ -1595,11 +1572,11 @@ void botChooseLetter(struct Grid superGrid[ROW][COLUMN] , char *ptrLetter)
 
 /**
  * @brief Runs a single player match against a BOT opponent.
- * 
+ *
  * @details The function is the main function of the 1 player match with a bot. It takes care of the game's flow and the player/bot's turns.
- * 
+ *
  * @see takeTurn(), setDifficulty(), [difficulty]BotTurn(), botChooseLetter()
-*/
+ */
 void match1P()
 {
     clearTerminal();
@@ -1624,31 +1601,30 @@ void match1P()
     gamertag playerName;
     gamertag botName;
 
-    while (getchar() != '\n'); /* Clears entry buffer */
     clearTerminal();
     printf("Player, please choose you pseudo ('*' for a random one): \n");
     namePlayer(playerName);
 
     /* Get the pseudo for the bot */
     srand(time(NULL));
-    int botPseudo = rand() % (nbBotNames/3);
+    int botPseudo = rand() % (nbBotNames / 3);
     switch (difficulty)
     {
-        case EASY:
-            strcpy(botName, BotNames[botPseudo]);
-            break;
+    case EASY:
+        strcpy(botName, BotNames[botPseudo]);
+        break;
 
-        case MEDIUM:
-            strcpy(botName, BotNames[botPseudo+5]);
-            break;
+    case MEDIUM:
+        strcpy(botName, BotNames[botPseudo + 5]);
+        break;
 
-        case HARD:
-            strcpy(botName, BotNames[botPseudo+10]);
-            break;
-        
-        default:
-            errors(UNEXPECTED);
-            break;
+    case HARD:
+        strcpy(botName, BotNames[botPseudo + 10]);
+        break;
+
+    default:
+        errors(UNEXPECTED);
+        break;
     }
 
     printf("%s will play 'X'\n", playerName);
@@ -1665,44 +1641,52 @@ void match1P()
         PrintGrid(superGrid);
 
         /* Checks which player's turn it is */
-        if (player == P1) { printf(RED "%s" RESET "(X) to play, ", playerName); }
-        else if (player == P2) { printf(RED "%s" RESET "(O) to play, ", botName); }
+        if (player == P1)
+        {
+            printf(RED "%s" RESET "(X) to play, ", playerName);
+        }
+        else if (player == P2)
+        {
+            printf(RED "%s" RESET "(O) to play, ", botName);
+        }
 
         /* If the game has just started */
         if (letter == 'Z')
         {
             inputWhichGrid(&letter);
-        } else
-
-        /* If the supposed grid to play in is completed */
-        if (gridComplete(superGrid, letter) != DEFAULT) 
-        {
-            printf(RED "The supposed grid already full" RESET ", so ");
-            if (player == P1)
-            {
-                inputWhichGrid(&letter);
-            }else
-            
-            if (player == P2)
-            {
-                printf("I'm going to play in the");
-                botChooseLetter(superGrid, &letter);
-                printf(" '%c' grid.\n", letter);
-                sleep(5);
-            }
-
-            while (gridComplete(superGrid, letter) != DEFAULT)
-            {
-                errors(GRID_TAKEN);
-                inputWhichGrid(&letter);
-            }
         }
-
-        /* Reminds which grid the player is in */
         else
-        {
-            printf("\nYou are playing in the '%c' grid.\n\n", letter);
-        }
+
+            /* If the supposed grid to play in is completed */
+            if (gridComplete(superGrid, letter) != DEFAULT)
+            {
+                printf(RED "The supposed grid already full" RESET ", so ");
+                if (player == P1)
+                {
+                    inputWhichGrid(&letter);
+                }
+                else
+
+                    if (player == P2)
+                {
+                    printf("I'm going to play in the");
+                    botChooseLetter(superGrid, &letter);
+                    printf(" '%c' grid.\n", letter);
+                    sleep(5);
+                }
+
+                while (gridComplete(superGrid, letter) != DEFAULT)
+                {
+                    errors(GRID_TAKEN);
+                    inputWhichGrid(&letter);
+                }
+            }
+
+            /* Reminds which grid the player is in */
+            else
+            {
+                printf("\nYou are playing in the '%c' grid.\n\n", letter);
+            }
 
         /* Finds the letter indexs */
         bool foundLetter = false;
@@ -1722,7 +1706,7 @@ void match1P()
         }
 
         /* If the grid got full but not won by any, resets it after the next player's turn */
-        if(isGridDraw(superGrid, letter) && gridComplete(superGrid, letter) == DEFAULT)
+        if (isGridDraw(superGrid, letter) && gridComplete(superGrid, letter) == DEFAULT)
         {
             for (int row = 0; row < ROW; row++)
             {
@@ -1737,30 +1721,31 @@ void match1P()
         if (player == P1)
         {
             letter = takeTurn(superGrid, player, letter, &playedRow, &playedCol);
-        } else
+        }
+        else
 
-        if (player == P2)
+            if (player == P2)
         {
             printf("Thinking");
             loading_animation();
 
             switch (difficulty)
             {
-                case EASY:
-                    letter = easyBotTurn(superGrid, letter, &playedRow, &playedCol);
-                    break;
+            case EASY:
+                letter = easyBotTurn(superGrid, letter, &playedRow, &playedCol);
+                break;
 
-                case MEDIUM:
-                    letter = mediumBotTurn(superGrid, letter, &playedRow, &playedCol);
-                    break;
-                
-                case HARD:
-                    letter = hardBotTurn(superGrid, letter, &playedRow, &playedCol);
-                    break;
-                
-                default:
-                    errors(UNEXPECTED);
-                    break;
+            case MEDIUM:
+                letter = mediumBotTurn(superGrid, letter, &playedRow, &playedCol);
+                break;
+
+            case HARD:
+                letter = hardBotTurn(superGrid, letter, &playedRow, &playedCol);
+                break;
+
+            default:
+                errors(UNEXPECTED);
+                break;
             }
             sleep(3);
         }
@@ -1768,24 +1753,24 @@ void match1P()
         /* Takes care of asigning the correct player's symbol and switching players */
         switch (player)
         {
-            case P1:
-                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'X';
-                player = P2;
-                break;
-        
-            case BOT:
-                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'O';
-                player = P1;
-                break;
+        case P1:
+            superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'X';
+            player = P2;
+            break;
 
-            default:
-                errors(PLAYER_ID);
-                break;
+        case BOT:
+            superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'O';
+            player = P1;
+            break;
+
+        default:
+            errors(PLAYER_ID);
+            break;
         }
 
         /* Checks if the game has been won */
         winCondition = superGridComplete(superGrid);
-    }while (winCondition == DEFAULT);
+    } while (winCondition == DEFAULT);
 
     PrintGrid(superGrid);
     printf("You played for %d turns.\n", turns);
@@ -1804,11 +1789,11 @@ void match1P()
 
 /**
  * @brief Runs a 2 player match with alternating turns.
- * 
+ *
  * @details The function is the main function of the 2 player match. It takes care of the game's flow and the player's turns.
- * 
+ *
  * @see takeTurn()
-*/
+ */
 void match2P()
 {
     clearTerminal();
@@ -1819,20 +1804,20 @@ void match2P()
     char letter = 'Z';
     int winCondition = DEFAULT;
 
-    struct Grid superGrid[ROW][COLUMN]; 
+    struct Grid superGrid[ROW][COLUMN];
     initSuperGrid(superGrid);
 
     /* Get the pseudo for both players */
     gamertag nameP1;
     gamertag nameP2;
 
-    while (getchar() != '\n'); /* Clears entry buffer */
+    while (getchar() != '\n')
+        ; /* Clears entry buffer */
     printf("Player 1, please choose you pseudo ('*' for a random one): \n");
     namePlayer(nameP1);
     sleep(1);
     printf("Player 2, please choose you pseudo ('*' for a random one): \n");
     namePlayer(nameP2);
-
 
     printf("%s will play 'X' & ", nameP1);
     printf("%s will play 'O'\n", nameP2);
@@ -1848,33 +1833,40 @@ void match2P()
         PrintGrid(superGrid);
 
         /* Checks which player's turn it is */
-        if (player == P1) { printf(RED "%s" RESET "(X) to play, ", nameP1); }
-        else if (player == P2) { printf(RED "%s" RESET "(O) to play, ", nameP2); }                    
+        if (player == P1)
+        {
+            printf(RED "%s" RESET "(X) to play, ", nameP1);
+        }
+        else if (player == P2)
+        {
+            printf(RED "%s" RESET "(O) to play, ", nameP2);
+        }
 
         /* If the game has just started */
         if (letter == 'Z')
         {
             inputWhichGrid(&letter);
-        } else
-        
-        /* If the supposed grid to play in is completed */
-        if (gridComplete(superGrid, letter) != DEFAULT) 
-        {
-            printf("The supposed grid already full, so ");
-            inputWhichGrid(&letter);
-            
-            while (gridComplete(superGrid, letter) != DEFAULT)
-            {
-                errors(GRID_TAKEN);
-                inputWhichGrid(&letter);
-            }
         }
-
-        /* Reminds which grid the player is in */
         else
-        {
-            printf("\nYou are playing in the '%c' grid.\n\n", letter);
-        }
+
+            /* If the supposed grid to play in is completed */
+            if (gridComplete(superGrid, letter) != DEFAULT)
+            {
+                printf("The supposed grid already full, so ");
+                inputWhichGrid(&letter);
+
+                while (gridComplete(superGrid, letter) != DEFAULT)
+                {
+                    errors(GRID_TAKEN);
+                    inputWhichGrid(&letter);
+                }
+            }
+
+            /* Reminds which grid the player is in */
+            else
+            {
+                printf("\nYou are playing in the '%c' grid.\n\n", letter);
+            }
 
         /* Finds the letter indexs */
         bool foundLetter = false;
@@ -1894,7 +1886,7 @@ void match2P()
         }
 
         /* If the grid got full but not won by any, resets it after the next player's turn */
-        if(isGridDraw(superGrid, letter) && gridComplete(superGrid, letter) == DEFAULT)
+        if (isGridDraw(superGrid, letter) && gridComplete(superGrid, letter) == DEFAULT)
         {
             for (int row = 0; row < ROW; row++)
             {
@@ -1908,23 +1900,22 @@ void match2P()
 
         letter = takeTurn(superGrid, player, letter, &playedRow, &playedCol);
 
-
         /* Takes care of asigning the correct player's symbol and switching players */
         switch (player)
         {
-            case P1:
-                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'X';
-                player = P2;
-                break;
-        
-            case P2:
-                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'O';
-                player = P1;
-                break;
+        case P1:
+            superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'X';
+            player = P2;
+            break;
 
-            default:
-                errors(PLAYER_ID);
-                break;
+        case P2:
+            superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'O';
+            player = P1;
+            break;
+
+        default:
+            errors(PLAYER_ID);
+            break;
         }
 
         /* Checks if the game has been won */
@@ -1933,7 +1924,7 @@ void match2P()
 
     PrintGrid(superGrid);
     printf("You played for %d turns.\n", turns);
-    
+
     printf("Do you want to play again ? [Y]/[N] ");
     scanf("%c", &rematch);
     rematch = toupper(rematch);
@@ -1948,11 +1939,11 @@ void match2P()
 
 /**
  * @brief Runs a match with only bots.
- * 
+ *
  * @details The function is the main function of the bot match. It takes care of the game's flow and the bots' turns.
- * 
+ *
  * @see setDifficulty(), [difficulty]BotTurn(), botChooseLetter()
-*/
+ */
 void botVsBotMatch()
 {
     clearTerminal();
@@ -1964,8 +1955,8 @@ void botVsBotMatch()
     int difficultyBot_1 = setDifficulty();
     int difficultyBot_2 = setDifficulty();
 
-    char* botName_1 = "Fred";
-    char* botName_2 = "Jeremy";
+    char *botName_1 = "Fred";
+    char *botName_2 = "Jeremy";
 
     char playAgain = 'N';
     int player = 1, playedRow = 0, playedCol = 0;
@@ -1973,7 +1964,7 @@ void botVsBotMatch()
     char letter = 'Z';
     int winCondition = DEFAULT;
 
-    struct Grid superGrid[ROW][COLUMN]; 
+    struct Grid superGrid[ROW][COLUMN];
     initSuperGrid(superGrid);
 
     /*-- Clears the terminal --*/
@@ -2000,15 +1991,18 @@ void botVsBotMatch()
 
         /* Checks if the game has been won */
         winCondition = superGridComplete(superGrid);
-        if (winCondition != DEFAULT) { break; }
-        
+        if (winCondition != DEFAULT)
+        {
+            break;
+        }
 
         if (letter == 'Z')
         {
             botChooseLetter(superGrid, &letter);
-        } else
+        }
+        else
 
-        if (gridComplete(superGrid, letter) != DEFAULT)
+            if (gridComplete(superGrid, letter) != DEFAULT)
         {
             botChooseLetter(superGrid, &letter);
         }
@@ -2031,7 +2025,7 @@ void botVsBotMatch()
         }
 
         /* If the grid got full but not won by any, resets it after the next player's turn */
-        if(isGridDraw(superGrid, letter) && gridComplete(superGrid, letter) == DEFAULT)
+        if (isGridDraw(superGrid, letter) && gridComplete(superGrid, letter) == DEFAULT)
         {
             for (int row = 0; row < ROW; row++)
             {
@@ -2045,69 +2039,69 @@ void botVsBotMatch()
 
         switch (player)
         {
-            case P1:
-                switch (difficultyBot_1)
-                {
-                    case EASY:
-                        letter = easyBotTurn(superGrid, letter, &playedRow, &playedCol);
-                        break;
-
-                    case MEDIUM:
-                        letter = mediumBotTurn(superGrid, letter, &playedRow, &playedCol);
-                        break;
-
-                    case HARD:
-                        letter = hardBotTurn(superGrid, letter, &playedRow, &playedCol);
-                        break;
-                    
-                    default:
-                        errors(UNEXPECTED);
-                        break;
-                }
+        case P1:
+            switch (difficultyBot_1)
+            {
+            case EASY:
+                letter = easyBotTurn(superGrid, letter, &playedRow, &playedCol);
                 break;
 
-            case P2:
-                switch (difficultyBot_2)
-                {
-                    case EASY:
-                        letter = easyBotTurn(superGrid, letter, &playedRow, &playedCol);
-                        break;
-
-                    case MEDIUM:
-                        letter = mediumBotTurn(superGrid, letter, &playedRow, &playedCol);
-                        break;
-
-                    case HARD:
-                        letter = hardBotTurn(superGrid, letter, &playedRow, &playedCol);
-                        break;
-
-                    default:
-                        errors(UNEXPECTED);
-                        break;
-                }
+            case MEDIUM:
+                letter = mediumBotTurn(superGrid, letter, &playedRow, &playedCol);
                 break;
-            
+
+            case HARD:
+                letter = hardBotTurn(superGrid, letter, &playedRow, &playedCol);
+                break;
+
             default:
-                errors(PLAYER_ID);
+                errors(UNEXPECTED);
                 break;
+            }
+            break;
+
+        case P2:
+            switch (difficultyBot_2)
+            {
+            case EASY:
+                letter = easyBotTurn(superGrid, letter, &playedRow, &playedCol);
+                break;
+
+            case MEDIUM:
+                letter = mediumBotTurn(superGrid, letter, &playedRow, &playedCol);
+                break;
+
+            case HARD:
+                letter = hardBotTurn(superGrid, letter, &playedRow, &playedCol);
+                break;
+
+            default:
+                errors(UNEXPECTED);
+                break;
+            }
+            break;
+
+        default:
+            errors(PLAYER_ID);
+            break;
         }
 
         /* Takes care of asigning the correct player's symbol and switching players */
         switch (player)
         {
-            case P1:
-                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'X';
-                player = P2;
-                break;
+        case P1:
+            superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'X';
+            player = P2;
+            break;
 
-            case P2:
-                superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'O';
-                player = P1;
-                break;
+        case P2:
+            superGrid[superGridRow][superGridColumn].grid[playedRow][playedCol] = 'O';
+            player = P1;
+            break;
 
-            default:
-                errors(PLAYER_ID);
-                break;
+        default:
+            errors(PLAYER_ID);
+            break;
         }
 
         /* Checks if the game has been won */
@@ -2121,7 +2115,8 @@ void botVsBotMatch()
     printf("The bots played for %d turns.\n", turns);
 
     printf("Do you want to play again ? [Y]/[N] ");
-    while(getchar()!= '\n');
+    while (getchar() != '\n')
+        ;
     scanf("%c", &playAgain);
     playAgain = toupper(playAgain);
     if (playAgain == 'Y')
@@ -2135,11 +2130,11 @@ void botVsBotMatch()
 
 /**
  * @brief Main function, runs the game.
- * 
+ *
  * @details This function is the main function of the game. Calls the main menu and the match functions.
- * 
+ *
  * @see mainMenu(), match1P(), match2P(), botVsBotMatch()
-*/
+ */
 void mainScreen()
 {
     /*-- Variables --*/
@@ -2154,70 +2149,73 @@ void mainScreen()
         scanf("%d", &choice);
         switch (choice)
         {
-            /*-- Exit --*/
-            case EXIT:
-                printf("Exiting");
-                loading_animation();
-                exit(EXIT_SUCCESS);
-                break;
+        /*-- Exit --*/
+        case EXIT:
+            printf("Exiting");
+            loading_animation();
+            exit(EXIT_SUCCESS);
+            break;
 
             /****************************************************/
             /**************|         Rules        |**************/
-            /****************************************************/    
+            /****************************************************/
 
-            case RULES:
-                rules();
-                char PressEnterToContinue = 0;
-                while (PressEnterToContinue != '\r' && PressEnterToContinue != '\n') { PressEnterToContinue = getchar(); }
-                choice = DEFAULT;
-                mainMenu();
-                break;
+        case RULES:
+            rules();
+            char PressEnterToContinue = 0;
+            while (PressEnterToContinue != '\r' && PressEnterToContinue != '\n')
+            {
+                PressEnterToContinue = getchar();
+            }
+            choice = DEFAULT;
+            mainMenu();
+            break;
 
             /****************************************************/
             /*************|     1 Player match     |*************/
             /****************************************************/
 
-            case MATCH_1P:
-                clearTerminal();
-                printf("Initialising");
-                loading_animation();
+        case MATCH_1P:
+            clearTerminal();
+            printf("Initialising");
+            loading_animation();
 
-                match1P(); /* Calls the 1P match function that does it all */
+            match1P(); /* Calls the 1P match function that does it all */
 
-                choice = DEFAULT;
-                mainMenu();
-                break;
+            choice = DEFAULT;
+            mainMenu();
+            break;
 
             /****************************************************/
             /**************|    2 Players match    |*************/
             /****************************************************/
 
-            case MATCH_2P:
-                clearTerminal();
-                printf("Initialising");
-                loading_animation();
+        case MATCH_2P:
+            clearTerminal();
+            printf("Initialising");
+            loading_animation();
 
-                match2P(); /* Calls the 2P match function that does it all */
+            match2P(); /* Calls the 2P match function that does it all */
 
-                choice = DEFAULT;
-                mainMenu();
-                break;
+            choice = DEFAULT;
+            mainMenu();
+            break;
 
-            case SECRET:
-                clearTerminal();
-                printf("Initialising");
-                loading_animation();
+        case SECRET:
+            clearTerminal();
+            printf("Initialising");
+            loading_animation();
 
-                botVsBotMatch(); /* Calls the bot vs bot match function that does it all */
+            botVsBotMatch(); /* Calls the bot vs bot match function that does it all */
 
-                choice = DEFAULT;
-                mainMenu();
-                break;
-            
-            default:
-                choice = DEFAULT;
-                mainMenu();
-                break;
+            choice = DEFAULT;
+            mainMenu();
+            break;
+
+        default:
+            choice = DEFAULT;
+            mainMenu();
+            break;
         }
 
     } while (choice == DEFAULT);
