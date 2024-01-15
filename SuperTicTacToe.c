@@ -1082,6 +1082,7 @@ char easyBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow
 char mediumBotTurn(struct Grid superGrid[ROW][COLUMN], char letter, int *ptrBotRow, int *ptrBotCol)
 {
     /* As the bot is based on a random choice between easy and hard, it will play randomly one of the 2 */
+    sleep(1);
     srand(time(NULL));
     int choice = rand() % 3;
     switch (choice)
