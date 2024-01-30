@@ -2,7 +2,7 @@
  * @brief Program to play Super Tic-Tac-Toe, a variation of tic-tac-toe where players need to complete a grid in order to claim a square of the main grid ('super grid')
  *
  * @author Powan
- * @version 2.1.2
+ * @version 2.1.3
  */
 
 #include "./includes.h"
@@ -237,6 +237,9 @@ void rules()
 void namePlayer(char *ptrInput)
 {
     bool condition = false;
+
+    while (getchar() != '\n')
+        ;
 
     do
     {
@@ -791,9 +794,9 @@ void inputWhichGrid(char *ptrLetter)
         }
 
         /* Checks if it's a correct letter */
-        for (int row = 0; row < ROW; row++)
+        for (int row = 0; row < ROW + 1; row++)
         {
-            for (size_t col = 0; col < COLUMN; col++)
+            for (int col = 0; col < COLUMN + 1; col++)
             {
                 char upperInput = toupper(input[0]);
                 if (upperInput == LETTERS[row][col]) /* if it is, outputs it, */
@@ -893,20 +896,17 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
     int superGridRow, superGridColumn;
 
     bool foundLetter = false;
-    int letterRow = 0, letterColumn = 0;
-    while (letterRow < ROW || !foundLetter)
+    for (int row = 0; row < ROW + 1 || !foundLetter; row++)
     {
-        while (letterColumn < COLUMN || !foundLetter)
+        for (int col = 0; col < COLUMN + 1 || !foundLetter; col++)
         {
-            if (letter == LETTERS[letterRow][letterColumn])
+            if (LETTERS[row][col] == letter)
             {
+                superGridRow = row;
+                superGridColumn = col;
                 foundLetter = true;
-                superGridRow = letterRow;
-                superGridColumn = letterColumn;
             }
-            letterColumn++;
         }
-        letterRow++;
     }
 
     /*-- Asks row & column, and checks if it's a correct cell to play in --*/
@@ -915,6 +915,8 @@ char takeTurn(struct Grid superGrid[ROW][COLUMN], int player, char letter, int *
     int row = -1, column = -1;
     int preventFails = 0;
 
+    while (getchar() != '\n')
+        ;
     do
     {
         /*-- Asks for row & column, makes it from [1-3] to [0-2] --*/
